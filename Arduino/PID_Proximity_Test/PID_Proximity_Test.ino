@@ -15,12 +15,12 @@
 DualVNH5019MotorShield motorShield;
 
 // Declare input pins, each encoder has 2 inputs.
-byte encoderE1 = 3;   // Right motor encoder.
-byte encoderE2 = 11;  // Left motor encoder.
+byte R_encoder = 3;   // Right motor encoder.
+byte L_encoder = 11;  // Left motor encoder.
 
 // Variables to store the duration that each encoder square wave remains high.
-int encoderE1_PWM = 0;
-int encoderE2_PWM = 0;
+int R_encoder_PWM = 0;
+int L_encoder_PWM = 0;
 
 float rightSpeed = 100;
 float leftSpeed = rightSpeed * 1.13;
@@ -29,9 +29,39 @@ float timer = 0;
 int state = 1;
 int interval = 100;
 
+// To calculate delta Time
+float currentTime = 0;
+float prevTime = 0;
+float elapsedTime = 0;
+
 // Number of revolution per wheels.
-float L_wheelRevo = 0;
-float R_wheelRevo = 0;
+float LeftRPM = 0;
+float RightRPM = 0;
+
+// Total revolution
+float TLrevo = 0;
+float TRrevo = 0;
+
+// current revolution in this dt period
+float Lrevo = 0;
+float Rrevo = 0;
+
+// Set point ticks
+int setPoint_ticks = 650;
+
+double R_ticks_PID = 0;
+double L_ticks_PID = 0;
+
+double R_error_ticks = 0;
+double L_error_ticks = 0;
+double R_prev_error = 0;
+double L_prev_error = 0;
+double R_sum_error = 0; 
+double L_sum_error = 0; 
+
+double KP = 0.2;
+double KD = 0.01;
+double KI = 0.005;
 
 // Integer variables to hold sensor analog values.
 // Voltage values range: 0V to 5V, Analog values range: 0 to 1023.
@@ -65,8 +95,8 @@ void setup()
   Serial.println("Dual VNH5019 Motor Shield");
 
   // Initialize the inputs.
-  pinMode(encoderE1,INPUT);
-  pinMode(encoderE2,INPUT);
+  pinMode(R_encoder,INPUT);
+  pinMode(L_encoder,INPUT);
 
   // Initialize the motor shield driver object.
   motorShield.init();
@@ -105,24 +135,53 @@ double computePID(double setPoint , double inp)
 
 void updateSpeed()
 {
-  encoderE1_PWM = pulseIn(encoderE1,HIGH);
-  encoderE2_PWM = pulseIn(encoderE2,HIGH);
+  currentTime = millis();
+  elapsedTime = currentTime - prevTime;
+  
+  R_encoder_PWM = pulseIn(R_encoder,HIGH);
+  L_encoder_PWM = pulseIn(L_encoder,HIGH);
 
-  /*
-  leftSpeed += computePID(562.25 , encoderE1_PWM);
-  rightSpeed += computePID(562.25 , encoderE2_PWM);
-  */
+  prevTime = currentTime;
+
+  Lrevo = ( elapsedTime * 1000 / ( (float)L_encoder_PWM * 2 ) ) / 562.25 ;
+  Rrevo = ( elapsedTime * 1000 / ( (float)L_encoder_PWM * 2 ) ) / 562.25 ;
+
+  TLrevo += Lrevo;
+  TRrevo += Rrevo;
+
+  LeftRPM = 1000 / elapsedTime * Lrevo * 60;
+  RightRPM = 1000 / elapsedTime * Rrevo * 60;  
+
+  Serial.print("Total Left Motor Revolution: ");
+  Serial.print(TLrevo);
+  Serial.print(", Total Right Motor Revolution: ");
+  Serial.print(TRrevo);
+  
+  Serial.print("  Left Motor RPM: ");
+  Serial.print(LeftRPM);
+  Serial.print(", Right Motor RPM: ");
+  Serial.println(RightRPM);
+
+  R_error_ticks = setPoint_ticks - R_encoder_PWM;
+  L_error_ticks = setPoint_ticks - L_encoder_PWM;
+  
+  R_ticks_PID = R_encoder_PWM + (R_error_ticks * (KP * 0.95)) + (R_prev_error * (KD + 0.01)) + (R_sum_error * KI);
+  L_ticks_PID = L_encoder_PWM + (L_error_ticks * KP) + (L_prev_error * KD) + (L_sum_error * KI);
+
+  //convert adjusted ticks to RPM
+  leftSpeed = L_ticks_PID / 6.5;
+  rightSpeed = R_ticks_PID / 6.5;
+
+  
+  R_prev_error = R_error_ticks;
+  L_prev_error = L_error_ticks;
+
+  R_sum_error += R_error_ticks;
+  L_sum_error += L_error_ticks;
+    
 
   
   /*
-  L_wheelRevo += (float)encoderE1_PWM / 562.25;
-  R_wheelRevo += (float)encoderE2_PWM / 562.25;
-
-  Serial.print(L_wheelRevo); Serial.print(", ");
-  Serial.println(R_wheelRevo);
-  */
-  
-  
   if(encoderE2_PWM - encoderE1_PWM > 5)
   {
     if (encoderE1_PWM < encoderE2_PWM)
@@ -139,7 +198,7 @@ void updateSpeed()
       rightSpeed += 1;
     }
   }
-  
+  */
 
   /*
   if (encoderE1_PWM < encoderE2_PWM)
@@ -271,9 +330,6 @@ int SensorReact()
   
 }
 
-unsigned long currentTime = 0;
-unsigned long previousTime = 0;
-
 // Looping code runs continuously.
 void loop()
 {
@@ -284,10 +340,6 @@ void loop()
   Serial.println(encoderE2_PWM);
   */
   //Serial.println(timer);
-
-  currentTime = millis();
-
-  double elapsedTime = currentTime - previousTime;
 
   timer += elapsedTime;
   
@@ -335,6 +387,4 @@ void loop()
   }
 
   stopIfFault();
-
-  previousTime = currentTime;
 }
