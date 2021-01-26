@@ -24,6 +24,7 @@ double sensorA5_avg = 0.0;*/
 
 // -----------------------------------------------------------------------------------
 // SHARP IR SENSOR LIBRARY CALIBRATION.
+
 // Define IR sensor input pins.
 #define PS1_pin A0
 #define PS2_pin A1
@@ -37,8 +38,8 @@ double sensorA5_avg = 0.0;*/
 #define small_model 1080
 
 /* Model and code:
-  GP2Y0A02YK0F --> 20150 (our large model)
-  GP2Y0A21YK0F --> 1080 (our small model)
+  GP2Y0A02YK0F --> 20150 (our large model, range is 20cm to 160cm.)
+  GP2Y0A21YK0F --> 1080 (our small model, range is from 10cm to 80cm.)
   GP2Y0A710K0F --> 100500
   GP2YA41SK0F --> 430
 */
@@ -50,6 +51,16 @@ int PS3_distance;
 int PS4_distance;
 int PS5_distance;
 int PS6_distance;
+
+// Variables to check if there is an obstacle in the front or rear.
+double front_average;
+double back_average;
+
+// Boolean variables to indicate if there are obstacles surrounding the robot.
+boolean obstacle_front = false;
+boolean obstacle_back = false;
+boolean obstacle_left = false;
+boolean obstacle_right = false;
 
 // Create a new instance of the SharpIR class for each small and large sensor.
 SharpIR PS1 = SharpIR(PS1_pin, small_model);  // Back left sensor.
@@ -72,6 +83,7 @@ void setup()
 void loop()
 {
   // CODE FOR CALIBRATION USING SHARP IR SENSOR LIBRARY.
+  // READ IN SENSOR READINGS AND APPLY OFFSET AS REQUIRED.
   
   // Sharp IR sensor library code helps to obtain the average of each sensor's readings.
   // May wish to add in buffer distance to each measured value to reduce collision likelihood.
@@ -90,10 +102,63 @@ void loop()
   Serial.print("Front left PS5: "); Serial.print(PS5_distance); Serial.print("cm, ");
   Serial.print("Front right PS6: "); Serial.print(PS6_distance); Serial.println("cm");
 
+  // -----------------------------------------------------------------------------------
+  // DETERMINE IF THERE ARE OBSTACLES AROUND THE ROBOT.
+  
+  // Detect for obstacle in front of robot.
+  front_average = (PS1_distance + PS2_distance) / 2;
+  
+  if(front_average <= 10.0)
+  {
+    obstacle_front = true;
+    Serial.println("Obstacle detected in rear. ");
+  }
+  else
+  {
+    obstacle_front = false;
+  }
+
+  // Detect for obstacle behind robot.
+  back_average = (PS5_distance + PS6_distance) / 2;
+  
+  if(back_average <= 30.0)
+  {
+    obstacle_back = true;
+    Serial.println("Obstacle detected in front. ");
+  }
+  else
+  {
+    obstacle_back = false;
+  }
+
+  // Detect for obstacle on left of robot.
+  if(PS3_distance <= 10)
+  {
+    obstacle_left = true;
+    Serial.println("Obstacle detected on left. ");
+  }
+  else
+  {
+    obstacle_left = false;
+  }
+
+  // Detect for obstacle on right of robot.
+  if(PS4_distance <= 10)
+  {
+    obstacle_right = true;
+    Serial.println("Obstacle detected on right. ");
+  }
+  else
+  {
+    obstacle_right = false;
+  }
+
+  Serial.println("\n\n");
   delay(500);
 
   // -----------------------------------------------------------------------------------
   // CODE FOR MANUAL CALIBRATION.
+  
   /*for(count = 0; count < 20; count++)
   {
     // Read the analog value of each sensor and accumulate them for averaging.
