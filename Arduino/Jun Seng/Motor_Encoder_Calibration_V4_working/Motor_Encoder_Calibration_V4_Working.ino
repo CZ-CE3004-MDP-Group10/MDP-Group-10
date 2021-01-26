@@ -1,6 +1,7 @@
 // Include the required libraries.
 #include "DualVNH5019MotorShield.h"
 #include "EnableInterrupt.h"
+#include <SharpIR.h>
 
 // Create an object for the motor shield.
 DualVNH5019MotorShield motorShield;
@@ -61,6 +62,45 @@ double left_K2 = -left_KP - (2 * left_KD);
 double left_K3 = left_KD;
 */
 
+// -----------------------------------------------------------------------------------
+// SHARP IR SENSOR LIBRARY CALIBRATION.
+
+// Define IR sensor input pins.
+#define PS1_pin A0
+#define PS2_pin A1
+#define PS3_pin A2
+#define PS4_pin A3
+#define PS5_pin A4
+#define PS6_pin A5
+
+// Define IR sensor models, both large and small are used.
+#define large_model 20150
+#define small_model 1080
+
+// Create variable to store the distance, all in centimetres.
+int B_Left_distance;
+int B_Right_distance;
+int Left_distance;
+int Right_distance;
+int F_Left_distance;
+int F_Right_distance;
+
+// Boolean variables to indicate if there are obstacles surrounding the robot.
+boolean obstacle_front = false;
+boolean obstacle_back = false;
+boolean obstacle_left = false;
+boolean obstacle_right = false;
+
+// Create a new instance of the SharpIR class for each small and large sensor.
+SharpIR PS1 = SharpIR(PS1_pin, small_model);  // Back left sensor.
+SharpIR PS2 = SharpIR(PS2_pin, small_model);  // Back right sensor.
+SharpIR PS3 = SharpIR(PS3_pin, small_model);  // Left sensor.
+SharpIR PS4 = SharpIR(PS4_pin, small_model);  // Right sensor.
+SharpIR PS5 = SharpIR(PS5_pin, large_model);  // Front left sensor.
+SharpIR PS6 = SharpIR(PS6_pin, large_model);  // Front right sensor.
+
+
+
 // ----------------------------------------------------------------------------------
 // Setup code runs once at startup.
 void setup()
@@ -82,6 +122,14 @@ void setup()
   enableInterrupt(encoder_M1_A, right_tick_increment, RISING);
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
+  B_Left_distance = PS1.distance() + 2;    // Need to +2cm for improved accuracy.
+  B_Right_distance = PS2.distance() + 1;    // Need to +1cm for improved accuracy.
+  Left_distance = PS3.distance() + 2;    // Need to +2cm for improved accuracy.
+  Right_distance = PS4.distance() + 2;    // Need to +2cm for improved accuracy.
+  F_Left_distance = PS5.distance() + 1;    // Need to +1cm +more as distance increases for improved accuracy.
+  F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
+
+  
   // Set the motor initial speed if desired. - May be redundant.
   //motorShield.setM1Speed(100);    // Right motor.
   //motorShield.setM2Speed(150);     // Left motor.
@@ -110,6 +158,9 @@ void loop()
     {
       ticks_to_move = 400;
     }
+  
+    Serial.print("HELOPLPSLA");
+    
   }
 
   if ( !waitingInput )
@@ -148,6 +199,16 @@ void loop()
   
       // Stop the robot movement, braking is more effective then setting the speed to 0.
       motorShield.setBrakes(400,400);
+
+      // Check sensor when stopped 
+      // May wish to add in buffer distance to each measured value to reduce collision likelihood.
+      B_Left_distance = PS1.distance() + 2;    // Need to +2cm for improved accuracy.
+      B_Right_distance = PS2.distance() + 1;    // Need to +1cm for improved accuracy.
+      Left_distance = PS3.distance() + 2;    // Need to +2cm for improved accuracy.
+      Right_distance = PS4.distance() + 2;    // Need to +2cm for improved accuracy.
+      F_Left_distance = PS5.distance() + 1;    // Need to +1cm +more as distance increases for improved accuracy.
+      F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
+      
     }
   }
 }
