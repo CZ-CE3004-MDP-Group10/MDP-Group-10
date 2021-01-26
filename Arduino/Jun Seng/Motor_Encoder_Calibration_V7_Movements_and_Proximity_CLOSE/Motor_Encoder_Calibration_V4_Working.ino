@@ -140,9 +140,13 @@ void setup()
 boolean waitingInput = true;
 char readChar = '0';
 
+boolean backwards = false;
+int backwards_count = 0;
+
 // Looping code runs continuously.
 void loop()
 {
+  //************************* Read from Serial ********************************* 
   /*
    while(waitingInput and Serial.available() > 0)
   {
@@ -162,6 +166,8 @@ void loop()
     
   }*/
 
+  //************************* Auto detect and steer v1 *********************************
+  /*
   while(waitingInput)
   {
     delay(500);
@@ -183,6 +189,7 @@ void loop()
       else if(Left_distance < 40 && Right_distance < 40)
       {
         readChar = 's';
+        backwards = true;
       }
     }
     
@@ -198,7 +205,69 @@ void loop()
     waitingInput = false;
     
   }
+  */
+
+  //************************* Auto detect and steer v2 *********************************
+  while(waitingInput)
+  {
+    delay(500);
+    if(backwards == true)
+    {
+      backwards_count += 1;
+
+      if(backwards_count == 2)
+      {
+        if(Left_distance > 40)
+        {
+          readChar = 'a';
+        }
+        else if(Right_distance > 40)
+        {
+          readChar = 'd';
+        }
+
+        ticks_to_move = 400;
+    
+        backwards_count = 0;
+        backwards = false;  
+      }
+    }
+    else if(backwards == false)
+    {
+      if(F_Left_distance > 20 and F_Right_distance > 20)
+      {
+        readChar = 'w';
+      }
+      else
+      {
+        if(Left_distance > 40)
+        {
+          readChar = 'a';
+        }
+        else if(Right_distance > 40)
+        {
+          readChar = 'd';
+        }
+        else if(Left_distance < 40 && Right_distance < 40)
+        {
+          readChar = 's';
+          backwards = true;
+        }
+      }
+      
+       if(readChar == 'w' or readChar == 's')
+      {
+        ticks_to_move = 245;
+      }
+      if(readChar == 'a' or readChar == 'd')
+      {
+        ticks_to_move = 400;
+      }
   
+      waitingInput = false;
+    }
+  }
+
 
   if ( !waitingInput )
   {

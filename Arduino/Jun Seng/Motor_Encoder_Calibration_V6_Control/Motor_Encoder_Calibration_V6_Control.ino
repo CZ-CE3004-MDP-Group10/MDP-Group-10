@@ -94,7 +94,7 @@ char readChar = '0';
 
 // Looping code runs continuously.
 void loop()
-{
+{  
    while(waitingInput and Serial.available() > 0)
   {
     String data = Serial.readStringUntil("\n");
@@ -145,7 +145,7 @@ void loop()
       M2_ticks_moved = 0;
 
       waitingInput = true;
-  
+      
       // Stop the robot movement, braking is more effective then setting the speed to 0.
       motorShield.setBrakes(400,400);
     }

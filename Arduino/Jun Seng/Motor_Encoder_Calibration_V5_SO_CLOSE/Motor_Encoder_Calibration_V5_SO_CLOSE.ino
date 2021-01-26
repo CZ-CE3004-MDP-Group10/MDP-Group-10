@@ -183,43 +183,6 @@ double left_ticks_to_power(double left_ticks)
 }
 
 // ----------------------------------------------------------------------------------
-// Functions to move the robot in each particular direction.
-void Forward(int duration)
-{
-  motorShield.setM1Speed(left_speed);
-  motorShield.setM2Speed(right_speed);
-  delay(duration);
-}
-
-void Backward(int duration)
-{
-  motorShield.setM1Speed(-left_speed);
-  motorShield.setM2Speed(-right_speed);
-  delay(duration);
-}
-
-void Left(int duration)
-{
-  motorShield.setM1Speed(-left_speed);
-  motorShield.setM2Speed(right_speed);
-  delay(duration);
-}
-
-void Right(int duration)
-{
-  motorShield.setM1Speed(left_speed);
-  motorShield.setM2Speed(-right_speed);
-  delay(duration);
-}
-
-void Stop(int duration)
-{
-  motorShield.setM1Speed(0);
-  motorShield.setM2Speed(0);
-  delay(duration);
-}
-
-// ----------------------------------------------------------------------------------
 // Stops the motor if there is a fault, like a short circuit.
 // Infinite loop stops the program from continuing.
 void stopIfFault()
