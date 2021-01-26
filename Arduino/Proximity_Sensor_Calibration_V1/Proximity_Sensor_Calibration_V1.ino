@@ -52,10 +52,6 @@ int PS4_distance;
 int PS5_distance;
 int PS6_distance;
 
-// Variables to check if there is an obstacle in the front or rear.
-double front_average;
-double back_average;
-
 // Boolean variables to indicate if there are obstacles surrounding the robot.
 boolean obstacle_front = false;
 boolean obstacle_back = false;
@@ -95,23 +91,21 @@ void loop()
   PS6_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
 
   // Print out the calculated distance values in centiemtres.
-  Serial.print("Back left PS1: "); Serial.print(PS1_distance); Serial.print("cm, ");
-  Serial.print("Back right PS2: "); Serial.print(PS2_distance); Serial.print("cm, ");
-  Serial.print("Left PS3: "); Serial.print(PS3_distance); Serial.print("cm, ");
-  Serial.print("Right PS4: "); Serial.print(PS4_distance); Serial.print("cm, ");
-  Serial.print("Front left PS5: "); Serial.print(PS5_distance); Serial.print("cm, ");
-  Serial.print("Front right PS6: "); Serial.print(PS6_distance); Serial.println("cm");
+  //Serial.print("Back left PS1: "); Serial.print(PS1_distance); Serial.print("cm, ");
+  //Serial.print("Back right PS2: "); Serial.print(PS2_distance); Serial.print("cm, ");
+  //Serial.print("Left PS3: "); Serial.print(PS3_distance); Serial.print("cm, ");
+  //Serial.print("Right PS4: "); Serial.print(PS4_distance); Serial.print("cm, ");
+  //Serial.print("Front left PS5: "); Serial.print(PS5_distance); Serial.print("cm, ");
+  //Serial.print("Front right PS6: "); Serial.print(PS6_distance); Serial.println("cm");
 
   // -----------------------------------------------------------------------------------
   // DETERMINE IF THERE ARE OBSTACLES AROUND THE ROBOT.
   
   // Detect for obstacle in front of robot.
-  front_average = (PS1_distance + PS2_distance) / 2;
-  
-  if(front_average <= 10.0)
+  if(PS5_distance <= 30 || PS6_distance <= 30)
   {
     obstacle_front = true;
-    Serial.println("Obstacle detected in rear. ");
+    Serial.println("Obstacle detected in front. ");
   }
   else
   {
@@ -119,12 +113,10 @@ void loop()
   }
 
   // Detect for obstacle behind robot.
-  back_average = (PS5_distance + PS6_distance) / 2;
-  
-  if(back_average <= 30.0)
+  if(PS1_distance <= 20 || PS2_distance <= 20)
   {
     obstacle_back = true;
-    Serial.println("Obstacle detected in front. ");
+    Serial.println("Obstacle detected in rear. ");
   }
   else
   {
@@ -132,7 +124,7 @@ void loop()
   }
 
   // Detect for obstacle on left of robot.
-  if(PS3_distance <= 10)
+  if(PS3_distance <= 20)
   {
     obstacle_left = true;
     Serial.println("Obstacle detected on left. ");
@@ -143,7 +135,7 @@ void loop()
   }
 
   // Detect for obstacle on right of robot.
-  if(PS4_distance <= 10)
+  if(PS4_distance <= 20)
   {
     obstacle_right = true;
     Serial.println("Obstacle detected on right. ");
@@ -152,8 +144,6 @@ void loop()
   {
     obstacle_right = false;
   }
-
-  Serial.println("\n\n");
   delay(500);
 
   // -----------------------------------------------------------------------------------
