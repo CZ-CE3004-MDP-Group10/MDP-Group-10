@@ -213,24 +213,26 @@ void loop()
     delay(500);
     if(backwards == true)
     {
-      backwards_count += 1;
-
-      if(backwards_count == 2)
+      if(Left_distance > 40)
       {
-        if(Left_distance > 40)
-        {
-          readChar = 'a';
-        }
-        else if(Right_distance > 40)
-        {
-          readChar = 'd';
-        }
+        readChar = 'a';
 
+        backwards_count += 1;
+      }
+      else if(Right_distance > 40)
+      {
+        readChar = 'd';
+        
+        backwards_count += 1;
+      }
+
+      if(backwards_count > 2)
+      {
         ticks_to_move = 400;
-    
         backwards_count = 0;
         backwards = false;  
       }
+      
     }
     else if(backwards == false)
     {
@@ -335,8 +337,8 @@ void PID(int right_mul , int left_mul)
   E2_error_ticks = M2_setpoint_ticks - left_ticks;
 
   // Perform PID calculation for the new motor speed.
-  M1_ticks_PID = right_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
-  M2_ticks_PID = left_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
+  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
+  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
 
   //Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
   //Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
@@ -346,8 +348,8 @@ void PID(int right_mul , int left_mul)
   // Compensation is larger for the left motor, nd smaller for the right motor,
   // Hence the left ticks PID is fed to the right motor,
   // And the right ticks PID is fed to the left motor.
-  right_speed = right_ticks_to_power(M2_ticks_PID);
-  left_speed = left_ticks_to_power(M1_ticks_PID);
+  right_speed = right_ticks_to_power(M1_ticks_PID);
+  left_speed = left_ticks_to_power(M2_ticks_PID);
   
   // Set the new motor speed.
   motorShield.setM1Speed(right_speed * right_mul);    // Right motor.
