@@ -262,7 +262,7 @@ void loop()
       
        if(readChar == 'w' or readChar == 's')
       {
-        ticks_to_move = 245;
+        ticks_to_move = 290;
       }
       if(readChar == 'a' or readChar == 'd')
       {
@@ -340,8 +340,8 @@ void PID(int right_mul , int left_mul)
   E2_error_ticks = M2_setpoint_ticks - left_ticks;
 
   // Perform PID calculation for the new motor speed.
-  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
-  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
+  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
+  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
 
   //Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
   //Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);

@@ -208,36 +208,31 @@ void loop()
   */
 
   //************************* Auto detect and steer v2 *********************************
-  
   while(waitingInput)
   {
     delay(500);
     if(backwards == true)
     {
-      if(Left_distance > 40 or Right_distance > 40)
-      {
-        backwards_count += 1;
-        readChar = 's';
-      }
-      
-      if(backwards_count > 2)
-      {
+      backwards_count += 1;
 
+      if(backwards_count == 2)
+      {
         if(Left_distance > 40)
         {
           readChar = 'a';
         }
-        else if ( Right_distance > 40)
+        else if(Right_distance > 40)
         {
           readChar = 'd';
         }
-  
+
+        ticks_to_move = 400;
+    
         backwards_count = 0;
         backwards = false;  
       }
-      
     }
-    else
+    else if(backwards == false)
     {
       if(F_Left_distance > 20 and F_Right_distance > 20)
       {
@@ -272,7 +267,7 @@ void loop()
       waitingInput = false;
     }
   }
-  
+
 
   if ( !waitingInput )
   {
@@ -294,8 +289,8 @@ void loop()
     // Once the desired number of ticks to move the required distance (10cm) has been reached.
     if(M1_ticks_moved > ticks_to_move and M2_ticks_moved > ticks_to_move)
     {
-      //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-      //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
+      Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
+      Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
       Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
       Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
   
@@ -333,15 +328,15 @@ void PID(int right_mul , int left_mul)
   // Two master counters count the total number of ticks moved through
   // the entire motor operation to check for discrepancies over time.
   //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-  //Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
+  //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
 
   // Determine the error difference in the number of ticks.
   E1_error_ticks = M1_setpoint_ticks - right_ticks;
   E2_error_ticks = M2_setpoint_ticks - left_ticks;
 
   // Perform PID calculation for the new motor speed.
-  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
-  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
+  M1_ticks_PID = right_ticks + (E1_error_ticks * KP) + (E1_prev_error * KD) + (E1_sum_error * KI);
+  M2_ticks_PID = left_ticks + (E2_error_ticks * KP * 0.95) + (E2_prev_error * (KD + 0.2)) + (E2_sum_error * KI);
 
   //Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
   //Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
