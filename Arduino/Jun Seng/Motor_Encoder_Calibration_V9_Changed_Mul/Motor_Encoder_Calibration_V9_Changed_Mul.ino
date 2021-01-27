@@ -143,6 +143,12 @@ char readChar = '0';
 boolean backwards = false;
 int backwards_count = 0;
 
+int front_back_ticks = 245;
+int left_right_ticks = 380;
+
+int left_mul = 0;
+int right_mul = 0;
+
 // Looping code runs continuously.
 void loop()
 {
@@ -157,15 +163,15 @@ void loop()
 
     if(readChar == 'w' or readChar == 's')
     {
-      ticks_to_move = 245;
+      ticks_to_move = front_back_ticks;
     }
     if(readChar == 'a' or readChar == 'd')
     {
-      ticks_to_move = 370;
+      ticks_to_move = left_right_ticks;
     }
     
   }
-
+  
   //************************* Auto detect and steer v1 *********************************
   /*
   while(waitingInput)
@@ -214,28 +220,30 @@ void loop()
     delay(500);
     if(backwards == true)
     {
-      if(Left_distance > 40)
+      if(Left_distance > 40 or Right_distance > 40)
       {
-        readChar = 'a';
-
         backwards_count += 1;
+        readChar = 's';
       }
-      else if(Right_distance > 40)
-      {
-        readChar = 'd';
-        
-        backwards_count += 1;
-      }
-
+      
       if(backwards_count > 2)
       {
-        ticks_to_move = 400;
+
+        if(Left_distance > 40)
+        {
+          readChar = 'a';
+        }
+        else if ( Right_distance > 40)
+        {
+          readChar = 'd';
+        }
+  
         backwards_count = 0;
         backwards = false;  
       }
       
     }
-    else if(backwards == false)
+    else
     {
       if(F_Left_distance > 20 and F_Right_distance > 20)
       {
@@ -260,11 +268,11 @@ void loop()
       
        if(readChar == 'w' or readChar == 's')
       {
-        ticks_to_move = 245;
+        ticks_to_move = front_back_ticks;
       }
       if(readChar == 'a' or readChar == 'd')
       {
-        ticks_to_move = 400;
+        ticks_to_move = left_right_ticks;
       }
   
       waitingInput = false;
@@ -272,33 +280,52 @@ void loop()
   }
   */
 
+  
+  
+
   if ( !waitingInput )
   {
     switch(readChar)
     {
-      case 'w': PID(1,1);
+      case 'w': setMul(1,1);
                 break;
       
-      case 's': PID(-1,-1);
+      case 's': setMul(-1,-1);
                 break;
 
-      case 'a': PID(-1,1);
+      case 'a': setMul(-1,1);
                 break;
 
-      case 'd': PID(1,-1);
+      case 'd': setMul(1,-1);
                 break;
     }
-    
+
+    /*
+    if(M1_ticks_moved > ticks_to_move)
+    {
+      right_mul = 0;
+      motorShield.setBrakes(0,400);
+      Serial.print("Hit here");
+    }
+    if(M2_ticks_moved > ticks_to_move)
+    {
+      left_mul = 0;
+      motorShield.setBrakes(400,0);
+      Serial.print("Hit there");
+    }*/
+
+    PID();
+  
     // Once the desired number of ticks to move the required distance (10cm) has been reached.
     if(M1_ticks_moved > ticks_to_move and M2_ticks_moved > ticks_to_move)
     {
+      Total_M1_moved += M1_ticks_moved;
+      Total_M2_moved += M2_ticks_moved;
+      
       Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
       Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
       Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
       Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
-  
-      Total_M1_moved += M1_ticks_moved;
-      Total_M2_moved += M2_ticks_moved;
       
       // Reset the tick counters.
       M1_ticks_moved = 0;
@@ -322,7 +349,13 @@ void loop()
   }
 }
 
-void PID(int right_mul , int left_mul)
+void setMul(int right , int left)
+{
+  right_mul = right;
+  left_mul = left;
+}
+
+void PID()//int right_mul , int left_mul)
 {
   // Sum up the total number of ticks per iteration of PID computation.
   M1_ticks_moved += right_ticks;
@@ -330,16 +363,16 @@ void PID(int right_mul , int left_mul)
 
   // Two master counters count the total number of ticks moved through
   // the entire motor operation to check for discrepancies over time.
-  //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-  //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
+  Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
+  Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
 
   // Determine the error difference in the number of ticks.
   E1_error_ticks = M1_setpoint_ticks - right_ticks;
   E2_error_ticks = M2_setpoint_ticks - left_ticks;
 
   // Perform PID calculation for the new motor speed.
-  M1_ticks_PID = right_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
-  M2_ticks_PID = left_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
+  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI);
+  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI);
 
   //Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
   //Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
@@ -349,16 +382,16 @@ void PID(int right_mul , int left_mul)
   // Compensation is larger for the left motor, nd smaller for the right motor,
   // Hence the left ticks PID is fed to the right motor,
   // And the right ticks PID is fed to the left motor.
-  right_speed = right_ticks_to_power(M2_ticks_PID);
-  left_speed = left_ticks_to_power(M1_ticks_PID);
+  right_speed = right_ticks_to_power(M1_ticks_PID);
+  left_speed = left_ticks_to_power(M2_ticks_PID);
   
   // Set the new motor speed.
   motorShield.setM1Speed(right_speed * right_mul);    // Right motor.
   motorShield.setM2Speed(left_speed * left_mul);     // Left motor.
   stopIfFault();
 
-  //Serial.print(", R power: "); Serial.print(right_speed);
-  //Serial.print(", L power: "); Serial.println(left_speed);
+  Serial.print(", R power: "); Serial.print(right_speed);
+  Serial.print(", L power: "); Serial.println(left_speed);
 
   // Reset the tick count for the next iteration after the PID has been performed.
   right_ticks = 0;
