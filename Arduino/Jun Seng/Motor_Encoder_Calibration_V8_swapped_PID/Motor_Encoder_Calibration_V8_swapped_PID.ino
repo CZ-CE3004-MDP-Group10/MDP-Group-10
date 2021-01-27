@@ -147,7 +147,7 @@ int backwards_count = 0;
 void loop()
 {
   //************************* Read from Serial ********************************* 
-  /*
+  
    while(waitingInput and Serial.available() > 0)
   {
     String data = Serial.readStringUntil("\n");
@@ -164,7 +164,7 @@ void loop()
       ticks_to_move = 400;
     }
     
-  }*/
+  }
 
   //************************* Auto detect and steer v1 *********************************
   /*
@@ -208,33 +208,36 @@ void loop()
   */
 
   //************************* Auto detect and steer v2 *********************************
+  /*
   while(waitingInput)
   {
     delay(500);
     if(backwards == true)
     {
-      if(Left_distance > 40)
+      if(Left_distance > 40 or Right_distance > 40)
       {
-        readChar = 'a';
-
         backwards_count += 1;
+        readChar = 's';
       }
-      else if(Right_distance > 40)
-      {
-        readChar = 'd';
-        
-        backwards_count += 1;
-      }
-
+      
       if(backwards_count > 2)
       {
-        ticks_to_move = 400;
+
+        if(Left_distance > 40)
+        {
+          readChar = 'a';
+        }
+        else if ( Right_distance > 40)
+        {
+          readChar = 'd';
+        }
+  
         backwards_count = 0;
         backwards = false;  
       }
       
     }
-    else if(backwards == false)
+    else
     {
       if(F_Left_distance > 20 and F_Right_distance > 20)
       {
@@ -269,7 +272,7 @@ void loop()
       waitingInput = false;
     }
   }
-
+  */
 
   if ( !waitingInput )
   {
