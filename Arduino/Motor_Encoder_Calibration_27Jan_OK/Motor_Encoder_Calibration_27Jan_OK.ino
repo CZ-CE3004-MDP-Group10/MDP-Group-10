@@ -40,9 +40,12 @@ int right_ticks;
 int left_ticks;
 double M1_ticks_moved = 0;
 double M2_ticks_moved = 0;
+double M1_ticks_diff = 0;
+double M2_ticks_diff = 0;
 double Total_M1_moved = 0;
 double Total_M2_moved = 0;
-double ticks_to_move = 245;     // Gives approximately 10cm.
+double M1_ticks_to_move = 0;     // Gives approximately 10cm.
+double M2_ticks_to_move = 0;
 double M1_setpoint_ticks = 5;   // Number of ticks before each iteration of PID controller.
 double M2_setpoint_ticks = 5;   // Number of ticks before each iteration of PID controller.
 
@@ -111,6 +114,8 @@ SharpIR PS4 = SharpIR(PS4_pin, small_model);  // Right sensor.
 SharpIR PS5 = SharpIR(PS5_pin, large_model);  // Front left sensor.
 SharpIR PS6 = SharpIR(PS6_pin, large_model);  // Front right sensor.
 
+boolean init360 = true;
+
 // SETUP - RUNS ONCE.***************************************************************************************
 void setup()
 {
@@ -132,12 +137,59 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Get the initial readings from each sensor for any obstacles detected and their distances.
-  B_Left_distance = PS1.distance() + 2;     // Need to +2cm for improved accuracy.
+  /*B_Left_distance = PS1.distance() + 2;     // Need to +2cm for improved accuracy.
   B_Right_distance = PS2.distance() + 1;    // Need to +1cm for improved accuracy.
   Left_distance = PS3.distance() + 2;       // Need to +2cm for improved accuracy.
   Right_distance = PS4.distance() + 2;      // Need to +2cm for improved accuracy.
   F_Left_distance = PS5.distance() + 1;     // Need to +1cm +more as distance increases for improved accuracy.
   F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
+  */
+
+  
+  M1_ticks_to_move = 393 * 4 + 15;
+  M2_ticks_to_move = 393 * 4 + 15;
+
+  while(init360)
+  {
+    PID(-1,1);
+
+    if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
+    {
+      // For debugging, two master counters count the total number of ticks moved through
+      // the entire motor operation to check for tick discrepancies over time.
+      Total_M1_moved += M1_ticks_moved;
+      Total_M2_moved += M2_ticks_moved;
+      
+      //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
+      //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
+      Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
+      Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
+      
+      // Reset the tick counters.
+      M1_ticks_moved = 0;
+      M2_ticks_moved = 0;
+  
+      // Stop the robot movement, braking is more effective then setting the speed to 0.
+      motorShield.setBrakes(400,400);
+
+      // When the robot stops moving, read in sensor data.
+      // May need to add in buffer distance to each measured value to reduce collision likelihood.
+      B_Left_distance = PS1.distance() + 2;     // Need to +2cm for improved accuracy.
+      B_Right_distance = PS2.distance() + 1;    // Need to +1cm for improved accuracy.
+      Left_distance = PS3.distance() + 2;       // Need to +2cm for improved accuracy.
+      Right_distance = PS4.distance() + 2;      // Need to +2cm for improved accuracy.
+      F_Left_distance = PS5.distance() + 1;     // Need to +1cm +more as distance increases for improved accuracy.
+      F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
+
+      // Once finished executing the current iteration of command, the robot
+      // Waits for either another command input from the serial link or its sensors.
+      init360 = false;
+    }
+    delay(10);
+  }
+  delay(2000); 
+
+  //Serial.print("w");
 }
 
 // LOOPING - RUNS CONTINUOUSLY.*****************************************************************************
@@ -145,41 +197,50 @@ void setup()
 void loop()
 {
   // METHOD 1 - READ FROM SERIAL.***************************************************************************
-  /*
+
+  
    // Check if data has been received at the serial link (USB).
-   while(waitingInput and Serial.available() > 0)
+  /* while(waitingInput and Serial.available() > 0)
   {
     // Read up to the entire string that is passed in.
     String data = Serial.readStringUntil("\n");
 
+    //Serial.println(data);
+  
     // Capture the first character in a variable, remaining characters are ignored.
     readChar = data.charAt(0);
 
+    
     // Robot has received a command and does not need to wait for further input.
     waitingInput = false;
 
     // If the command is to move forwards or backwards, set the tick value.
     if(readChar == 'w' or readChar == 's')
     {
-    // Optimal value: 283.
-      ticks_to_move = 283;
+      // Optimal value: 287.
+      M1_ticks_to_move = 287 - M1_ticks_diff;
+      M2_ticks_to_move = 287 - M2_ticks_diff;
     }
 
     // If the command is to rotate left or right by 90 degrees, set the tick value.
     if(readChar == 'a' or readChar == 'd')
     {
-    // Optimal value: 393.
-      ticks_to_move = 393;
-    }
-  }
-  */ 
-  // METHOD 2 - AUTO DETECT OBSTACLES AND STEER AROUND THEM.************************************************
+      // Optimal value: 395.
+      M1_ticks_to_move = 395 - M1_ticks_diff;
+      M2_ticks_to_move = 395 - M2_ticks_diff;
+    } 
+  }*/
 
+  //Serial.println("Can work?");
+  //delay(1000);
+  
+  // METHOD 2 - AUTO DETECT OBSTACLES AND STEER AROUND THEM.************************************************
+  
   // If the robot is not commanded externally, it must wait for input from
   // Its sensors to navigate on its own.
   while(waitingInput)
   {
-    delay(500);
+    //delay(500);
 
     // If the robot is required to reverse.
     if(backwards == true)
@@ -249,15 +310,17 @@ void loop()
       // If the command is to move forwards or backwards, set the tick value.
       if(readChar == 'w' or readChar == 's')
       {
-        // Optimal value: 283.
-        ticks_to_move = 283;
+        // Optimal value: 287.
+        M1_ticks_to_move = 287 - M1_ticks_diff;
+        M2_ticks_to_move = 287 - M2_ticks_diff;
       }
 
       // If the command is to rotate left or right by 90 degrees, set the tick value.
       if(readChar == 'a' or readChar == 'd')
       {
-        // Optimal value: 393.
-        ticks_to_move = 393;
+        // Optimal value: 395.
+        M1_ticks_to_move = 395 - M1_ticks_diff;
+        M2_ticks_to_move = 395 - M2_ticks_diff;
       }
 
       // The robot has received a command input from the sensors and does not have
@@ -265,7 +328,7 @@ void loop()
       waitingInput = false;
     }
   }
-
+  
   // If an input has already been given, it needs to be executed here.
   if ( !waitingInput )
   {
@@ -290,8 +353,12 @@ void loop()
     }
     
     // Once the desired number of ticks to move the required distance (10cm) has been reached.
-    if(M1_ticks_moved > ticks_to_move and M2_ticks_moved > ticks_to_move)
+    if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
     {
+      // Error difference for how many ticks the current step exceeded by.
+      M1_ticks_diff = M1_ticks_moved - M1_ticks_to_move;
+      M2_ticks_diff = M2_ticks_moved - M2_ticks_to_move;
+      
       // For debugging, two master counters count the total number of ticks moved through
       // the entire motor operation to check for tick discrepancies over time.
       Total_M1_moved += M1_ticks_moved;
