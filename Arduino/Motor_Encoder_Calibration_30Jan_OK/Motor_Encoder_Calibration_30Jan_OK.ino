@@ -72,7 +72,6 @@ double right_KI = 0.05;
 double left_KP = 0.2;
 double left_KD = 0.01;
 double left_KI = 0.05;
-
 double right_K1 = right_KP + right_KI + right_KD;
 double right_K2 = -right_KP - (2 * right_KD);
 double right_K3 = right_KD;
@@ -96,10 +95,11 @@ boolean obstacle_left = false;
 boolean obstacle_right = false;
 
 // For movement control when receiving commands for navigating around obstacles.
-boolean waitingInput = true;
-char readChar = ' ';
-boolean backwards = false;
-int backwards_count = 0;
+boolean waitingInput = true;  // Determines if the robot is waiting for input from serial link or its sensors.
+char readChar = ' ';          // Command character indicating the direction to move.
+boolean backwards = false;    // Indicates if the robot must move backwards.
+int backwards_count = 0;      // Number of steps the robot must move backwards.
+boolean init360 = true;       // Initial calibration rotation.
 
 // CREATE OBJECTS.******************************************************************************************
 
@@ -113,8 +113,6 @@ SharpIR PS3 = SharpIR(PS3_pin, small_model);  // Left sensor.
 SharpIR PS4 = SharpIR(PS4_pin, small_model);  // Right sensor.
 SharpIR PS5 = SharpIR(PS5_pin, large_model);  // Front left sensor.
 SharpIR PS6 = SharpIR(PS6_pin, large_model);  // Front right sensor.
-
-boolean init360 = true;
 
 // SETUP - RUNS ONCE.***************************************************************************************
 void setup()
@@ -145,12 +143,15 @@ void setup()
   F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
   */
 
-  
-  M1_ticks_to_move = 393 * 4 + 15;
-  M2_ticks_to_move = 393 * 4 + 15;
+  // Multiply the number of ticks by 4 to get a full rotation.
+  // But still need to under compensate to achieve exact 360 degrees.
+  M1_ticks_to_move = 393 * 4 - 10;
+  M2_ticks_to_move = 393 * 4 - 10;
 
+  // Calibrate the robot by rotating it 360 degrees.
   while(init360)
   {
+    // Turn the robot counter clockwise.
     PID(-1,1);
 
     if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
@@ -162,8 +163,8 @@ void setup()
       
       //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
       //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
-      Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
-      Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
+      //Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
+      //Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
       
       // Reset the tick counters.
       M1_ticks_moved = 0;
@@ -181,12 +182,12 @@ void setup()
       F_Left_distance = PS5.distance() + 1;     // Need to +1cm +more as distance increases for improved accuracy.
       F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
 
-      // Once finished executing the current iteration of command, the robot
-      // Waits for either another command input from the serial link or its sensors.
+      // Once finished executing the calibration, the robot waits for either another command 
+      // Input from the serial link or its sensors.
       init360 = false;
     }
-    delay(10);
   }
+  // Give a buffer time after calibration before executing the main loop.
   delay(2000); 
 
   //Serial.print("w");
@@ -198,22 +199,19 @@ void loop()
 {
   // METHOD 1 - READ FROM SERIAL.***************************************************************************
 
-  
-   // Check if data has been received at the serial link (USB).
-  /* while(waitingInput and Serial.available() > 0)
+  /*
+  // Check if data has been received at the serial link (USB).
+  while(waitingInput and Serial.available() > 0)
   {
     // Read up to the entire string that is passed in.
     String data = Serial.readStringUntil("\n");
-
     //Serial.println(data);
   
     // Capture the first character in a variable, remaining characters are ignored.
     readChar = data.charAt(0);
-
     
     // Robot has received a command and does not need to wait for further input.
     waitingInput = false;
-
     // If the command is to move forwards or backwards, set the tick value.
     if(readChar == 'w' or readChar == 's')
     {
@@ -221,7 +219,6 @@ void loop()
       M1_ticks_to_move = 287 - M1_ticks_diff;
       M2_ticks_to_move = 287 - M2_ticks_diff;
     }
-
     // If the command is to rotate left or right by 90 degrees, set the tick value.
     if(readChar == 'a' or readChar == 'd')
     {
@@ -230,9 +227,6 @@ void loop()
       M2_ticks_to_move = 395 - M2_ticks_diff;
     } 
   }*/
-
-  //Serial.println("Can work?");
-  //delay(1000);
   
   // METHOD 2 - AUTO DETECT OBSTACLES AND STEER AROUND THEM.************************************************
   
@@ -240,40 +234,58 @@ void loop()
   // Its sensors to navigate on its own.
   while(waitingInput)
   {
-    //delay(500);
-
     // If the robot is required to reverse.
     if(backwards == true)
     {
-      // If there are no obstacles on its left or right.
-      if(Left_distance > 10 or Right_distance > 10)
+      // If there are still more backward steps to take.
+      if(backwards_count > 0)
       {
-        // Reverse by only one step.
-        backwards_count += 1;
         readChar = 's';
+        backwards_count--;
+
+        // Ticks must be manually specified for the backwards condition as the
+        // Else body containing their assignment is not performed in this if body.
+        // Set the number of ticks for reversing.
+        // Optimal value: 287.
+        M1_ticks_to_move = 287 - M1_ticks_diff;
+        M2_ticks_to_move = 287 - M2_ticks_diff;
+
+        // A command has been issued, hence no need to wait for further input.
+        waitingInput = false;
       }
 
-      // If there are obstacles on both its left and right.
-      if(backwards_count > 2)
+      // If the robot has finished moving backwards by the required distance.
+      else
       {
         // Check if the robot's left is clear to move.
         if(Left_distance > 10)
         {
           readChar = 'a';
+          
+          // Optimal value: 395.
+          M1_ticks_to_move = 395 - M1_ticks_diff;
+          M2_ticks_to_move = 395 - M2_ticks_diff;
+
+          // A command has been issued, hence no need to wait for further input.
+          waitingInput = false;
         }
 
         // Otherwise check if the robot's right is clear to move.
-        else if ( Right_distance > 10)
+        else if(Right_distance > 10)
         {
           readChar = 'd';
-        }
+          
+          // Optimal value: 395.
+          M1_ticks_to_move = 395 - M1_ticks_diff;
+          M2_ticks_to_move = 395 - M2_ticks_diff;
 
-        // Reset the reversing parameters.
-        backwards_count = 0;
-        backwards = false;  
+          // A command has been issued, hence no need to wait for further input.
+          waitingInput = false;
+        }
+        backwards = false;
       }
     }
-
+    
     // If the robot is not required to reverse.
     else
     {
@@ -300,10 +312,13 @@ void loop()
 
         // Otherwise, the robot is surrounded by obstacles on front,
         // Left and right, and must reverse.
-        else if(Left_distance < 10 && Right_distance < 10)
+        else if(Left_distance < 10 and Right_distance < 10)
         {
           readChar = 's';
           backwards = true;
+
+          // Set how many steps the robot needs to reverse by.
+          backwards_count = 2;
         }
       }
 
@@ -330,7 +345,7 @@ void loop()
   }
   
   // If an input has already been given, it needs to be executed here.
-  if ( !waitingInput )
+  if (!waitingInput)
   {
     // Read the input command given.
     switch(readChar)
@@ -366,15 +381,16 @@ void loop()
       
       //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
       //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
-      Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
-      Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
+      //Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
+      //Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
       
       // Reset the tick counters.
       M1_ticks_moved = 0;
       M2_ticks_moved = 0;
   
-      // Stop the robot movement, braking is more effective then setting the speed to 0.
-      motorShield.setBrakes(400,400);
+      // Set the motor speed to zero instead of braking to prevent jerking motion.
+      motorShield.setM1Speed(0);  // Right motor.
+      motorShield.setM2Speed(0);  // Left motor.
 
       // When the robot stops moving, read in sensor data.
       // May need to add in buffer distance to each measured value to reduce collision likelihood.
