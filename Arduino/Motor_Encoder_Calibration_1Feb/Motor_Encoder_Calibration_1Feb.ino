@@ -145,8 +145,11 @@ void setup()
 
   // Multiply the number of ticks by 4 to get a full rotation.
   // But still need to under compensate to achieve exact 360 degrees.
-  M1_ticks_to_move = 393 * 4 - 10;
-  M2_ticks_to_move = 393 * 4 - 10;
+  M1_ticks_to_move = 393 * 4 + 6;   // Right motor.
+  M2_ticks_to_move = 393 * 4 + 6;   // Left motor.
+
+  // Introduce an initial delay to prevent power up surges from interfering.
+  delay(2000);
 
   // Calibrate the robot by rotating it 360 degrees.
   while(init360)
@@ -186,11 +189,12 @@ void setup()
       // Input from the serial link or its sensors.
       init360 = false;
     }
+    // A delay introduced here slows the initial rotation calibration, but based on the delay duration,
+    // The number of ticks to rotate by has to be adjusted above.
+    delay(5);
   }
   // Give a buffer time after calibration before executing the main loop.
-  delay(2000); 
-
-  //Serial.print("w");
+  delay(2000);
 }
 
 // LOOPING - RUNS CONTINUOUSLY.*****************************************************************************
@@ -258,7 +262,7 @@ void loop()
       else
       {
         // Check if the robot's left is clear to move.
-        if(Left_distance > 10)
+        if(Left_distance > 15)
         {
           readChar = 'a';
           
@@ -271,7 +275,7 @@ void loop()
         }
 
         // Otherwise check if the robot's right is clear to move.
-        else if(Right_distance > 10)
+        else if(Right_distance > 15)
         {
           readChar = 'd';
           
@@ -290,7 +294,7 @@ void loop()
     else
     {
       // While there are no obstacles detected in front.
-      if(F_Left_distance > 20 and F_Right_distance > 20)
+      if(F_Left_distance > 25 and F_Right_distance > 25)
       {
         readChar = 'w';
       }
@@ -299,20 +303,20 @@ void loop()
       else
       {
         // Check if the robot's left is clear to move.
-        if(Left_distance > 10)
+        if(Left_distance > 15)
         {
           readChar = 'a';
         }
 
         // Otherwise check if the robot's right is clear to move.
-        else if(Right_distance > 10)
+        else if(Right_distance > 15)
         {
           readChar = 'd';
         }
 
         // Otherwise, the robot is surrounded by obstacles on front,
         // Left and right, and must reverse.
-        else if(Left_distance < 10 and Right_distance < 10)
+        else if(Left_distance < 15 and Right_distance < 15)
         {
           readChar = 's';
           backwards = true;
@@ -334,8 +338,8 @@ void loop()
       if(readChar == 'a' or readChar == 'd')
       {
         // Optimal value: 395.
-        M1_ticks_to_move = 395 - M1_ticks_diff;
-        M2_ticks_to_move = 395 - M2_ticks_diff;
+        M1_ticks_to_move = 399 - M1_ticks_diff;
+        M2_ticks_to_move = 399 - M2_ticks_diff;
       }
 
       // The robot has received a command input from the sensors and does not have
@@ -389,8 +393,9 @@ void loop()
       M2_ticks_moved = 0;
   
       // Set the motor speed to zero instead of braking to prevent jerking motion.
-      motorShield.setM1Speed(0);  // Right motor.
-      motorShield.setM2Speed(0);  // Left motor.
+      //motorShield.setM1Speed(0);  // Right motor.
+      //motorShield.setM2Speed(0);  // Left motor.
+      motorShield.setBrakes(400, 400);
 
       // When the robot stops moving, read in sensor data.
       // May need to add in buffer distance to each measured value to reduce collision likelihood.
