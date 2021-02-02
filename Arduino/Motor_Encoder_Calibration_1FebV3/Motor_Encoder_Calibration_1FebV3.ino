@@ -84,6 +84,10 @@ int Right_ticks = 390;
 int Right_Diag_ticks = Right_ticks / 2;
 int Left_Diag_ticks = Left_ticks / 2;
 
+// Required for PID to stop calculating the errors when its supposed to be stopped
+boolean LeftStopped = false;
+boolean RightStopped = false;
+
 // CREATE OBJECTS.******************************************************************************************
 
 // Create an object for the motor shield.
@@ -131,6 +135,8 @@ void setup()
     // Turn the robot counter clockwise.
     PID(-1,1);
 
+    delay(10);
+
     if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
     {
       // For debugging, two master counters count the total number of ticks moved through
@@ -157,8 +163,13 @@ void setup()
     // The number of ticks to rotate by has to be adjusted above.
     delay(5);
   }
+
+  LeftStopped = true;
+  RightStopped = true;
+  
   // Give a buffer time after calibration before executing the main loop.
   delay(1000);
+
 
   Serial.println("Ready");
 }
@@ -170,7 +181,7 @@ void loop()
   // METHOD 1 - READ FROM SERIAL.***************************************************************************
 
   // Check if data has been received at the serial link (USB).
-  while(waitingInput ) //and Serial.available() > 0)
+  while(waitingInput and Serial.available() > 0)
   {
     // Read up to the entire string that is passed in.
     String data = Serial.readStringUntil("\n");
@@ -188,6 +199,8 @@ void loop()
       // Optimal value: 287.
       M1_ticks_to_move = Front_Back_ticks - M1_ticks_diff;
       M2_ticks_to_move = Front_Back_ticks - M2_ticks_diff;
+
+      //Serial.println(String(M1_ticks_to_move) + " , " + String(M2_ticks_to_move));
     }
     // If the command is to rotate left or right by 90 degrees, set the tick value.
     if(readChar == 'a' or readChar == 'd')
@@ -208,6 +221,9 @@ void loop()
     // Extract the number portion of the string and convert it into an integer.
     steps_to_move = data.substring(1).toInt();
 
+    LeftStopped = false;
+    RightStopped = false;
+    
     // Acknowledgement string to send back to the Raspberry Pi.
     Serial.println("ALG|MOV|" + data);
   }
@@ -215,6 +231,7 @@ void loop()
   // If an input has already been given, it needs to be executed here.
   if (!waitingInput && steps_to_move > 0)
   {
+  
     // Read the input command given.
     switch(readChar)
     {
@@ -246,20 +263,25 @@ void loop()
 
     if(M1_ticks_moved > M1_ticks_to_move)
     {
-      motorShield.setBrakes(400,0);
+      motorShield.setM2Brake(400);
+      //motorShield.setM1Speed(0);
 
-      Serial.println("Enter M1");
+      RightStopped = true;
+      //Serial.println("STOP RIGHT MOTOR");
     }
     
     if(M2_ticks_moved > M2_ticks_to_move)
     {
-      motorShield.setBrakes(0,400);
+      motorShield.setM1Brake(400);
+      //motorShield.setM2Speed(0);
 
-      Serial.println("Enter M2");
+      LeftStopped = true;
+      //Serial.println("STOP LEFT MOTOR");
     }
-    
+
+    //Serial.println( String(M1_ticks_moved) + ", " + String(M1_ticks_to_move) + ", " + String(M2_ticks_moved) + ", " +  String(M2_ticks_to_move));
     // Once the desired number of ticks to move the required distance (10cm) has been reached.
-    if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
+    if(RightStopped and LeftStopped)
     {
       // Error difference for how many ticks the current step exceeded by.
       M1_ticks_diff = M1_ticks_moved - M1_ticks_to_move;
@@ -300,6 +322,8 @@ void loop()
         waitingInput = true;
       }
     }
+
+    delay(10);
   }
 }
 
@@ -313,24 +337,48 @@ void PID(int right_mul , int left_mul)
   M2_ticks_moved += left_ticks;
 
   // Determine the error difference in the number of ticks.
-  E1_error_ticks = M1_setpoint_ticks - right_ticks;
-  E2_error_ticks = M2_setpoint_ticks - left_ticks;
+  if(!RightStopped)
+  {
+    E1_error_ticks = M1_setpoint_ticks - right_ticks;
+      
+    // Perform PID calculation for the new motor speed for the right motor.
+    M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
+
+    
+    // Convert the adjusted ticks to the new motor power using the functions below.
+    right_speed = right_ticks_to_power(M1_ticks_PID);
+
+    // Store the last error value for the next computation.
+    E1_prev_error = E1_error_ticks;
+
+    // Store the sum of all errors. Errors with negative values are subtracted from the sum.
+    E1_sum_error += E1_error_ticks;
+  }
+
+  if(!LeftStopped)
+  {
+    E2_error_ticks = M2_setpoint_ticks - left_ticks;
+
+    
+    // Perform PID calculation for the new motor speed for the left motor.
+    M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
+    
+    // Convert the adjusted ticks to the new motor power using the functions below.
+    left_speed = left_ticks_to_power(M2_ticks_PID);
+
+    E2_prev_error = E2_error_ticks;
+  
+    E2_sum_error += E2_error_ticks;
+  }
 
   // NOTE: PID CALCULATION 'KP', 'KI', 'KD' VALUES NEED TO BE MANUALLY TUNED FOR EACH MOTOR.
   
-  // Perform PID calculation for the new motor speed for the right motor.
-  M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
-
-  // Perform PID calculation for the new motor speed for the left motor.
-  M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
 
   // For debugging.
   //Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
   //Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
-
-  // Convert the adjusted ticks to the new motor power using the functions below.
-  right_speed = right_ticks_to_power(M1_ticks_PID);
-  left_speed = left_ticks_to_power(M2_ticks_PID);
+  //Serial.print("Right (M1) ticks: "); Serial.print(M1_ticks_moved);
+  //Serial.print(", Left (M2) ticks: "); Serial.println(M2_ticks_moved);
   
   // Set the new motor speed and direction with the multiplier.
   motorShield.setM1Speed(right_speed * right_mul);    // Right motor.
@@ -345,16 +393,11 @@ void PID(int right_mul , int left_mul)
   right_ticks = 0;
   left_ticks = 0;
 
-  // Store the last error value for the next computation.
-  E1_prev_error = E1_error_ticks;
-  E2_prev_error = E2_error_ticks;
 
-  // Store the sum of all errors. Errors with negative values are subtracted from the sum.
-  E1_sum_error += E1_error_ticks;
-  E2_sum_error += E2_error_ticks;
 
   // Perform the PID computation again after a sampling time.
-  delay(10);
+  //if(init360)
+    //delay(10);
 }
 
 void readSensor()
