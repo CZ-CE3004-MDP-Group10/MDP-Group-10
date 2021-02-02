@@ -88,6 +88,11 @@ int Left_Diag_ticks = Left_ticks / 2;
 boolean LeftStopped = false;
 boolean RightStopped = false;
 
+// Queue buffer
+
+String queue[] = {"w1","w1","w1"};//{"w1", "a1","w1", "a1","w1", "a1","w1", "a1"};
+int qCounter = 0;
+
 // CREATE OBJECTS.******************************************************************************************
 
 // Create an object for the motor shield.
@@ -185,7 +190,13 @@ void loop()
   {
     // Read up to the entire string that is passed in.
     String data = Serial.readStringUntil("\n");
-  
+    
+    /*delay(1000);
+    String data = queue[qCounter];
+    qCounter = ( qCounter + 1 ) % (sizeof(queue)/sizeof(queue[0]));*/
+
+
+    
     // Capture the first character in a variable, remaining characters are ignored.
     readChar = data.charAt(0);
 
@@ -220,6 +231,8 @@ void loop()
 
     // Extract the number portion of the string and convert it into an integer.
     steps_to_move = data.substring(1).toInt();
+
+    Serial.println(String(M1_ticks_to_move) + " , " + String(M2_ticks_to_move));
 
     LeftStopped = false;
     RightStopped = false;
@@ -292,8 +305,8 @@ void loop()
       Total_M1_moved += M1_ticks_moved;
       Total_M2_moved += M2_ticks_moved;
       
-      //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-      //Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
+      Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
+      Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
       //Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
       //Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
       
