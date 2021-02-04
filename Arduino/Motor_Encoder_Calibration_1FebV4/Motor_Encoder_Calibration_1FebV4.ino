@@ -65,12 +65,12 @@ double KD = 0.3;        // Adjust for derivative component.
 double KI = 7;          // Adjust for integral component.
 
 // Sensor values for distance from obstacles.
-int B_Left_distance;
-int B_Right_distance;
-int Left_distance;
-int Right_distance;
-int F_Left_distance;
-int F_Right_distance;
+double B_Left_distance;
+double B_Right_distance;
+double Left_distance;
+double Right_distance;
+double F_Left_distance;
+double F_Right_distance;
 
 // For movement control when receiving commands for navigating around obstacles.
 boolean waitingInput = true;  // Determines if the robot is waiting for input from serial link or its sensors.
@@ -90,7 +90,7 @@ boolean RightStopped = false;
 
 // Queue buffer
 
-String queue[] = {"d1", "a1","d1", "a1","d1", "a1","d1", "a1"};
+String queue[] = {"w1"};
 int qCounter = 0;
 
 // CREATE OBJECTS.******************************************************************************************
@@ -416,12 +416,12 @@ void PID(int right_mul , int left_mul)
 void readSensor()
 {
   // May need to add in buffer distance to each measured value to reduce collision likelihood.
-  B_Left_distance = PS1.distance() + 2;     // Need to +2cm for improved accuracy.
-  B_Right_distance = PS2.distance() + 1;    // Need to +1cm for improved accuracy.
-  Left_distance = PS3.distance() + 2;       // Need to +2cm for improved accuracy.
-  Right_distance = PS4.distance() + 2;      // Need to +2cm for improved accuracy.
-  F_Left_distance = PS5.distance() + 1;     // Need to +1cm +more as distance increases for improved accuracy.
-  F_Right_distance = PS6.distance() + 2;    // Need to +2cm +more as distance increases for improved accuracy.
+  B_Left_distance = PS1.distance();     // Need to +2cm for improved accuracy.
+  B_Right_distance = PS2.distance();    // Need to +1cm for improved accuracy.
+  Left_distance = PS3.distance();       // Need to +2cm for improved accuracy.
+  Right_distance = PS4.distance();      // Need to +2cm for improved accuracy.
+  F_Left_distance = PS5.distance();     // Need to +1cm +more as distance increases for improved accuracy.
+  F_Right_distance = PS6.distance();    // Need to +2cm +more as distance increases for improved accuracy.
 }
 
 
