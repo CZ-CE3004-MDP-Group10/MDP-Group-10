@@ -34,6 +34,8 @@ void setup()
   Serial.begin(115200);
 }
 
+//int wholeCount = 0;
+
 // Looping code runs continuously.
 void loop()
 {
@@ -69,32 +71,57 @@ void loop()
   // -----------------------------------------------------------------------------------
   // EQUATIONS TO CONVERT THE ANALOG VALUES INTO CENTIMETERS:
 
-  // SENSOR 1 CALCULATION AND OFFSETS:
-  distanceA0 = -9.24678 + (8592.735 / (sensorA0_avg + 40.4344));
+  // SENSOR 1 CALCULATION AND OFFSETS:   READINGS DIFFERENT FROM EXCEL
+  distanceA0 = -9.1042 + (8155.745 / (sensorA0_avg + 22.11502));
+  if(distanceA0 < 15) {distanceA0 += 2;}
+  else if(distanceA0 > 15 and distanceA0 < 30) {distanceA0 -= 1;}
+  else if(distanceA0 > 30 and distanceA0 < 45) {distanceA0 -= 2;}
+  else if(distanceA0 > 50 and distanceA0 < 55) {distanceA0 += 1;}
+  else if(distanceA0 > 65 and distanceA0 < 70) {distanceA0 += 2;}
 
   // SENSOR 2 CALCULATION AND OFFSETS:
   distanceA1 = -3.53939 + (5891.966 / (sensorA1_avg - 11.84241));
+  if(distanceA1 < 10) {distanceA1 += 1;}
+  else if(distanceA1 > 15 and distanceA1 < 20) {distanceA1 += 1;}
 
   // SENSOR 3 CALCULATION AND OFFSETS:
-  distanceA2 = -5.6782 + (6790.144 / (sensorA2_avg - 1.58589));
-
+  distanceA2 = 1.41294 + (4269.218 / (sensorA2_avg - 28.92149));
+  if(distanceA2 > 10 and distanceA2 < 40) {distanceA2 += 1;}
+  else if(distanceA2 > 55 and distanceA2 < 60) {distanceA2 += 1;}
+  else if(distanceA2 > 65) {distanceA2 += 2;}
+  
   // SENSOR 4 CALCULATION AND OFFSETS:
   distanceA3 = 0.252644 + (4894.633 / (sensorA3_avg - 26.90775));
+  if(distanceA3 > 70) {distanceA3 -= 3;}
+  else if(distanceA3 > 80) {distanceA3 -= 2;}
 
   // SENSOR 5 CALCULATION AND OFFSETS:
   distanceA4 = 0.404528 + (5267.347 / (sensorA4_avg - 7.79982));
+  if(distanceA4 < 13) {distanceA4 -= 1;}
+  else if(distanceA4 > 50 and distanceA4 < 70) {distanceA4 -= 2;}
 
   // SENSOR 6 CALCULATION AND OFFSETS:
-  distanceA5 = 0.33899 + (11687.6939 / (sensorA5_avg - 28.01154));
+  distanceA5 = -3.3012 + (12806.428 / (sensorA5_avg - 9.81909));
+  if(distanceA5 < 25) {distanceA5 -= 1;}
+  else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
+  else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
 
   // -----------------------------------------------------------------------------------
   // PRINT OUT ANALOG VALUES AND CALCULATED DISTANCES.
-  Serial.print("Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.print(distanceA0);
-  Serial.print("Sensor A1: "); Serial.print(sensorA1_avg); Serial.print(", Distance A1: "); Serial.print(distanceA1);
-  Serial.print("Sensor A2: "); Serial.print(sensorA2_avg); Serial.print(", Distance A2: "); Serial.print(distanceA2);
-  Serial.print("Sensor A3: "); Serial.print(sensorA3_avg); Serial.print(", Distance A3: "); Serial.print(distanceA3);
-  Serial.print("Sensor A4: "); Serial.print(sensorA4_avg); Serial.print(", Distance A4: "); Serial.print(distanceA4);
-  Serial.print("Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.print(distanceA5);
+
+  //if(wholeCount < 20)
+  //{
+    //Serial.print(""); Serial.print(sensorA5_avg); Serial.print(", "); Serial.print("");
+  //}
+
+  //wholeCount += 1;
+  
+  //Serial.print("Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.println(distanceA0);
+  //Serial.print("Sensor A1: "); Serial.print(sensorA1_avg); Serial.print(", Distance A1: "); Serial.println(distanceA1);
+  //Serial.print("Sensor A2: "); Serial.print(sensorA2_avg); Serial.print(", Distance A2: "); Serial.println(distanceA2);
+  //Serial.print("Sensor A3: "); Serial.print(sensorA3_avg); Serial.print(", Distance A3: "); Serial.println(distanceA3);
+  //Serial.print("Sensor A4: "); Serial.print(sensorA4_avg); Serial.print(", Distance A4: "); Serial.println(distanceA4);
+  Serial.print("Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.println(distanceA5);
 
   // Reset the counter and variables.
   count = 0;
