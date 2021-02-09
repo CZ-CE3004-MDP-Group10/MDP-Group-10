@@ -118,7 +118,12 @@ void setup()
 
   // Introduce an initial delay to prevent power up surges from interfering.
   delay(3000);
-  Serial.println("Ready.");
+
+  // Send initial string of sensor readings when the robot is ready and initialized.
+  readSensor();
+    
+  Serial.println("ALG|RDY|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
+  + "," + String(distanceA3) + "," + String(distanceA4) + "," + String(distanceA5));
 }
 
 // LOOPING - RUNS CONTINUOUSLY.*****************************************************************************
@@ -128,13 +133,13 @@ void loop()
   // READ FROM SERIAL.**************************************************************************************
   
   // Check if data has been received at the serial link (USB).
-  while(waitingInput) //and Serial.available() > 0)
+  while(waitingInput and Serial.available() > 0)
   {
     // Read up to the entire string that is passed in up to the newline character.
-    //String data = Serial.readStringUntil("\n");
+    String data = Serial.readStringUntil("\n");
 
     // Capture the first character in a variable, remaining characters are ignored.
-    //readChar = data.charAt(0);
+    readChar = data.charAt(0);
 
     // Robot has received a command and does not need to wait for further input.
     waitingInput = false;
@@ -185,7 +190,7 @@ void forwards()
     stopIfReached();
   }
   // Insert delay here between steps if necessary.
-  delay(2000);
+  //delay(2000);
 }
 
 // Rotating left 90 degrees.
