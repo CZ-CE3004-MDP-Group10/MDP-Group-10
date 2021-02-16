@@ -59,8 +59,8 @@ double Total_M1_moved = 0;
 double Total_M2_moved = 0;
 double M1_ticks_to_move = 0;    // Individual number of ticks to move is specified in each scenario.
 double M2_ticks_to_move = 0;
-double M1_setpoint_ticks = 5;   // Number of ticks before each iteration of PID controller, also controls motor speed.
-double M2_setpoint_ticks = 5;
+double M1_setpoint_ticks = 7;   // Number of ticks before each iteration of PID controller, also controls motor speed.
+double M2_setpoint_ticks = 7;
 
 // Proportional Integral Derivative (PID) controller.
 double right_ticks_PID = 0.0;
@@ -113,8 +113,8 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Introduce an initial delay to prevent power up surges from interfering.
-  delay(3000);
-
+  delay(3000);  
+  
   // Send initial string of sensor readings when the robot is ready and initialized.
   readSensor();
     
@@ -207,8 +207,8 @@ void rotate90left()
 {
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = (Right_ticks) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks) - M2_ticks_diff;
+    M1_ticks_to_move = Right_ticks;
+    M2_ticks_to_move = Left_ticks;
 
     // Left motor is negative and right motor is positive.
     PID(-1,1);
@@ -225,8 +225,8 @@ void rotate90right()
 {
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = (Right_ticks) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks) - M2_ticks_diff;
+    M1_ticks_to_move = Right_ticks;
+    M2_ticks_to_move = Left_ticks;
 
     // Left motor is positive and right motor is negative.
     PID(1,-1);
@@ -241,8 +241,8 @@ void rotate180()
   while(!waitingInput and distsub > 0)
   {
     // Need to insert offsets to improve accuracy.
-    M1_ticks_to_move = (Right_ticks * 2) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks * 2) - M2_ticks_diff;
+    M1_ticks_to_move = Right_ticks * 2;
+    M2_ticks_to_move = Left_ticks * 2;
 
     // Left motor is negative and right motor is positive.
     PID(-1,1);
@@ -265,8 +265,8 @@ void stopIfReached()
       
     // For debugging, two master counters count the total number of ticks moved through
     // the entire motor operation to check for tick discrepancies over time.
-    Total_M1_moved += M1_ticks_moved;
-    Total_M2_moved += M2_ticks_moved;
+    //Total_M1_moved += M1_ticks_moved;
+    //Total_M2_moved += M2_ticks_moved;
       
     //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
     //Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
@@ -310,8 +310,8 @@ void stopIfRotated()
       
     // For debugging, two master counters count the total number of ticks moved through
     // the entire motor operation to check for tick discrepancies over time.
-    Total_M1_moved += M1_ticks_moved;
-    Total_M2_moved += M2_ticks_moved;
+    //Total_M1_moved += M1_ticks_moved;
+    //Total_M2_moved += M2_ticks_moved;
       
     //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
     //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
