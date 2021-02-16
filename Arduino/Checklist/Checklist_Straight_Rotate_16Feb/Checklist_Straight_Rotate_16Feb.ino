@@ -81,10 +81,14 @@ double KI = 7;          // Adjust for integral component.
 char readChar = ' ';            // Command character indicating the direction to move.
 boolean waitingInput = true;    // Determines if the robot is waiting for input from serial link.
 
+// Due to an observed abnormality when performing the first movement or transitioning between lateral or rotational
+// Movements, these boolean variables determine the number of ticks required accordingly in the movement functions.
+boolean straightTransitionFirst = true;   // Indicates if the robot has to move straight after making a rotation.
+boolean rotateTransitionFirst = true;     // Indicates if the robot has to rotate after moving straight.
+
 // Set the distance travelled with each step and the angle of rotation here.
 int Front_Back_ticks = 295;     // Theoretically 298, but in reality 295 ticks moves the robot forward by approximately 10cm.
-int Right_ticks = 395;          // Theoretically, 398 ticks rotates the robot by approximately 90 degrees.
-int Left_ticks = 395;           // In reality, 395 ticks are needed to rotate the robot by approximately 90 degrees.
+int Right_Left_ticks = 395;     // Theoretically 398, but in reality 395 ticks rotates the robot by approximately 90 degrees.
 int distsub = 0;                // Number of steps to move in a particular direction.
 
 // CREATE OBJECTS.******************************************************************************************
@@ -160,21 +164,32 @@ void loop()
               // Need to change the command character to a non-functional character
               // So that the robot stops moving.
               readChar = ' ';
+
+              // These boolean variables determine if the robot has just transitioned from lateral to rotational
+              // Movement or vice versa, and sets the number of ticks accordingly in the movement functions.
+              straightTransitionFirst = false;
+              rotateTransitionFirst = true;
               break;
 
     // Rotate to the left by 90 degrees.
     case 'L': rotate90left();
               readChar = ' ';
+              straightTransitionFirst = true;
+              rotateTransitionFirst = false;
               break;
 
     // Rotate to the right by 90 degrees.
     case 'R': rotate90right();
               readChar = ' ';
+              straightTransitionFirst = true;
+              rotateTransitionFirst = false;
               break;
 
     // Rotate 180 degrees from the left.
     case 'B': rotate180();
               readChar = ' ';
+              straightTransitionFirst = true;
+              rotateTransitionFirst = false;
               break;
   }
 }
@@ -188,8 +203,18 @@ void forwards()
   // Keep running while it is executing a command and has not reached the last step.
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = Front_Back_ticks - M1_ticks_diff;
-    M2_ticks_to_move = Front_Back_ticks - M2_ticks_diff;
+    // If the robot is moving in a straight line after making a rotation, or for the first time.
+    if(straightTransitionFirst)
+    {
+      // Need to manually adjust offsets after each transition in movement type.
+      M1_ticks_to_move = 240 - M1_ticks_diff;
+      M2_ticks_to_move = 250 - M2_ticks_diff;
+    }
+    else
+    {
+      M1_ticks_to_move = Front_Back_ticks - M1_ticks_diff;
+      M2_ticks_to_move = Front_Back_ticks - M2_ticks_diff;
+    }
 
     // Both motors have positive speed values.
     PID(1,1);
@@ -204,11 +229,21 @@ void forwards()
 
 // Rotating left 90 degrees.
 void rotate90left()
-{
+{ 
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = Right_ticks;
-    M2_ticks_to_move = Left_ticks;
+    // If the robot is rotating after moving in a straight line, or for the first time.
+    if(rotateTransitionFirst)
+    {
+      M1_ticks_to_move = 375;
+      M2_ticks_to_move = 375;
+      ;
+    }
+    else
+    {
+      M1_ticks_to_move = Right_Left_ticks;
+      M2_ticks_to_move = Right_Left_ticks;
+    }
 
     // Left motor is negative and right motor is positive.
     PID(-1,1);
@@ -217,7 +252,7 @@ void rotate90left()
     // Anywhere from 5 to 15 ticks more than the set value at the top of this file.
     stopIfRotated();
   }
-  delay(2000);
+  delay(1000);
 }
 
 // Rotating right 90 degrees.
@@ -225,14 +260,23 @@ void rotate90right()
 {
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = Right_ticks;
-    M2_ticks_to_move = Left_ticks;
+    // If the robot is rotating after moving in a straight line, or for the first time.
+    if(rotateTransitionFirst)
+    {
+      M1_ticks_to_move = 375;
+      M2_ticks_to_move = 375;
+    }
+    else
+    {
+      M1_ticks_to_move = Right_Left_ticks;
+      M2_ticks_to_move = Right_Left_ticks;
+    }
 
     // Left motor is positive and right motor is negative.
     PID(1,-1);
     stopIfRotated();
   }
-  delay(2000);
+  delay(1000);
 }
 
 // Rotating left 180 degrees.
@@ -240,15 +284,26 @@ void rotate180()
 {
   while(!waitingInput and distsub > 0)
   {
-    // Need to insert offsets to improve accuracy.
-    M1_ticks_to_move = Right_ticks * 2;
-    M2_ticks_to_move = Left_ticks * 2;
+    // If the robot is rotating after moving in a straight line, or for the first time.
+    if(rotateTransitionFirst)
+    {
+      M1_ticks_to_move = 355 * 2;
+      M2_ticks_to_move = 355 * 2;
+    }
+    else
+    {
+      M1_ticks_to_move = Right_Left_ticks;
+      M2_ticks_to_move = Right_Left_ticks;
+    }
+    
+    M1_ticks_to_move = Right_Left_ticks * 2;
+    M2_ticks_to_move = Right_Left_ticks * 2;
 
     // Left motor is negative and right motor is positive.
     PID(-1,1);
     stopIfRotated();
   }
-  delay(2000);
+  delay(1000);
 }
 
 // STOP MOVING OR ROTATING IF THE DISTANCE OR ANGLE HAS BEEN REACHED. *************************************
