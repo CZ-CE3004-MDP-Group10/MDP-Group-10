@@ -141,8 +141,13 @@ void loop()
     // Capture the first character indicating the direction to move.
     readChar = data.charAt(0);
 
+    // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
     // Capture the second integer in the string for number of steps to move.
     distsub = data.substring(1).toInt();
+
+    // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
+    // Comment the above line of code and uncomment this line below, or vice versa.
+    //distsub = 1;
     
     // Robot has received a command and does not need to wait for further input.
     waitingInput = false;
