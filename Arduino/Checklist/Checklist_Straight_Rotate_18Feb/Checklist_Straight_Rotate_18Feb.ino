@@ -69,8 +69,8 @@ double E1_error_ticks = 0;
 double E2_error_ticks = 0;
 double E1_prev_error = 0;
 double E2_prev_error = 0;
-double E1_sum_error = 120;      // An initial sum of square errors must be given to both motors for the PID controller
-double E2_sum_error = 120;       // To fix any discrepancies in stopping angle of the first step.
+double E1_sum_error = 0;
+double E2_sum_error = 0;
 double KP = 0.2;        // Adjust for proportional component.
 double KD = 0.3;        // Adjust for derivative component.
 double KI = 7;          // Adjust for integral component.
@@ -189,8 +189,8 @@ void forwards()
   E1_prev_error = 0;
   E2_prev_error = 0;
   
-  E1_sum_error = 120;
-  E2_sum_error = 120;
+  E1_sum_error = 110;
+  E2_sum_error = 95;
 
   // Before moving forwards after a rotation or stationary stop, reset the differences in ticks.
   M1_ticks_diff = 0;
@@ -205,7 +205,7 @@ void forwards()
       // Theoretically 298 ticks moves the robot forward by approximately 10cm.
       Serial.println("First Straight Transition.");
     
-      M1_ticks_to_move = 240;
+      M1_ticks_to_move = 245;
       M2_ticks_to_move = 245;
 
       // Set boolean values to account for observed transition accuracy errors.
@@ -386,9 +386,9 @@ void stopIfReached()
     if(distsub == 0)
     {
       // Set the brakes on both motors to bring the robot to a stop.
-      //motorShield.setM1Brake(400);
-      //motorShield.setM2Brake(400);
-      motorShield.setBrakes(400, 400);
+      motorShield.setM1Brake(400);
+      motorShield.setM2Brake(400);
+      //motorShield.setBrakes(400, 400);
 
       // The robot needs to wait for another input command before continuing.
       waitingInput = true;
