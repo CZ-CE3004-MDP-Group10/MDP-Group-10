@@ -80,10 +80,6 @@ char readChar = ' ';            // Command character indicating the direction to
 boolean waitingInput = true;    // Determines if the robot is waiting for input from serial link.
 boolean straightTransition = true;  // If the robot has to move straight after changing direction.
 boolean rotateTransition = true;    // If the robot has to rotate after changing direction.
-
-// Set the distance travelled with each step and the angle of rotation here.
-int Front_Back_ticks = 280;     // Theoretically 298, but in reality 275 ticks moves the robot forward by approximately 10cm.
-int Right_Left_ticks = 392;     // Theoretically 398, but in reality 395 ticks rotates the robot by approximately 90 degrees.
 int distsub = 0;                // Number of steps to move in a particular direction.
 
 // CREATE OBJECTS.******************************************************************************************
@@ -195,30 +191,34 @@ void forwards()
   
   E1_sum_error = 120;
   E2_sum_error = 120;
-  
-  // Reset the differences in ticks when the robot comes to a stop.
+
+  // Before moving forwards after a rotation or stationary stop, reset the differences in ticks.
   M1_ticks_diff = 0;
   M2_ticks_diff = 0;
-
-  // If the robot has to move straight after changing direction.
-  if(straightTransition)
-  {
-    M1_ticks_to_move = 245;
-    M2_ticks_to_move = 245;
-
-    // Set boolean values to account for observed transition accuracy errors.
-    straightTransition = false;
-    rotateTransition = true;
-  }
-  else
-  {
-    M1_ticks_to_move = Front_Back_ticks - M1_ticks_diff;
-    M2_ticks_to_move = Front_Back_ticks - M2_ticks_diff;
-  }
 	
   // Keep running while it is executing a command and has not reached the last step.
   while(!waitingInput and distsub > 0)
-  {     
+  { 
+    // If the robot has to move straight after changing direction.
+    if(straightTransition and distsub == 1)
+    {
+      // Theoretically 298 ticks moves the robot forward by approximately 10cm.
+      Serial.println("First Straight Transition.");
+    
+      M1_ticks_to_move = 240;
+      M2_ticks_to_move = 245;
+
+      // Set boolean values to account for observed transition accuracy errors.
+      straightTransition = false;
+      rotateTransition = true;
+    }
+    else
+    {
+      // When moving in a straight line for more than 1 step, need to include correction for subsequent steps.
+      M1_ticks_to_move = 275 - M1_ticks_diff;
+      M2_ticks_to_move = 275 - M2_ticks_diff;
+    }
+    
     // Both motors have positive speed values.
     PID(1,1);
 
@@ -233,30 +233,37 @@ void forwards()
   left_ticks = 0;
   
   // Insert delay here between steps if necessary.
-  //delay(2000);
+  //delay(1000);
 }
 
 // Rotating left 90 degrees.
 void rotate90left()
-{ 
+{
+  Serial.println("First rotate left transition.");
+   
   E1_prev_error = 0;
   E2_prev_error = 0;
   
   E1_sum_error = 120;
   E2_sum_error = 120;
 
+  right_ticks = 0;
+  left_ticks = 0;
+
   if(rotateTransition)
   {
-    M1_ticks_to_move = 375;
-    M2_ticks_to_move = 380;
+    // Theoretically 398 ticks rotates the robot by approximately 90 degrees.
+    // The ticks to move for each motor when rotating have to be individually adjusted.
+    M1_ticks_to_move = 360;
+    M2_ticks_to_move = 375;
 
     rotateTransition = false;
     straightTransition = true;
   }
   else
   {
-    M1_ticks_to_move = Right_Left_ticks;
-    M2_ticks_to_move = Right_Left_ticks;
+    M1_ticks_to_move = 345;
+    M2_ticks_to_move = 375;
   }
   
   while(!waitingInput and distsub > 0)
@@ -268,22 +275,28 @@ void rotate90left()
     // Anywhere from 5 to 15 ticks more than the set value at the top of this file.
     stopIfRotated();
   }
-  delay(1000);
+    
+  //delay(1000);
 }
 
 // Rotating right 90 degrees.
 void rotate90right()
 {
+  Serial.println("First rotate right transition.");
+  
   E1_prev_error = 0;
   E2_prev_error = 0;
 
   E1_sum_error = 120;
   E2_sum_error = 120;
 
-    if(rotateTransition)
+  right_ticks = 0;
+  left_ticks = 0;
+
+  if(rotateTransition)
   {
-    M1_ticks_to_move = 365;
-    M2_ticks_to_move = 375;
+    M1_ticks_to_move = 353;
+    M2_ticks_to_move = 363;
 
     rotateTransition = false;
     straightTransition = true;
@@ -291,8 +304,8 @@ void rotate90right()
   else
   {
     // Need to add offsets to tick values when rotating right.
-    M1_ticks_to_move = Right_Left_ticks;
-    M2_ticks_to_move = Right_Left_ticks;
+    M1_ticks_to_move = 365;
+    M2_ticks_to_move = 370;
   }
   
   while(!waitingInput and distsub > 0)
@@ -301,30 +314,36 @@ void rotate90right()
     PID(1,-1);
     stopIfRotated();
   }
-  delay(1000);
+
+  //delay(1000);
 }
 
 // Rotating left 180 degrees.
 void rotate180()
 {
+  Serial.println("First rotate 180 transition.");
+  
   E1_prev_error = 0;
   E2_prev_error = 0;
 
   E1_sum_error = 120;
   E2_sum_error = 120;
 
+  right_ticks = 0;
+  left_ticks = 0;
+
   if(rotateTransition)
   {
-    M1_ticks_to_move = 370 * 2;
-    M2_ticks_to_move = 390 * 2;
+    M1_ticks_to_move = 695;
+    M2_ticks_to_move = 769;
 
     rotateTransition = false;
     straightTransition = true;
   }
   else
   {
-    M1_ticks_to_move = (Right_Left_ticks + 5) * 2;
-    M2_ticks_to_move = (Right_Left_ticks + 5) * 2;
+    M1_ticks_to_move = 690;
+    M2_ticks_to_move = 772;
   }
   
   while(!waitingInput and distsub > 0)
@@ -333,7 +352,8 @@ void rotate180()
     PID(-1,1);
     stopIfRotated();
   }
-  delay(1000);
+  
+  //delay(1000);
 }
 
 // STOP MOVING OR ROTATING IF THE DISTANCE OR ANGLE HAS BEEN REACHED. *************************************
@@ -366,8 +386,9 @@ void stopIfReached()
     if(distsub == 0)
     {
       // Set the brakes on both motors to bring the robot to a stop.
-      motorShield.setM1Brake(400);
-      motorShield.setM2Brake(400);
+      //motorShield.setM1Brake(400);
+      //motorShield.setM2Brake(400);
+      motorShield.setBrakes(400, 400);
 
       // The robot needs to wait for another input command before continuing.
       waitingInput = true;
