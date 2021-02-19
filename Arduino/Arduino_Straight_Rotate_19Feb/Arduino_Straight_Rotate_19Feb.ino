@@ -1,4 +1,6 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
+// CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
+// IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
 
 // LIBRARIES.***********************************************************************************************
 #include <DualVNH5019MotorShield.h>
@@ -59,12 +61,10 @@ double Total_M1_moved = 0;
 double Total_M2_moved = 0;
 double M1_ticks_to_move = 0;    // Individual number of ticks to move is specified in each scenario.
 double M2_ticks_to_move = 0;
-double M1_setpoint_ticks = 5;   // Number of ticks before each iteration of PID controller, also controls motor speed.
-double M2_setpoint_ticks = 5;
+double M1_setpoint_ticks = 10;    // Number of ticks before each iteration of PID controller, also controls motor speed.
+double M2_setpoint_ticks = 10;    // A larger value here corresponds to the robot moving faster.
 
 // Proportional Integral Derivative (PID) controller.
-double right_ticks_PID = 0.0;
-double left_ticks_PID = 0.0;
 double M1_ticks_PID = 0;
 double M2_ticks_PID = 0;
 double E1_error_ticks = 0;
@@ -78,13 +78,10 @@ double KD = 0.3;        // Adjust for derivative component.
 double KI = 7;          // Adjust for integral component.
 
 // For movement control when receiving commands for navigating around obstacles.
-boolean needCheckRight = true;        // Determines if the left or right side is clear to move if an obstacle is detected in front.
+char readChar = ' ';            // Command character indicating the direction to move.
 boolean waitingInput = true;    // Determines if the robot is waiting for input from serial link.
-
-// Set the distance travelled with each step and the angle of rotation here.
-int Front_Back_ticks = 295;     // Theoretically 298, but in reality 295 ticks moves the robot forward by approximately 10cm.
-int Right_ticks = 200;          // Theoretically, 398 ticks rotates the robot by approximately 90 degrees.
-int Left_ticks = 200;           // In reality, 395 ticks are needed to rotate the robot by approximately 90 degrees.
+boolean straightTransition = true;  // If the robot has to move straight after changing direction.
+boolean rotateTransition = true;    // If the robot has to rotate after changing direction.
 int distsub = 0;                // Number of steps to move in a particular direction.
 
 // CREATE OBJECTS.******************************************************************************************
@@ -113,8 +110,8 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Introduce an initial delay to prevent power up surges from interfering.
-  delay(3000);
-
+  delay(3000);  
+  
   // Send initial string of sensor readings when the robot is ready and initialized.
   readSensor();
     
@@ -126,165 +123,61 @@ void setup()
 
 void loop()
 {
+  // READ FROM SERIAL.**************************************************************************************
+  
+  // Check if data has been received at the serial link (USB).
+  while(waitingInput and Serial.available() > 0)
+  {
+    // Read up to the entire string that is passed in up to the newline character.
+    String data = Serial.readStringUntil("\n");
+    
+    // Capture the first character indicating the direction to move.
+    readChar = data.charAt(0);
+
+    // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
+    // Capture the second integer in the string for number of steps to move.
+    distsub = data.substring(1).toInt();
+
+    // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
+    // Comment the above line of code and uncomment this line below, or vice versa.
+    //distsub = 1;
+    
+    // Robot has received a command and does not need to wait for further input.
+    waitingInput = false;
+
+    // Acknowledgement string to send back to the Raspberry Pi.
+    Serial.print("ALG|MOV|"); Serial.println(readChar);
+  }
+
   // SET PARAMETERS BASED ON INPUT COMMAND GIVEN. **********************************************************
+  
+  // Read the input command given.
   // NOTE: Decrementing of this value 'distsub' is done in the 
   // 'stopIfReached()' and 'stopIfRotated()' functions.
-  // Reading of sensors if already being performed in the above two functions when running.
-  needCheckRight = true;
-
-  // While there is no obstacle in front, robot keeps moving forwards in steps.
-  // Optimal distance for front obstacle detection appears to be 25cm.
-  while(distanceA0 > 25 and distanceA1 > 25 and distanceA2 > 25)
+  switch(readChar)
   {
-    // Set 'waitingInput' to be false whenever issuing a command to move.
-    waitingInput = false;
-    distsub = 1;
-    forwards();
-  }
-  // Setting of brakes is only performed after the step in which an obstacle is detected.
-  // Whenever done moving forward, need to set the brakes.
-  Serial.println("Obstacle detected in front.");
-  delay(500);
+    // Move forward.
+    case 'F': forwards();
 
-  // Setting of brakes for rotation is done in 'stopIfRotated()' function.
-  // Rotate left 45 degrees.
-  waitingInput = false;
-  distsub = 1;
-  rotate45left();
-  Serial.println("Rotated left 45 degrees.");
-  delay(500);
+              // Need to change the command character to a non-functional character
+              // So that the robot stops moving.
+              readChar = ' ';
+              break;
 
-  // If there is no obstacle at half left.
-  if(distanceA0 > 20 and distanceA1 > 20 and distanceA2 > 20)
-  {
-    Serial.println("No obstacle at half left.");
+    // Rotate to the left by 90 degrees.
+    case 'L': rotate90left();
+              readChar = ' ';
+              break;
 
-    // Move forward for 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-    
-    // Rotate right 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45right();
-    Serial.println("Rotated right 45 degrees.");
-    delay(500);
+    // Rotate to the right by 90 degrees.
+    case 'R': rotate90right();
+              readChar = ' ';
+              break;
 
-    // Move forward for 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-
-    // Rotate right 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45right();
-    Serial.println("Rotated right 45 degrees.");
-    delay(500);
-
-    // Move forward for 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-
-    // Rotate left 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45left();
-    Serial.println("Rotated left 45 degrees.");
-    delay(500);
-
-    // Go back to the start of the program from here.
-    needCheckRight = false;
-  }
-
-  // If there is an obstacle at half left, rotate to half right and check.
-  else
-  {
-    Serial.println("Obstacle at half left, checking half right.");
-    // Rotate right 90 degrees.
-    waitingInput = false;
-    distsub = 2;
-    rotate45right();
-    Serial.println("Rotated right 90 degrees.");
-    delay(500);
-  }
-
-  // If there is an obstacle at half right.
-  if(distanceA0 < 20 and distanceA1 < 20 and distanceA2 < 20 and needCheckRight)
-  {
-    Serial.println("Obstacle detected at half right, reversing.");
-    
-    // Rotate 135 degrees to the right, with the robot's front now facing the rear.
-    waitingInput = false;
-    distsub = 3;
-    rotate45right();
-    Serial.println("Rotated right 135 degrees.");
-    delay(500);
-  }
-
-  // If there is no obstacle at half right.
-  else if(needCheckRight)
-  {
-    Serial.println("No obstacle at half right.");
-    
-    // Move forwards for 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-
-    // For this particular action of manouvering right to avoid an obstacle, the number of
-    // Ticks has to be increased for angle accuracy.
-    Right_ticks = 215;
-    Left_ticks = 215;
-
-    // Rotate left 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45left();
-    Serial.println("Rotated left 45 degrees.");
-    delay(500);
-
-    // Move forwards for 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-
-    // Rotate left 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45left();
-    Serial.println("Rotated left 45 degrees.");
-    delay(500);
-
-    // Move forwards 3 steps.
-    waitingInput = false;
-    distsub = 3;
-    forwards();
-    Serial.println("Moved forwards 3 steps.");
-    delay(500);
-
-    // Reset the number of ticks after performing this manouvere.
-    Right_ticks = 200;
-    Left_ticks = 200;
-
-    // Rotate right 45 degrees.
-    waitingInput = false;
-    distsub = 1;
-    rotate45right();
-    Serial.println("Rotated right 45 degrees.");
-    delay(500);
+    // Rotate 180 degrees from the left.
+    case 'B': rotate180();
+              readChar = ' ';
+              break;
   }
 }
 
@@ -294,12 +187,44 @@ void loop()
 // Moving forwards.
 void forwards()
 {
+  // Reset the PID parameters when changing direction.
+  E1_prev_error = 0;
+  E2_prev_error = 0;
+
+  // Optimal sum of square errors for E1 and E2 are 110 and 95 respectively.
+  E1_sum_error = 110;
+  E2_sum_error = 95;
+
+  // Before moving forwards after a rotation or stationary stop, reset the differences in ticks.
+  M1_ticks_diff = 0;
+  M2_ticks_diff = 0;
+
+  // If the robot has to move straight after changing direction.
+    if(straightTransition and distsub == 1)
+    {
+      // Theoretically 298 ticks moves the robot forward by approximately 10cm.
+      Serial.println("First Straight Transition.");
+    
+      M1_ticks_to_move = 221; //OK
+      M2_ticks_to_move = 221; //OK
+
+      // Set boolean values to account for observed transition accuracy errors.
+      straightTransition = false;
+      rotateTransition = true;
+    }
+    else
+    {
+    // To account for discrepancies in the distance moving forward, may need to include a switch case
+    // Statement here with 5 cases for 5 possible step distances when moving forwards up to 5 steps.
+    
+      // When moving in a straight line for more than 1 step, need to include correction for subsequent steps.
+      M1_ticks_to_move = 273 - M1_ticks_diff; //OK
+      M2_ticks_to_move = 273 - M2_ticks_diff; //OK
+    }
+	
   // Keep running while it is executing a command and has not reached the last step.
   while(!waitingInput and distsub > 0)
-  {
-    M1_ticks_to_move = Front_Back_ticks - M1_ticks_diff;
-    M2_ticks_to_move = Front_Back_ticks - M2_ticks_diff;
-
+  {     
     // Both motors have positive speed values.
     PID(1,1);
 
@@ -307,18 +232,48 @@ void forwards()
     // Step distance and rotation angle are set at the top of this file.
     stopIfReached();
   }
+
+  // Reset the tick counters here as there would have been alight movement between the time
+  // When the tick counters are last reset in the PID function and when the brakes are applied.
+  right_ticks = 0;
+  left_ticks = 0;
+  
   // Insert delay here between steps if necessary.
-  //delay(2000);
+  //delay(1000);
 }
 
 // Rotating left 90 degrees.
-void rotate45left()
+void rotate90left()
 {
+  Serial.println("First rotate left transition.");
+   
+  E1_prev_error = 0;
+  E2_prev_error = 0;
+  
+  E1_sum_error = 110;
+  E2_sum_error = 95;
+
+  right_ticks = 0;
+  left_ticks = 0;
+
+  if(rotateTransition)
+  {
+    // Theoretically 398 ticks rotates the robot by approximately 90 degrees.
+    // The ticks to move for each motor when rotating have to be individually adjusted.
+    M1_ticks_to_move = 320; //OK
+    M2_ticks_to_move = 325; //OK
+
+    rotateTransition = false;
+    straightTransition = true;
+  }
+  else
+  {
+    M1_ticks_to_move = 300; //OK
+    M2_ticks_to_move = 330; //OK
+  }
+  
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = (Right_ticks) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks) - M2_ticks_diff;
-
     // Left motor is negative and right motor is positive.
     PID(-1,1);
 
@@ -326,39 +281,77 @@ void rotate45left()
     // Anywhere from 5 to 15 ticks more than the set value at the top of this file.
     stopIfRotated();
   }
-  //delay(2000);
+    
+  //delay(1000);
 }
 
 // Rotating right 90 degrees.
-void rotate45right()
+void rotate90right()
 {
-  Serial.println("Rotate45right called.");
+  Serial.println("First rotate right transition.");
+  
+  E1_prev_error = 0;
+  E2_prev_error = 0;
+
+  E1_sum_error = 110;
+  E2_sum_error = 95;
+
+  right_ticks = 0;
+  left_ticks = 0;
+
+  if(rotateTransition)
+  {
+    M1_ticks_to_move = 305; //OK
+    M2_ticks_to_move = 335; //OK
+
+    rotateTransition = false;
+    straightTransition = true;
+  }
+  else
+  {
+    // Need to add offsets to tick values when rotating right.
+    M1_ticks_to_move = 320; //OK
+    M2_ticks_to_move = 330; //OK
+  }
+  
   while(!waitingInput and distsub > 0)
   {
-    M1_ticks_to_move = (Right_ticks) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks) - M2_ticks_diff;
-
     // Left motor is positive and right motor is negative.
     PID(1,-1);
     stopIfRotated();
   }
-  //delay(2000);
+
+  //delay(1000);
 }
 
 // Rotating left 180 degrees.
 void rotate180()
 {
+  Serial.println("First rotate 180 transition.");
+  
+  E1_prev_error = 0;
+  E2_prev_error = 0;
+
+  E1_sum_error = 110;
+  E2_sum_error = 95;
+
+  right_ticks = 0;
+  left_ticks = 0;
+
+  M1_ticks_to_move = 565; //OK
+  M2_ticks_to_move = 740; //OK
+
+  rotateTransition = false;
+  straightTransition = true;
+  
   while(!waitingInput and distsub > 0)
   {
-    // Need to insert offsets to improve accuracy.
-    M1_ticks_to_move = (Right_ticks * 2) - M1_ticks_diff;
-    M2_ticks_to_move = (Left_ticks * 2) - M2_ticks_diff;
-
     // Left motor is negative and right motor is positive.
     PID(-1,1);
     stopIfRotated();
   }
-  //delay(2000);
+  
+  //delay(1000);
 }
 
 // STOP MOVING OR ROTATING IF THE DISTANCE OR ANGLE HAS BEEN REACHED. *************************************
@@ -369,14 +362,19 @@ void stopIfReached()
   // Once the desired number of ticks to move the required distance has been reached.
   if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
   {
+    //Serial.print("Ticks to move M1: "); Serial.print(M1_ticks_to_move);
+    Serial.print(", Ticks moved M1: "); Serial.println(M1_ticks_moved);
+    //Serial.print(", Ticks to move M2: "); Serial.print(M2_ticks_to_move);
+    Serial.print(", Ticks moved M2: "); Serial.println(M2_ticks_moved);
+    
     // Error difference for how many ticks the current step exceeded by.
     M1_ticks_diff = M1_ticks_moved - M1_ticks_to_move;
     M2_ticks_diff = M2_ticks_moved - M2_ticks_to_move;
       
     // For debugging, two master counters count the total number of ticks moved through
     // the entire motor operation to check for tick discrepancies over time.
-    Total_M1_moved += M1_ticks_moved;
-    Total_M2_moved += M2_ticks_moved;
+    //Total_M1_moved += M1_ticks_moved;
+    //Total_M2_moved += M2_ticks_moved;
       
     //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
     //Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
@@ -386,29 +384,32 @@ void stopIfReached()
     // Decrement the number of steps left to travel.
     distsub--;
 
-    // Reset the tick counters.
-    M1_ticks_moved = 0;
-    M2_ticks_moved = 0;
-
     // The robot should only apply the brakes when it has finished the last step.
     // The robot should only stop and wait for a command after its last step.
     if(distsub == 0)
     {
-      // Set the brakes on both motors simultaneously to bring the robot to a stop.
-      // Syntax: motorShield.setBrakes(M1 right motor, M2 left motor);
+      // Set the brakes on both motors to bring the robot to a stop.
+      //motorShield.setM1Brake(400);
+      //motorShield.setM2Brake(400);
       motorShield.setBrakes(400, 400);
 
       // The robot needs to wait for another input command before continuing.
       waitingInput = true;
 
-      // When the robot stops moving, read in sensor data.
+      // When the robot stops moving after its last step, read in sensor data.
       readSensor();
 
       // Return acknowledgement string that the robot has stopped moving, and the readings in cm from all sensors.
-      Serial.println("ALG|DMV|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
+      Serial.println("ALG|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
       + "," + String(distanceA3) + "," + String(distanceA4) + "," + String(distanceA5));
     }
+
+    // Reset the tick counters.
+    M1_ticks_moved = 0;
+    M2_ticks_moved = 0;
   }
+  // Provide a sampline time before the next PID iteration.
+  //delay(5);
 }
 
 // If the robot is meant to rotate.
@@ -416,12 +417,17 @@ void stopIfRotated()
 {
   if(M1_ticks_moved > M1_ticks_to_move and M2_ticks_moved > M2_ticks_to_move)
   {
+    //Serial.print("Ticks to move M1: "); Serial.print(M1_ticks_to_move);
+    Serial.print(", Ticks moved M1: "); Serial.println(M1_ticks_moved);
+    //Serial.print(", Ticks to move M2: "); Serial.print(M2_ticks_to_move);
+    Serial.print(", Ticks moved M2: "); Serial.println(M2_ticks_moved);
+    
     // NOTE: ERROR IN TICKS DIFFERENCE IS NOT NEEDED HERE AS EACH ROTATION IS INDEPENDENT.
       
     // For debugging, two master counters count the total number of ticks moved through
     // the entire motor operation to check for tick discrepancies over time.
-    Total_M1_moved += M1_ticks_moved;
-    Total_M2_moved += M2_ticks_moved;
+    //Total_M1_moved += M1_ticks_moved;
+    //Total_M2_moved += M2_ticks_moved;
       
     //Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
     //Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
@@ -442,20 +448,20 @@ void stopIfRotated()
       // The robot needs to wait for another input command before continuing.
       waitingInput = true;
 
-      // Get sensor readings for any obstacles detected and their distances around the starting point.
+      // When the robot stops moving after its last step, read in sensor data.
       readSensor();
 
       // Return acknowledgement string that the robot has stopped moving, and the readings in cm from all sensors.
-      Serial.println("ALG|DMV|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
+      Serial.println("ALG|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
       + "," + String(distanceA3) + "," + String(distanceA4) + "," + String(distanceA5));
     }
+
     // Reset the tick counters.
     M1_ticks_moved = 0;
     M2_ticks_moved = 0;
   }
-  // NOTE: THIS DELAY IS CRUCIAL TO ENSURING THE ACCURACY OF ROTATION ANGLE.
-  // A SMALLER DELAY VALUE MAKES ROTATION FASTER BUT MORE LIKELY TO LOSE ANGLE ACCURACY.
-  delay(5);
+  // Provide a sampline time before the next PID iteration.
+  //delay(5);
 }
 
 // PID CONTROLLER.*****************************************************************************************
@@ -488,7 +494,7 @@ void PID(int right_mul , int left_mul)
   left_speed = left_ticks_to_power(M2_ticks_PID);
   
   // Set both motors speed and direction with the multiplier simultaneously.
-  Syntax: // motorShield.setSpeeds(M1Speed (right), M2Speed (left));
+  //Syntax: motorShield.setSpeeds(M1Speed (right), M2Speed (left));
   motorShield.setSpeeds(right_speed * right_mul, left_speed * left_mul);
   stopIfFault();
 
@@ -507,6 +513,11 @@ void PID(int right_mul , int left_mul)
   // Store the sum of all errors. Errors with negative values are subtracted from the sum.
   E1_sum_error += E1_error_ticks;
   E2_sum_error += E2_error_ticks;
+
+  //Serial.print("M1 Error: "); Serial.print(E1_error_ticks); Serial.print(", M2 error: "); Serial.print(E2_error_ticks);
+  //Serial.print(", M1 prev error: "); Serial.print(E1_prev_error); Serial.print(", M2 prev error: "); Serial.print(E2_prev_error);
+  //Serial.print(", M1 sum error: "); Serial.print(E1_sum_error); Serial.print(", M2 sum error: "); Serial.print(E2_sum_error);
+  //Serial.println();
 
   // Perform the PID computation again after a sampling time.
   delay(10);

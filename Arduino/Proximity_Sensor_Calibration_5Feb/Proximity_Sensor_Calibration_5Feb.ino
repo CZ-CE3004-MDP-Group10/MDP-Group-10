@@ -116,12 +116,12 @@ void loop()
 
   //wholeCount += 1;
   
-  Serial.print("Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.println(distanceA0);
-  Serial.print("Sensor A1: "); Serial.print(sensorA1_avg); Serial.print(", Distance A1: "); Serial.println(distanceA1);
-  Serial.print("Sensor A2: "); Serial.print(sensorA2_avg); Serial.print(", Distance A2: "); Serial.println(distanceA2);
-  Serial.print("Sensor A3: "); Serial.print(sensorA3_avg); Serial.print(", Distance A3: "); Serial.println(distanceA3);
-  Serial.print("Sensor A4: "); Serial.print(sensorA4_avg); Serial.print(", Distance A4: "); Serial.println(distanceA4);
-  Serial.print("Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.println(distanceA5);
+  Serial.print("Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.print(distanceA0);
+  Serial.print(", Sensor A1: "); Serial.print(sensorA1_avg); Serial.print(", Distance A1: "); Serial.print(distanceA1);
+  Serial.print(", Sensor A2: "); Serial.print(sensorA2_avg); Serial.print(", Distance A2: "); Serial.print(distanceA2);
+  Serial.print(", Sensor A3: "); Serial.print(sensorA3_avg); Serial.print(", Distance A3: "); Serial.print(distanceA3);
+  Serial.print(", Sensor A4: "); Serial.print(sensorA4_avg); Serial.print(", Distance A4: "); Serial.print(distanceA4);
+  Serial.print(", Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.println(distanceA5);
 
   // Reset the counter and variables.
   count = 0;
