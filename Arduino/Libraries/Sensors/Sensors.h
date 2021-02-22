@@ -26,12 +26,12 @@ class Sensors
 	double sensorA5_avg;
 
 	// Stores the converted distance based on sensor analog value.
-	double distanceA0;    // FRONT LEFT SENSOR.
-	double distanceA1;    // FRONT MIDDLE SENSOR.
-	double distanceA2;    // FRONT RIGHT SENSOR.
-	double distanceA3;    // RIGHT SIDE FRONT SENSOR.
-	double distanceA4;    // RIGHT SIDE BACK SENSOR.
-	double distanceA5;    // FACING LEFT LONG RANGE SENSOR.
+	double distanceA0;
+	double distanceA1;
+	double distanceA2;
+	double distanceA3;
+	double distanceA4;
+	double distanceA5;
 	
 	// Functions for sensors.
 	void init(void);

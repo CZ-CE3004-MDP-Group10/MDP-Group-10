@@ -13,11 +13,17 @@ void Movement::init()
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
 	//rotateTransition = true;
+	loopSwitchCase = true;
 }
 
 // Move Forwards.
 void Movement::forwards()
 {
+	// The normal distsub value is used for decrementing the movement steps.
+	// The constant value distsub is used for the switch case operation to determine the number
+	// Of ticks that are required for steps 1 to 5.
+	distsubConstant = distsub;
+	
 	// Reset the PID controller variables after each movement.
 	pid.setZero();
 
@@ -37,24 +43,66 @@ void Movement::forwards()
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
 		//rotateTransition = true;
+		
+		// If it is moving straight after a rotation transition, the switch case within the while
+		// Loop body for forward movement below should not run at all.
+		// The tick value set above will then move the robot one step forward.
+		loopSwitchCase = false;
 	}
 	else
 	{
-		// To account for discrepancies in the distance moving forward, may need to include a switch case
-		// Statement here with 5 cases for 5 possible step distances when moving forwards up to 5 steps.
-
-		// When moving in a straight line for more than 1 step, need to include correction for subsequent steps.
-		pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //OK
-		pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //OK
+		// If it is moving straight but not after a transition, iterate through the switch case
+		// Statement with each decrement of distsub.
+		loopSwitchCase = true;
 	}
 
 	// Keep running while it is executing a command and has not reached the last step.
 	while(distsub > 0)
-	{     
+	{
+		// If it is not the first transition after rotation and distsub is not equal to 1.
+		if(loopSwitchCase)
+		{
+			// To account for discrepancies in the distance moving forward, we need to include a switch case
+			// Statement here with 5 cases for 5 possible step distances when moving forwards up to 5 steps.
+			switch(distsubConstant)
+			{
+				// When moving in a straight line, need to include correction for each number of steps.
+				case 1: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //OK
+						break;
+					
+				case 2: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
+						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						break;
+			
+				case 3: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
+						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						break;
+			
+				case 4: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
+						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						break;
+			
+				case 5: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
+						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						break;
+						
+				default: pid.M1_ticks_to_move = 0;
+						 pid.M2_ticks_to_move = 0;
+						 break;
+			}
+		}
+	
 		// Both motors have positive speed values.
 		pid.control(1,1);
+		
+		// Set the motor commanded power based on the number of ticks it should be moving.
 		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		
+		// Stop the motors if a fault is detected.
 		stopIfFault();
+		
+		// Include a sampling time.
 		delay(10);
 		
 		// Stop the motor movement if the required distance or step is reached.
@@ -67,7 +115,6 @@ void Movement::forwards()
 void Movement::rotate90left()
 {
 	Serial.println("First rotate left transition.");
-   
 	pid.setZero();
 
 	//if(rotateTransition)
@@ -80,6 +127,8 @@ void Movement::rotate90left()
 	//rotateTransition = false;
 	straightTransition = true;
 	//}
+	
+	// Include this portion only if the robot will make 2 consecutive 90 degree left turns.
 	/*else
 	{
 		pid.M1_ticks_to_move = 300; //OK
@@ -93,9 +142,6 @@ void Movement::rotate90left()
 		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
 		stopIfFault();
 		delay(10);
-
-		// When rotating, the number of ticks for both motors is observed to fluctuate
-		// Anywhere from 5 to 15 ticks more than the set value at the top of this file.
 		stopIfRotated();
 	}
 }
@@ -104,7 +150,6 @@ void Movement::rotate90left()
 void Movement::rotate90right()
 {
 	Serial.println("First rotate right transition.");
-
 	pid.setZero();
 
 	//if(rotateTransition)
@@ -115,6 +160,8 @@ void Movement::rotate90right()
 	//rotateTransition = false;
 	straightTransition = true;
 	//}
+	
+	// Include this portion only if the robot will make 2 consecutive 90 degree right turns.
 	/*else
 	{
 		// Need to add offsets to tick values when rotating right.
@@ -129,7 +176,6 @@ void Movement::rotate90right()
 		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
 		stopIfFault();
 		delay(10);
-		
 		stopIfRotated();
 	}
 }
@@ -138,7 +184,6 @@ void Movement::rotate90right()
 void Movement::rotate180()
 {
 	Serial.println("First rotate 180 transition.");
-  
 	pid.setZero();
 
 	pid.M1_ticks_to_move = 565; //OK
@@ -154,7 +199,6 @@ void Movement::rotate180()
 		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
 		stopIfFault();
 		delay(10);
-		
 		stopIfRotated();
 	}
 }
@@ -196,9 +240,6 @@ void Movement::stopIfReached()
 		  //motorShield.setM2Brake(400);
 		  motorShield.setBrakes(400, 400);
 
-		  // The robot needs to wait for another input command before continuing.
-		  //waitingInput = true;
-
 		  // When the robot stops moving after its last step, read in sensor data.
 		  sensor.readSensor();
 		}
@@ -207,8 +248,6 @@ void Movement::stopIfReached()
 		pid.M1_ticks_moved = 0;
 		pid.M2_ticks_moved = 0;
 	}
-	// Provide a sampline time before the next PID iteration.
-	//delay(5);
 }
 
 // Stop the robot after it has rotated by the required angle.
@@ -238,15 +277,11 @@ void Movement::stopIfRotated()
 		distsub--;
 
 		// The robot should only apply the brakes when it has finished the last step.
-		// The robot should only stop and wait for a command after its last step.
 		if(distsub == 0)
 		{
 		  // Set the brakes on both motors simultaneously to bring the robot to a stop.
 		  // Syntax: motorShield.setBrakes(M1 right motor, M2 left motor);
 		  motorShield.setBrakes(400, 400);
-
-		  // The robot needs to wait for another input command before continuing.
-		  //waitingInput = true;
 
 		  // When the robot stops moving after its last step, read in sensor data.
 		  sensor.readSensor();

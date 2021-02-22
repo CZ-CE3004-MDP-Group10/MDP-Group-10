@@ -16,27 +16,21 @@ class Movement
 	
 	// Movement variables.
 	int distsub;
+	int distsubConstant;
 	boolean straightTransition;
 	//boolean rotateTransition;
-	
-	// Initialization of objects.
-	void init(void);
+	boolean loopSwitchCase;
 	
 	// Movement functions.
+	void init(void);
 	void forwards();
 	void rotate90left();
 	void rotate90right();
 	void rotate180();
-	
-	// Movement stopping functions.
 	void stopIfReached();
 	void stopIfRotated();
 	void stopIfFault();
-	
-	// Read sensor values.
 	void readSensor();
-	
-	// Interrupt functions to increment encoder ticks.
 	void right_tick_increment();
 	void left_tick_increment();
 };

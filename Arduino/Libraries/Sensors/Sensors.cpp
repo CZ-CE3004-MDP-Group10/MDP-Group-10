@@ -23,12 +23,12 @@ void Sensors::init()
 	sensorA5_avg = 0.0;
 
 	// Float variables to hold the converted distance based on sensor analog value.
-	distanceA0 = 0.0;    // FRONT LEFT SENSOR.
-	distanceA1 = 0.0;    // FRONT MIDDLE SENSOR.
-	distanceA2 = 0.0;    // FRONT RIGHT SENSOR.
-	distanceA3 = 0.0;    // RIGHT SIDE FRONT SENSOR.
-	distanceA4 = 0.0;    // RIGHT SIDE BACK SENSOR.
-	distanceA5 = 0.0;    // FACING LEFT LONG RANGE SENSOR.
+	distanceA0 = 0.0;
+	distanceA1 = 0.0;
+	distanceA2 = 0.0;
+	distanceA3 = 0.0;
+	distanceA4 = 0.0;
+	distanceA5 = 0.0;
 }
 
 // Read and obtain the average of all sensor's analog values.

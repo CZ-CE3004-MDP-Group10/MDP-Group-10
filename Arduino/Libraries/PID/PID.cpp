@@ -102,9 +102,6 @@ void PID::control(int right_mul , int left_mul)
 	//Serial.print(", M1 prev error: "); Serial.print(E1_prev_error); Serial.print(", M2 prev error: "); Serial.print(E2_prev_error);
 	//Serial.print(", M1 sum error: "); Serial.print(E1_sum_error); Serial.print(", M2 sum error: "); Serial.print(E2_sum_error);
 	//Serial.println();
-
-	// Perform the PID computation again after a sampling time.
-	//delay(10);
 }
 
 // Returns the number of right ticks.

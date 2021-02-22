@@ -35,24 +35,14 @@ class PID
 	double KD;        	// Adjust for derivative component.
 	double KI;          // Adjust for integral component.
 	
-	// Initialization of PID controller.
+	// PID Controller Functions.
 	void init();
-	
-	// Tick incrementing functions.
 	void right_ticks_increment(void);
 	void left_ticks_increment(void);
-	
-	// PID controller.
 	void control(int right_mul , int left_mul);
-	
-	// Conversion of ticks to motor power.
 	double right_ticks_to_power(double right_ticks);
 	double left_ticks_to_power(double left_ticks);
-	
-	// Stores the number of ticks.
 	int getRightSpeed();
 	int getLeftSpeed();
-	
-	// Reset the PID controller values.
 	void setZero();
 };
