@@ -17,7 +17,7 @@ class Movement
 	// Movement variables.
 	int distsub;
 	boolean straightTransition;
-	boolean rotateTransition;
+	//boolean rotateTransition;
 	
 	// Initialization of objects.
 	void init(void);

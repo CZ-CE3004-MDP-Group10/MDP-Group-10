@@ -12,7 +12,7 @@ void Movement::init()
 	
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
-	rotateTransition = true;
+	//rotateTransition = true;
 }
 
 // Move Forwards.
@@ -36,7 +36,7 @@ void Movement::forwards()
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
-		rotateTransition = true;
+		//rotateTransition = true;
 	}
 	else
 	{
@@ -70,21 +70,21 @@ void Movement::rotate90left()
    
 	pid.setZero();
 
-	if(rotateTransition)
-	{
-		// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
-		// The ticks to move for each motor when rotating have to be individually adjusted.
-		pid.M1_ticks_to_move = 320; //OK
-		pid.M2_ticks_to_move = 325; //OK
+	//if(rotateTransition)
+	//{
+	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
+	// The ticks to move for each motor when rotating have to be individually adjusted.
+	pid.M1_ticks_to_move = 320; //OK
+	pid.M2_ticks_to_move = 325; //OK
 
-		rotateTransition = false;
-		straightTransition = true;
-	}
-	else
+	//rotateTransition = false;
+	straightTransition = true;
+	//}
+	/*else
 	{
 		pid.M1_ticks_to_move = 300; //OK
 		pid.M2_ticks_to_move = 330; //OK
-	}
+	}*/
 
 	while(distsub > 0)
 	{
@@ -107,20 +107,20 @@ void Movement::rotate90right()
 
 	pid.setZero();
 
-	if(rotateTransition)
-	{
-		pid.M1_ticks_to_move = 305; //OK
-		pid.M2_ticks_to_move = 335; //OK
+	//if(rotateTransition)
+	//{
+	pid.M1_ticks_to_move = 305; //OK
+	pid.M2_ticks_to_move = 335; //OK
 
-		rotateTransition = false;
-		straightTransition = true;
-	}
-	else
+	//rotateTransition = false;
+	straightTransition = true;
+	//}
+	/*else
 	{
 		// Need to add offsets to tick values when rotating right.
 		pid.M1_ticks_to_move = 320; //OK
 		pid.M2_ticks_to_move = 330; //OK
-	}
+	}*/
 
 	while(distsub > 0)
 	{
@@ -144,7 +144,7 @@ void Movement::rotate180()
 	pid.M1_ticks_to_move = 565; //OK
 	pid.M2_ticks_to_move = 740; //OK
 
-	rotateTransition = false;
+	//rotateTransition = false;
 	straightTransition = true;
 
 	while(distsub > 0)
