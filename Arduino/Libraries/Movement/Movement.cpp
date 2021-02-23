@@ -69,22 +69,27 @@ void Movement::forwards()
 				// When moving in a straight line, need to include correction for each number of steps.
 				case 1: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //OK
 						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //OK
+						Serial.println("Taking 1 step forward.");
 						break;
 					
 				case 2: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
 						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						Serial.println("Taking 2 steps forward.");
 						break;
 			
 				case 3: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
 						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						Serial.println("Taking 3 steps forward.");
 						break;
 			
 				case 4: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
 						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						Serial.println("Taking 4 steps forward.");
 						break;
 			
 				case 5: pid.M1_ticks_to_move = 273 - pid.M1_ticks_diff; //TO ADJUST
 						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //TO ADJUST
+						Serial.println("Taking 5 steps forward.");
 						break;
 						
 				default: pid.M1_ticks_to_move = 0;
