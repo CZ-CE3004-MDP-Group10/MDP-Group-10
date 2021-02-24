@@ -1,5 +1,6 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
 // CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
+// ENSURE BATTERY IS FULLY CHARGED BEFORE STARTING NAVIGATION.
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
 
 // Include libraries.
@@ -52,6 +53,7 @@ void setup()
 }
 
 // LOOPING.
+String data;
 
 void loop()
 { 
@@ -59,7 +61,7 @@ void loop()
   while(waitingInput and Serial.available() > 0)
   {
     // Read up to the entire string that is passed in up to the newline character.
-    String data = Serial.readStringUntil("\n");
+    data = Serial.readStringUntil("\n");
     
     // Capture the first character indicating the direction to move.
     readChar = data.charAt(0);
@@ -87,21 +89,29 @@ void loop()
     case 'F': robot.forwards();
               // The robot needs to stop and wait for the next commmand after finishing its current one.
               waitingInput = true;
+              Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
+              readChar = " ";
               break;
 
     // Rotate to the left by 90 degrees.
     case 'L': robot.rotate90left();
               waitingInput = true;
+              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              readChar = " ";
               break;
 
     // Rotate to the right by 90 degrees.
     case 'R': robot.rotate90right();
               waitingInput = true;
+              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              readChar = " ";
               break;
 
     // Rotate 180 degrees from the left.
     case 'B': robot.rotate180();
               waitingInput = true;
+              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              readChar = " ";
               break;
   }
 }
