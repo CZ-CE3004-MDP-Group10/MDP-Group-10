@@ -12,7 +12,7 @@ void Movement::init()
 	
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
-	//rotateTransition = true;
+	rotateTransition = true;
 	loopSwitchCase = true;
 }
 
@@ -42,7 +42,7 @@ void Movement::forwards()
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
-		//rotateTransition = true;
+		rotateTransition = true;
 		
 		// If it is moving straight after a rotation transition, the switch case within the while
 		// Loop body for forward movement below should not run at all.
@@ -119,26 +119,28 @@ void Movement::forwards()
 // Rotate Left 90 Degrees.
 void Movement::rotate90left()
 {
-	//Serial.println("First rotate left transition.");
 	pid.setZero();
 
-	//if(rotateTransition)
-	//{
-	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
-	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 321; //OK
-	pid.M2_ticks_to_move = 326; //OK
-
-	//rotateTransition = false;
-	straightTransition = true;
-	//}
-	
-	// Include this portion only if the robot will make 2 consecutive 90 degree left turns.
-	/*else
+	if(rotateTransition)
 	{
+		//Serial.println("First rotate left transition.");
+		
+		// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
+		// The ticks to move for each motor when rotating have to be individually adjusted.
 		pid.M1_ticks_to_move = 300; //OK
 		pid.M2_ticks_to_move = 330; //OK
-	}*/
+
+		// Set the boolean variables to keep track of movement transitions.
+		rotateTransition = false;
+		straightTransition = true;
+	}
+	// If a left rotation is required immediately after a right rotation.
+	else
+	{
+		//Serial.println("Subsequent rotate left.");
+		pid.M1_ticks_to_move = 300; //TO ADJUST
+		pid.M2_ticks_to_move = 330; //TO ADJUST
+	}
 
 	while(distsub > 0)
 	{
@@ -154,25 +156,24 @@ void Movement::rotate90left()
 // Rotate Right 90 Degrees.
 void Movement::rotate90right()
 {
-	//Serial.println("First rotate right transition.");
 	pid.setZero();
 
-	//if(rotateTransition)
-	//{
-	pid.M1_ticks_to_move = 303; //OK
-	pid.M2_ticks_to_move = 335; //OK
-
-	//rotateTransition = false;
-	straightTransition = true;
-	//}
-	
-	// Include this portion only if the robot will make 2 consecutive 90 degree right turns.
-	/*else
+	if(rotateTransition)
 	{
-		// Need to add offsets to tick values when rotating right.
+		//Serial.println("First rotate right transition.");
 		pid.M1_ticks_to_move = 320; //OK
 		pid.M2_ticks_to_move = 330; //OK
-	}*/
+
+		rotateTransition = false;
+		straightTransition = true;
+	}
+	// If a right rotation is required immediately after a left rotation.
+	else
+	{
+		//Serial.println("Subsequent rotate right.");
+		pid.M1_ticks_to_move = 320; //TO ADJUST
+		pid.M2_ticks_to_move = 330; //TO ADJUST
+	}
 
 	while(distsub > 0)
 	{
@@ -194,9 +195,9 @@ void Movement::rotate180()
 	pid.M1_ticks_to_move = 555; //OK
 	pid.M2_ticks_to_move = 733; //OK
 
-	//rotateTransition = false;
+	rotateTransition = false;
 	straightTransition = true;
-
+	
 	while(distsub > 0)
 	{
 		// Left motor is negative and right motor is positive.

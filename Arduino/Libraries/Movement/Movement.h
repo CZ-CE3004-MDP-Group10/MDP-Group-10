@@ -18,7 +18,7 @@ class Movement
 	int distsub;
 	int distsubConstant;
 	boolean straightTransition;
-	//boolean rotateTransition;
+	boolean rotateTransition;
 	boolean loopSwitchCase;
 	
 	// Movement functions.
