@@ -17,6 +17,8 @@ class Movement
 	// Movement variables.
 	int distsub;
 	int distsubConstant;
+	int sensorRightFront;
+	int sensorRightRear;
 	boolean straightTransition;
 	boolean rotateTransition;
 	boolean loopSwitchCase;
@@ -29,6 +31,7 @@ class Movement
 	void rotate180();
 	void stopIfReached();
 	void stopIfRotated();
+	void rightWallHugging();
 	void stopIfFault();
 	void readSensor();
 	void right_tick_increment();

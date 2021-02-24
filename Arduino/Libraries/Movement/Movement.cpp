@@ -14,6 +14,10 @@ void Movement::init()
 	straightTransition = true;
 	rotateTransition = true;
 	loopSwitchCase = true;
+	
+	// Set the initial right wall hugging sensor values.
+	sensorRightFront = 0;
+	sensorRightRear = 0;
 }
 
 // Move Forwards.
@@ -297,6 +301,34 @@ void Movement::stopIfRotated()
 		// Reset the tick counters.
 		pid.M1_ticks_moved = 0;
 		pid.M2_ticks_moved = 0;
+	}
+}
+
+// Perform right wall hugging.
+// Check if the analog values of right mounted sensors are equal, perform corrections if not.
+void Movement::rightWallHugging()
+{
+	// Read in the sensor values.
+	sensor.readSensor();
+	sensorRightFront = sensor.distanceA3;
+	sensorRightRear = sensor.distanceA4;
+	
+	// Check the distance values of the right mounted sensors.
+	Serial.print("Right front sensor: "); Serial.print(sensorRightFront); Serial.print(", Right back sensor: "); Serial.println(sensorRightRear);
+	
+	// Perform adjustments if the values are different.
+	// Need to add in buffer offsets due to fluctuating sensor input values.
+	if(sensorRightFront > sensorRightRear)
+	{
+		Serial.println("Tilted left.");
+	}
+	else if(sensorRightFront < sensorRightRear)
+	{
+		Serial.println("Tilted right.");
+	}
+	else
+	{
+		Serial.println("Not tilted.");
 	}
 }
 
