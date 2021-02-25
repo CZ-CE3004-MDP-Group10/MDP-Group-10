@@ -354,7 +354,7 @@ void Movement::stopIfRotated()
 
 // Perform right wall hugging.
 // Check if the analog values of right mounted sensors are equal, perform corrections if not.
-void Movement::rightWallHugging()
+void Movement::rightWallCheckTilt()
 {
 	// Read in the sensor values.
 	sensor.readSensor();
@@ -376,6 +376,7 @@ void Movement::rightWallHugging()
 		delay(100);
 		rotate3right();
 	}
+	
 	// If the robot is tilted right.
 	else if(sensorRightFront < sensorRightRear)
 	{
@@ -383,6 +384,7 @@ void Movement::rightWallHugging()
 		delay(100);
 		rotate3left();
 	}
+	
 	// If no tilt is detected.
 	else
 	{

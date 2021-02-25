@@ -90,7 +90,7 @@ void loop()
               // The robot needs to stop and wait for the next commmand after finishing its current one.
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
-              robot.rightWallHugging();
+              robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -98,7 +98,7 @@ void loop()
     case 'L': robot.rotate90left();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallHugging();
+              robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -106,7 +106,7 @@ void loop()
     case 'R': robot.rotate90right();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallHugging();
+              robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -114,7 +114,7 @@ void loop()
     case 'B': robot.rotate180();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallHugging();
+              robot.rightWallCheckTilt();
               readChar = " ";
               break;
   }
