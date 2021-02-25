@@ -127,7 +127,7 @@ void Movement::rotate90left()
 
 	if(rotateTransition)
 	{
-		//Serial.println("First rotate left transition.");
+		Serial.println("First rotate left transition.");
 		
 		// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 		// The ticks to move for each motor when rotating have to be individually adjusted.
@@ -141,7 +141,7 @@ void Movement::rotate90left()
 	// If a left rotation is required immediately after a right rotation.
 	else
 	{
-		//Serial.println("Subsequent rotate left.");
+		Serial.println("Subsequent rotate left.");
 		pid.M1_ticks_to_move = 300; //TO ADJUST
 		pid.M2_ticks_to_move = 330; //TO ADJUST
 	}
@@ -164,9 +164,9 @@ void Movement::rotate90right()
 
 	if(rotateTransition)
 	{
-		//Serial.println("First rotate right transition.");
-		pid.M1_ticks_to_move = 320; //OK
-		pid.M2_ticks_to_move = 330; //OK
+		Serial.println("First rotate right transition.");
+		pid.M1_ticks_to_move = 315; //OK
+		pid.M2_ticks_to_move = 325; //OK
 
 		rotateTransition = false;
 		straightTransition = true;
@@ -174,9 +174,9 @@ void Movement::rotate90right()
 	// If a right rotation is required immediately after a left rotation.
 	else
 	{
-		//Serial.println("Subsequent rotate right.");
-		pid.M1_ticks_to_move = 320; //TO ADJUST
-		pid.M2_ticks_to_move = 330; //TO ADJUST
+		Serial.println("Subsequent rotate right.");
+		pid.M1_ticks_to_move = 305; //TO ADJUST
+		pid.M2_ticks_to_move = 315; //TO ADJUST
 	}
 
 	while(distsub > 0)
@@ -348,17 +348,19 @@ void Movement::stopIfFault()
 	}
 }
 
-
+// Read the sensor values when the robot stops moving.
 void Movement::readSensor()
 {
 	sensor.readSensor();
 }
 
+// Function to increment the encoder's right ticks.
 void Movement::right_tick_increment()
 {
 	pid.right_ticks_increment();
 }
 
+// Function to increment the encoder's left ticks.
 void Movement::left_tick_increment()
 {
 	pid.left_ticks_increment();
