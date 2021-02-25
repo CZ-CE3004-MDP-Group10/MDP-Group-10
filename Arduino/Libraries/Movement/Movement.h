@@ -29,6 +29,8 @@ class Movement
 	void rotate90left();
 	void rotate90right();
 	void rotate180();
+	void rotate3left();
+	void rotate3right();
 	void stopIfReached();
 	void stopIfRotated();
 	void rightWallHugging();

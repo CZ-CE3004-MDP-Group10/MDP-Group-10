@@ -213,6 +213,54 @@ void Movement::rotate180()
 	}
 }
 
+// Rotate 3 degrees to the left if the robot is detected to be tilted right.
+void Movement::rotate3left()
+{
+	pid.setZero();
+	
+	Serial.println("Tilting left for correction.");
+	pid.M1_ticks_to_move = 10; //TO ADJUST
+	pid.M2_ticks_to_move = 10; //TO ADJUST
+
+	rotateTransition = false;
+	straightTransition = true;
+	distsub = 1;
+	
+	while(distsub > 0)
+	{
+		// Left motor is negative and right motor is positive.
+		pid.control(-1,1);
+		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		stopIfFault();
+		delay(10);
+		stopIfRotated();
+	}
+}
+
+// Rotate 3 degrees to the right if the robot is detected to be tilted left.
+void Movement::rotate3right()
+{
+	pid.setZero();
+	
+	Serial.println("Tilting right for correction.");
+	pid.M1_ticks_to_move = 10; //TO ADJUST
+	pid.M2_ticks_to_move = 10; //TO ADJUST
+
+	rotateTransition = false;
+	straightTransition = true;
+	distsub = 1;
+	
+	while(distsub > 0)
+	{
+		// Left motor is positive and right motor is negative.
+		pid.control(1,-1);
+		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		stopIfFault();
+		delay(10);
+		stopIfRotated();
+	}
+}
+
 // Stop the robot after it has moved the required straight distance.
 void Movement::stopIfReached()
 {
@@ -317,18 +365,28 @@ void Movement::rightWallHugging()
 	Serial.print("Right front sensor: "); Serial.print(sensorRightFront); Serial.print(", Right back sensor: "); Serial.println(sensorRightRear);
 	
 	// Perform adjustments if the values are different.
-	// Need to add in buffer offsets due to fluctuating sensor input values.
+	// Tilt must be significant enough for sensors to detect at least 1cm difference.
+	
+	// If the robot is tilted left.
 	if(sensorRightFront > sensorRightRear)
 	{
 		Serial.println("Tilted left.");
+		
+		// Wait a short while between the two movements.
+		delay(100);
+		rotate3right();
 	}
+	// If the robot is tilted right.
 	else if(sensorRightFront < sensorRightRear)
 	{
 		Serial.println("Tilted right.");
+		delay(100);
+		rotate3left();
 	}
+	// If no tilt is detected.
 	else
 	{
-		Serial.println("Not tilted.");
+		Serial.println("No tilt detected.");
 	}
 }
 
