@@ -25,6 +25,10 @@ boolean waitingInput = true;    // Determines if the robot is waiting for input 
 // PID, sensor and motor shield objects are created in the movement file.
 Movement robot;
 
+String data;
+String queue[100];
+int qcount = 0;
+
 // SETUP.
 void setup()
 {
@@ -53,9 +57,6 @@ void setup()
 }
 
 // LOOPING.
-String data;
-String queue[100];
-int qcount = 0;
 void loop()
 { 
   // Check if data has been received at the serial link (USB).
@@ -63,8 +64,8 @@ void loop()
   {
     if(queue[0] == NULL)
     {
-      Serial.println("Enter condition");
-      while(Serial.available() > 0)
+      //Serial.println("Enter condition");
+      if(Serial.available() > 0)
       {
         data = Serial.readStringUntil("\n");
         char fastestPathQueue[100];
@@ -79,11 +80,11 @@ void loop()
         int count = 0;
         while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL) // delimiter is the semicolon
         {
-          Serial.println(command);
+          //Serial.println(command);
           queue[count] = command;
           count += 1;
         }
-    
+        /*
         Serial.println("Put inside array");
         
         for(int i = 0 ; i < 100 ; i++)
@@ -93,33 +94,49 @@ void loop()
             break;
           }
           Serial.println(queue[i]);
-        } 
+        }*/
+
       }
     }
+    else
+    {
+      delay(500);
 
-    data = queue[qcount];
-    qcount += 1;
-    
-    // Need to ignore the header "ARD|", start reading from the fourth character onwards.
-    //data = data.substring(4);
-    
-    // Capture the first character indicating the direction to move.
-    //data = queue[];
-    readChar = data.charAt(0);
-
-    // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
-    // Capture the second integer in the string for number of steps to move.
-    robot.distsub = data.substring(1).toInt();
-
-    // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
-    // Comment the above line of code and uncomment this line below, or vice versa.
-    //distsub = 1;
-    
-    // Robot has received a command and does not need to wait for further input.
-    waitingInput = false;
-
-    // Acknowledgement string to send back to the Raspberry Pi.
-    Serial.print("ALG|MOV|"); Serial.println(readChar);
+      if(queue[qcount] == NULL)
+      {
+        for(int i = 0 ; i <= qcount; i++)
+        {
+          queue[i] = "";
+        }
+        
+        qcount = 0;
+        continue;
+      }
+      
+      data = queue[qcount];
+      qcount += 1;
+      
+      // Need to ignore the header "ARD|", start reading from the fourth character onwards.
+      //data = data.substring(4);
+      
+      // Capture the first character indicating the direction to move.
+      //data = queue[];
+      readChar = data.charAt(0);
+  
+      // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
+      // Capture the second integer in the string for number of steps to move.
+      robot.distsub = data.substring(1).toInt();
+  
+      // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
+      // Comment the above line of code and uncomment this line below, or vice versa.
+      //distsub = 1;
+      
+      // Robot has received a command and does not need to wait for further input.
+      waitingInput = false;
+  
+      // Acknowledgement string to send back to the Raspberry Pi.
+      Serial.print("ALG|MOV|"); Serial.println(readChar);
+    }
   }
   
   // Read and execute the input command given.
