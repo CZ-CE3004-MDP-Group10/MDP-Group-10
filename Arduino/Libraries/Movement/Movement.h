@@ -17,11 +17,11 @@ class Movement
 	// Movement variables.
 	int distsub;
 	int distsubConstant;
-	int sensorRightFront;
-	int sensorRightRear;
-	int sensorFrontLeft;
-	int sensorFrontMiddle;
-	int sensorFrontRight;
+	float sensorRightFront;
+	float sensorRightRear;
+	float sensorFrontLeft;
+	float sensorFrontMiddle;
+	float sensorFrontRight;
 	boolean straightTransition;
 	boolean rotateTransition;
 	boolean loopSwitchCase;
@@ -38,7 +38,10 @@ class Movement
 	void rotate3right();
 	void stopIfReached();
 	void stopIfRotated();
+	void calibrate();
 	void frontObstacleCheck();
+	void frontDistanceCheck();
+	void frontWallCheckTilt();
 	void rightWallCheckTilt();
 	void stopIfFault();
 	void readSensor();
