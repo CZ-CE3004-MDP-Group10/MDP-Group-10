@@ -54,16 +54,57 @@ void setup()
 
 // LOOPING.
 String data;
-
+String queue[100];
+int qcount = 0;
 void loop()
 { 
   // Check if data has been received at the serial link (USB).
-  while(waitingInput and Serial.available() > 0)
+  while(waitingInput)
   {
-    // Read up to the entire string that is passed in up to the newline character.
-    data = Serial.readStringUntil("\n");
+    if(queue[0] == NULL)
+    {
+      Serial.println("Enter condition");
+      while(Serial.available() > 0)
+      {
+        data = Serial.readStringUntil("\n");
+        char fastestPathQueue[100];
+        data.toCharArray(fastestPathQueue,100);
+        
+        char *queuePointer = fastestPathQueue;
+        char *command;
+        
+        // Read up to the entire string that is passed in up to the newline character.
+        //data = Serial.readStringUntil("\n");
+    
+        int count = 0;
+        while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL) // delimiter is the semicolon
+        {
+          Serial.println(command);
+          queue[count] = command;
+          count += 1;
+        }
+    
+        Serial.println("Put inside array");
+        
+        for(int i = 0 ; i < 100 ; i++)
+        {
+          if(queue[i] == NULL)
+          {
+            break;
+          }
+          Serial.println(queue[i]);
+        } 
+      }
+    }
+
+    data = queue[qcount];
+    qcount += 1;
+    
+    // Need to ignore the header "ARD|", start reading from the fourth character onwards.
+    //data = data.substring(4);
     
     // Capture the first character indicating the direction to move.
+    //data = queue[];
     readChar = data.charAt(0);
 
     // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
@@ -90,7 +131,10 @@ void loop()
               // The robot needs to stop and wait for the next commmand after finishing its current one.
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
-              robot.rightWallCheckTilt();
+              // Insert while loop here for fixed number of iterations for tilt checking.
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -98,7 +142,9 @@ void loop()
     case 'L': robot.rotate90left();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallCheckTilt();
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -106,7 +152,9 @@ void loop()
     case 'R': robot.rotate90right();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallCheckTilt();
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
               break;
 
@@ -114,7 +162,9 @@ void loop()
     case 'B': robot.rotate180();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              robot.rightWallCheckTilt();
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
               break;
   }

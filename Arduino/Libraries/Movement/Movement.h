@@ -19,6 +19,9 @@ class Movement
 	int distsubConstant;
 	int sensorRightFront;
 	int sensorRightRear;
+	int sensorFrontLeft;
+	int sensorFrontMiddle;
+	int sensorFrontRight;
 	boolean straightTransition;
 	boolean rotateTransition;
 	boolean loopSwitchCase;
@@ -26,6 +29,8 @@ class Movement
 	// Movement functions.
 	void init(void);
 	void forwards();
+	void forwardsLittle();
+	void backwards();
 	void rotate90left();
 	void rotate90right();
 	void rotate180();
@@ -33,7 +38,8 @@ class Movement
 	void rotate3right();
 	void stopIfReached();
 	void stopIfRotated();
-	void rightWallHugging();
+	void frontObstacleCheck();
+	void rightWallCheckTilt();
 	void stopIfFault();
 	void readSensor();
 	void right_tick_increment();

@@ -18,6 +18,9 @@ void Movement::init()
 	// Set the initial right wall hugging sensor values.
 	sensorRightFront = 0;
 	sensorRightRear = 0;
+	sensorFrontLeft = 0;
+	sensorFrontMiddle = 0;
+	sensorFrontRight = 0;
 }
 
 // Move Forwards.
@@ -120,6 +123,53 @@ void Movement::forwards()
 	}
 }
 
+// Move forwards a little if the robot is too far from the stopping point in front.
+void Movement::forwardsLittle()
+{
+	pid.setZero();
+	Serial.println("Moving forwards for correction.");
+	pid.M1_ticks_diff = 0;
+	pid.M2_ticks_diff = 0;
+	
+	// Using a much smaller ticks value.
+	pid.M1_ticks_to_move = 30; //OK
+	pid.M2_ticks_to_move = 30; //OK
+	
+	straightTransition = false;
+	rotateTransition = true;
+	distsub = 1;
+	
+	pid.control(1,1);
+	motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		
+	stopIfFault();
+	delay(10);
+	stopIfReached();
+}
+
+// Move backwards a little if the robot is too close to an obstacle in front.
+void Movement::backwards()
+{
+	pid.setZero();
+	Serial.println("Moving backwards for correction.");
+	pid.M1_ticks_diff = 0;
+	pid.M2_ticks_diff = 0;
+	
+	pid.M1_ticks_to_move = 30; //OK
+	pid.M2_ticks_to_move = 30; //OK
+	
+	straightTransition = false;
+	rotateTransition = true;
+	distsub = 1;
+	
+	pid.control(-1,-1);
+	motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		
+	stopIfFault();
+	delay(10);
+	stopIfReached();
+}
+
 // Rotate Left 90 Degrees.
 void Movement::rotate90left()
 {
@@ -217,7 +267,6 @@ void Movement::rotate180()
 void Movement::rotate3left()
 {
 	pid.setZero();
-	
 	Serial.println("Tilting left for correction.");
 	pid.M1_ticks_to_move = 10; //TO ADJUST
 	pid.M2_ticks_to_move = 10; //TO ADJUST
@@ -241,7 +290,6 @@ void Movement::rotate3left()
 void Movement::rotate3right()
 {
 	pid.setZero();
-	
 	Serial.println("Tilting right for correction.");
 	pid.M1_ticks_to_move = 10; //TO ADJUST
 	pid.M2_ticks_to_move = 10; //TO ADJUST
@@ -352,6 +400,34 @@ void Movement::stopIfRotated()
 	}
 }
 
+// Check if the robot is too close to the front, perform corrections if it is.
+void::Movement::frontObstacleCheck()
+{
+	// Read in the sensor values.
+	sensor.readSensor();
+	
+	// Check the distance values of the front mounted sensors.
+	sensorFrontLeft = sensor.distanceA0;
+	sensorFrontMiddle = sensor.distanceA1;
+	sensorFrontRight = sensor.distanceA2;
+	
+	// Compare the front left and front right sensors.
+	if(sensorFrontLeft < 11 and sensorFrontRight < 11)
+	{
+		Serial.println("Too close to front.");
+		
+		// Wait a short while between the two movements.
+		delay(50);
+		backwards();
+	}
+	else if(sensorFrontLeft > 12 and sensorFrontLeft < 17 and sensorFrontRight > 12 and sensorFrontRight < 17)
+	{
+		Serial.println("Too far from front.");
+		delay(50);
+		forwardsLittle();
+	}
+}
+
 // Perform right wall hugging.
 // Check if the analog values of right mounted sensors are equal, perform corrections if not.
 void Movement::rightWallCheckTilt()
@@ -368,20 +444,18 @@ void Movement::rightWallCheckTilt()
 	// Tilt must be significant enough for sensors to detect at least 1cm difference.
 	
 	// If the robot is tilted left.
-	if(sensorRightFront > sensorRightRear)
+	if(((sensorRightFront - sensorRightRear) > 2) and sensorRightFront < 20 and sensorRightRear < 20)
 	{
 		Serial.println("Tilted left.");
-		
-		// Wait a short while between the two movements.
-		delay(100);
+		delay(50);
 		rotate3right();
 	}
 	
 	// If the robot is tilted right.
-	else if(sensorRightFront < sensorRightRear)
+	else if(((sensorRightFront - sensorRightRear) > 2))
 	{
 		Serial.println("Tilted right.");
-		delay(100);
+		delay(50);
 		rotate3left();
 	}
 	
