@@ -433,7 +433,7 @@ void Movement::frontDistanceCheck()
 	
 	Serial.print("Left Front sensor: "); Serial.print(sensorFrontLeft); Serial.print(", Right Front sensor: "); Serial.print(sensorFrontRight); Serial.print(" Error: ");Serial.println(error); 
 	
-	while(abs(error) > error_margin)
+	while(abs(error) > error_margin and sensorFrontLeft < 17 and sensorFrontRight < 17)
 	{
 		// Compare the front left and front right sensors.
 		if(error < 0)
@@ -481,9 +481,9 @@ void Movement::frontWallCheckTilt()
 	
 	Serial.print("Left Front sensor: "); Serial.print(sensorFrontLeft); Serial.print(", Right Front sensor: "); Serial.print(sensorFrontRight); Serial.print(" Error: ");Serial.println(error); 
 	
-	while(abs(error) > error_margin)
+	while(abs(error) > error_margin and sensorFrontLeft < 20 and sensorFrontRight < 20)
 	{
-		if(error > 0 and sensorFrontLeft < 20 and sensorFrontLeft < 20)
+		if(error > 0 )
 		{
 			Serial.println("Tilted left.");
 			delay(20);
@@ -491,7 +491,7 @@ void Movement::frontWallCheckTilt()
 		}
 		
 		// If the robot is tilted right.
-		else if(error < 0 and sensorFrontLeft < 20 and sensorFrontLeft < 20)
+		else if(error < 0 )
 		{
 			Serial.println("Tilted right.");
 			delay(20);
@@ -533,7 +533,7 @@ void Movement::rightWallCheckTilt()
 	
 	Serial.print("Right front sensor: "); Serial.print(sensorRightFront); Serial.print(", Right back sensor: "); Serial.print(sensorRightRear); Serial.print(" Error: ");Serial.println(error); 
 	
-	while(abs(error) > error_margin)
+	while(abs(error) > error_margin and sensorRightFront < 20 and sensorRightRear < 20)
 	{
 		// Check the distance values of the right mounted sensors.
 		Serial.print("Right front sensor: "); Serial.print(sensorRightFront); Serial.print(", Right back sensor: "); Serial.println(sensorRightRear);
@@ -542,7 +542,7 @@ void Movement::rightWallCheckTilt()
 		// Tilt must be significant enough for sensors to detect at least 1cm difference.
 		
 		// If the robot is tilted left.
-		if(error > 0 and sensorRightFront < 20 and sensorRightRear < 20)
+		if(error > 0)
 		{
 			Serial.println("Tilted left.");
 			delay(20);
@@ -550,7 +550,7 @@ void Movement::rightWallCheckTilt()
 		}
 		
 		// If the robot is tilted right.
-		else if(error < 0 and sensorRightFront < 20 and sensorRightRear < 20)
+		else if(error < 0)
 		{
 			Serial.println("Tilted right.");
 			delay(20);
