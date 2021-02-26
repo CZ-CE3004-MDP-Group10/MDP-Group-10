@@ -14,7 +14,7 @@ class Movement
 	PID pid;
 	Sensors sensor;
 	
-	// Movement variables.
+	// Movement and sensor value variables.
 	int distsub;
 	int distsubConstant;
 	float sensorRightFront;
@@ -22,29 +22,35 @@ class Movement
 	float sensorFrontLeft;
 	float sensorFrontMiddle;
 	float sensorFrontRight;
+	
+	// Movement transition boolean variables.
 	boolean straightTransition;
 	boolean rotateTransition;
 	boolean loopSwitchCase;
 	
-	// Movement functions.
+	// Movement and correction functions.
 	void init(void);
 	void forwards();
-	void forwardsLittle();
-	void backwards();
 	void rotate90left();
 	void rotate90right();
 	void rotate180();
-	void rotate3left();
-	void rotate3right();
 	void stopIfReached();
 	void stopIfRotated();
-	void calibrate();
-	void frontObstacleCheck();
-	void frontDistanceCheck();
-	void frontWallCheckTilt();
-	void rightWallCheckTilt();
 	void stopIfFault();
 	void readSensor();
 	void right_tick_increment();
 	void left_tick_increment();
+	
+	// Movement positioning error correction functions.
+	void calibrate();
+	void forwardsLittle();
+	void backwards();
+	void rotate3left();
+	void rotate3right();
+	
+	// Movement positioning error detection functions.
+	void frontObstacleCheck();
+	void frontDistanceCheck();
+	void frontWallCheckTilt();
+	void rightWallCheckTilt();
 };

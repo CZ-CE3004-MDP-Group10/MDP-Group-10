@@ -1,5 +1,6 @@
-
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
+// EXPLORATION AND IMAGE RECOGNITION NAVIGATION MAIN FILE.
+
 // CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
 // ENSURE BATTERY IS FULLY CHARGED BEFORE STARTING NAVIGATION.
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
@@ -63,9 +64,12 @@ void loop()
     // Read up to the entire string that is passed in up to the newline character.
     data = Serial.readStringUntil("\n");
     
-    // Need to ignore the header "ARD|", start reading from the fourth character onwards.
-    if(data.substring(0,3) == "ARD")
-      data = data.substring(4);
+    // Check if the first 4 characters are "ARD|", indicating they are for Arduino.
+    if(data.substring(0,4) == "ARD|")
+    {
+		// Take only the substring starting from the 5th character onwards.
+		data = data.substring(4);
+	}
     
     // Capture the first character indicating the direction to move.
     readChar = data.charAt(0);
