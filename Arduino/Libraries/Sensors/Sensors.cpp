@@ -6,21 +6,15 @@
 // Define sensor variables.
 void Sensors::init()
 {
-	sensorA0 = 0;   // Proximity Sensor 1 on board - FRONT LEFT SENSOR.
-	sensorA1 = 0;   // Proximity Sensor 2 on board - FRONT MIDDLE SENSOR.
-	sensorA2 = 0;   // Proximity Sensor 3 on board - FRONT RIGHT SENSOR.
-	sensorA3 = 0;   // Proximity Sensor 4 on board - RIGHT SIDE FRONT SENSOR.
-	sensorA4 = 0;   // Proximity Sensor 5 on board - RIGHT SIDE BACK SENSOR.
-	sensorA5 = 0;   // Proximity Sensor 6 on board - FACING LEFT LONG RANGE SENSOR.
 	count = 0;
 	
 	// Float variables to hold the voltage value of the sensor outputs.
-	sensorA0_avg = 0.0;
-	sensorA1_avg = 0.0;
-	sensorA2_avg = 0.0;
-	sensorA3_avg = 0.0;
-	sensorA4_avg = 0.0;
-	sensorA5_avg = 0.0;
+	sensorA0_avg = 0.0;		// Proximity Sensor 1 on board - FRONT LEFT SENSOR.
+	sensorA1_avg = 0.0;		// Proximity Sensor 2 on board - FRONT MIDDLE SENSOR.
+	sensorA2_avg = 0.0;		// Proximity Sensor 3 on board - FRONT RIGHT SENSOR.
+	sensorA3_avg = 0.0;		// Proximity Sensor 4 on board - RIGHT SIDE FRONT SENSOR.
+	sensorA4_avg = 0.0;		// Proximity Sensor 5 on board - RIGHT SIDE BACK SENSOR.
+	sensorA5_avg = 0.0;		// Proximity Sensor 6 on board - FACING LEFT LONG RANGE SENSOR.
 
 	// Float variables to hold the converted distance based on sensor analog value.
 	distanceA0 = 0.0;
@@ -34,21 +28,22 @@ void Sensors::init()
 // Read and obtain the average of all sensor's analog values.
 void Sensors::readSensor()
 {
+	sensorA0_avg = 0;
+	sensorA1_avg = 0;
+	sensorA2_avg = 0;
+	sensorA3_avg = 0;
+	sensorA4_avg = 0;
+	sensorA5_avg = 0;
+	
 	for(count = 0; count < 20; count++)
 	{
 		// Read the analog value of each sensor and accumulate them for averaging.
-		sensorA0 = analogRead(A0);
-		sensorA0_avg += sensorA0;
-		sensorA1 = analogRead(A1);
-		sensorA1_avg += sensorA1;
-		sensorA2 = analogRead(A2);
-		sensorA2_avg += sensorA2;
-		sensorA3 = analogRead(A3);
-		sensorA3_avg += sensorA3;
-		sensorA4 = analogRead(A4);
-		sensorA4_avg += sensorA4;
-		sensorA5 = analogRead(A5);
-		sensorA5_avg += sensorA5;
+		sensorA0_avg += analogRead(A0);
+		sensorA1_avg += analogRead(A1);
+		sensorA2_avg += analogRead(A2);
+		sensorA3_avg += analogRead(A3);
+		sensorA4_avg += analogRead(A4);
+		sensorA5_avg += analogRead(A5);
 	}
   
 	// Obtain the average of the values of each sensor.
@@ -113,20 +108,6 @@ void Sensors::doOffsets()
 	if(distanceA5 < 0) { distanceA5 = 100; }
 
 	print();	
-	reset();
-}
-
-// Reset the sensor values to their defaults.
-void Sensors::reset()
-{
-	// Reset the counter and variables.
-	count = 0;
-	sensorA0_avg = 0;
-	sensorA1_avg = 0;
-	sensorA2_avg = 0;
-	sensorA3_avg = 0;
-	sensorA4_avg = 0;
-	sensorA5_avg = 0;
 }
 
 // Print and send the string over to algorithm.

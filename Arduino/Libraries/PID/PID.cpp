@@ -21,8 +21,8 @@ void PID::init()
 	Total_M2_moved = 0;
 	M1_ticks_to_move = 0;    	// Individual number of ticks to move is specified in each scenario.
 	M2_ticks_to_move = 0;
-	M1_setpoint_ticks = 10;    	// Number of ticks before each iteration of PID controller, also controls motor speed.
-	M2_setpoint_ticks = 10;    	// A larger value here corresponds to the robot moving faster.
+	M1_setpoint_ticks = 8;    	// Number of ticks before each iteration of PID controller, also controls motor speed.
+	M2_setpoint_ticks = 8;    	// A larger value here corresponds to the robot moving faster.
 
 	// Proportional Integral Derivative (PID) controller.
 	M1_ticks_PID = 0;
