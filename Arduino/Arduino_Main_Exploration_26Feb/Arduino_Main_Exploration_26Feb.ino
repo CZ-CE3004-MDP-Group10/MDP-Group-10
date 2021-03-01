@@ -49,7 +49,9 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Introduce an initial delay to prevent power up surges from interfering.
-  delay(2000);  
+  delay(2000);
+
+  Serial.println("Robot Ready.");
   
   // Send initial string of sensor readings when the robot is ready and initialized.
   robot.readSensor();
@@ -86,7 +88,7 @@ void loop()
     waitingInput = false;
 
     // Acknowledgement string to send back to the Raspberry Pi.
-    Serial.print("ALG|MOV|"); Serial.println(readChar);
+    //Serial.print("ALG|MOV|"); Serial.println(readChar);
   }
   
   // Read and execute the input command given.

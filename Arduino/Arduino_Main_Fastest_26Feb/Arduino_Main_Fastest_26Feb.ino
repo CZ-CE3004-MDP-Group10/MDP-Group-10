@@ -25,9 +25,9 @@ boolean waitingInput = true;    // Determines if the robot is waiting for input 
 // PID, sensor and motor shield objects are created in the movement file.
 Movement robot;
 
-String data;
-String queue[100];
-int qcount = 0;
+String receiveData;
+String subData;
+int count = 4;
 
 // SETUP.
 void setup()
@@ -54,89 +54,38 @@ void setup()
   
   // Send initial string of sensor readings when the robot is ready and initialized.
   robot.readSensor();
+
+  Serial.println("Robot Ready.");
 }
 
 // LOOPING.
 void loop()
-{ 
+{
   // Check if data has been received at the serial link (USB).
   while(waitingInput)
   {
-    if(queue[0] == NULL)
+    //Serial.println("Enter condition");
+    if(receiveData == NULL and Serial.available() > 0)
     {
-      //Serial.println("Enter condition");
-      if(Serial.available() > 0)
-      {
-        data = Serial.readStringUntil("\n");
-
-        // Check if the first 4 characters are "ARD|", indicating they are for Arduino.
-        if(data.substring(0,4) == "ARD|")
-        {
-          // Take only the substring starting from the 5th character onwards.
-          data = data.substring(4);
-        }
-        char fastestPathQueue[100];
-        data.toCharArray(fastestPathQueue,100);
-        
-        char *queuePointer = fastestPathQueue;
-        char *command;
-        
-        // Read up to the entire string that is passed in up to the newline character.
-        //data = Serial.readStringUntil("\n");
-    
-        int count = 0;
-        while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL) // delimiter is the semicolon
-        {
-          Serial.println(command);
-          queue[count] = command;
-          count += 1;
-        }
-        /*
-        Serial.println("Put inside array");
-        
-        for(int i = 0 ; i < 100 ; i++)
-        {
-          if(queue[i] == NULL)
-          {
-            break;
-          }
-          Serial.println(queue[i]);
-        }*/
-
-      }
+      receiveData = Serial.readStringUntil("\n");
+      Serial.print("Data read in: "); Serial.println(receiveData);
     }
-    else
+    else if(receiveData != NULL)
     {
       delay(500);
+      
+      subData = receiveData.substring(count, count+2);
+      Serial.print("Substring obtained: "); Serial.println(subData);
+      readChar = subData.charAt(0);
 
-      if(queue[qcount] == NULL)
+      if(readChar == '\n')
       {
-        for(int i = 0 ; i <= qcount; i++)
-        {
-          queue[i] = "";
-        }
-        
-        qcount = 0;
+        count = 4;
+        receiveData = "";
         continue;
       }
-      
-      data = queue[qcount];
-      qcount += 1;
-      
-      // Need to ignore the header "ARD|", start reading from the fourth character onwards.
-      //data = data.substring(4);
-      
-      // Capture the first character indicating the direction to move.
-      //data = queue[];
-      readChar = data.charAt(0);
-  
-      // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
-      // Capture the second integer in the string for number of steps to move.
-      robot.distsub = data.substring(1).toInt();
-  
-      // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
-      // Comment the above line of code and uncomment this line below, or vice versa.
-      //distsub = 1;
+      robot.distsub = subData.substring(1).toInt();
+      count += 2;
       
       // Robot has received a command and does not need to wait for further input.
       waitingInput = false;
@@ -144,17 +93,17 @@ void loop()
       // Acknowledgement string to send back to the Raspberry Pi.
       Serial.print("ALG|MOV|"); Serial.println(readChar);
     }
-  }
   
   // Read and execute the input command given.
   // NOTE: Decrementing of this value 'distsub' is done in the 'stopIfReached()' and 'stopIfRotated()' functions.
   switch(readChar)
   {
     // Move forward.
-    case 'F': robot.forwards();
+    case 'F': Serial.println("Going to move forwards now.");
+              robot.forwards();
               // The robot needs to stop and wait for the next commmand after finishing its current one.
               waitingInput = true;
-              Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
+              Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
               // Insert while loop here for fixed number of iterations for tilt checking.
               //robot.calibrate();
               readChar = " ";
@@ -184,6 +133,7 @@ void loop()
               readChar = " ";
               break;
   }
+}
 }
 
 // INTERRUPT HANDLERS TO INCREMENT THE MOTOR ENCODER TICK COUNTERS.
