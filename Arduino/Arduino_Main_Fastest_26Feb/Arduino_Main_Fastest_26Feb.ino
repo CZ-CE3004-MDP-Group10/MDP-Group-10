@@ -68,6 +68,13 @@ void loop()
       if(Serial.available() > 0)
       {
         data = Serial.readStringUntil("\n");
+
+        // Check if the first 4 characters are "ARD|", indicating they are for Arduino.
+        if(data.substring(0,4) == "ARD|")
+        {
+          // Take only the substring starting from the 5th character onwards.
+          data = data.substring(4);
+        }
         char fastestPathQueue[100];
         data.toCharArray(fastestPathQueue,100);
         
@@ -80,7 +87,7 @@ void loop()
         int count = 0;
         while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL) // delimiter is the semicolon
         {
-          //Serial.println(command);
+          Serial.println(command);
           queue[count] = command;
           count += 1;
         }
@@ -149,9 +156,7 @@ void loop()
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
               // Insert while loop here for fixed number of iterations for tilt checking.
-              //robot.rightWallCheckTilt();
-              //robot.frontObstacleCheck();
-              //robot.rightWallCheckTilt();
+              //robot.calibrate();
               readChar = " ";
               break;
 
@@ -159,9 +164,7 @@ void loop()
     case 'L': robot.rotate90left();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.rightWallCheckTilt();
-              //robot.frontObstacleCheck();
-              //robot.rightWallCheckTilt();
+              //robot.calibrate();
               readChar = " ";
               break;
 
@@ -169,9 +172,7 @@ void loop()
     case 'R': robot.rotate90right();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.rightWallCheckTilt();
-              //robot.frontObstacleCheck();
-              //robot.rightWallCheckTilt();
+              //robot.calibrate();
               readChar = " ";
               break;
 
@@ -179,9 +180,7 @@ void loop()
     case 'B': robot.rotate180();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.rightWallCheckTilt();
-              //robot.frontObstacleCheck();
-              //robot.rightWallCheckTilt();
+              //robot.calibrate();
               readChar = " ";
               break;
   }
