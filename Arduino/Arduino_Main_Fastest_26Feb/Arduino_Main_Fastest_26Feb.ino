@@ -1,6 +1,4 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
-// FASTEST PATH NAVIGATION MAIN FILE.
-
 // CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
 // ENSURE BATTERY IS FULLY CHARGED BEFORE STARTING NAVIGATION.
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
@@ -27,12 +25,8 @@ boolean waitingInput = true;    // Determines if the robot is waiting for input 
 // PID, sensor and motor shield objects are created in the movement file.
 Movement robot;
 
-// Variables for processing of queue command.
 String data;
 String queue[100];
-char fastestPathQueue[100];
-char *queuePointer = fastestPathQueue;
-char *command;
 int qcount = 0;
 
 // SETUP.
@@ -65,62 +59,60 @@ void setup()
 // LOOPING.
 void loop()
 { 
-  // While the Arduino is waiting for an input queue of commands.
+  // Check if data has been received at the serial link (USB).
   while(waitingInput)
   {
-	// If there is no data in the first element of the queue string array.
-	// This IF portion runs once after startup to get the command queue string.
     if(queue[0] == NULL)
     {
-	  // Check if data has been received at the serial link (USB).
+      //Serial.println("Enter condition");
       if(Serial.available() > 0)
       {
-		// Read in the whole queue command.
         data = Serial.readStringUntil("\n");
-		
-		// Convert the string into a character array.
+        char fastestPathQueue[100];
         data.toCharArray(fastestPathQueue,100);
         
-		// Set the pointer to point to the first element of the character array.
-        *queuePointer = fastestPathQueue;
+        char *queuePointer = fastestPathQueue;
+        char *command;
         
         // Read up to the entire string that is passed in up to the newline character.
         //data = Serial.readStringUntil("\n");
     
         int count = 0;
-		
-		// While there are still elements in the character array.
-		// The delimiter in this case is the comma.
-        while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL)
+        while ((command = strtok_r(queuePointer, ",", &queuePointer)) != NULL) // delimiter is the semicolon
         {
           //Serial.println(command);
-		  // Assign the next command into the next element of the queue string array.
           queue[count] = command;
           count += 1;
         }
+        /*
+        Serial.println("Put inside array");
+        
+        for(int i = 0 ; i < 100 ; i++)
+        {
+          if(queue[i] == NULL)
+          {
+            break;
+          }
+          Serial.println(queue[i]);
+        }*/
+
       }
     }
-	// If there is data in the first element of the queue string array.
-	// This ELSE portion runs every other subsequent iteration to process the commands given in the queue.
     else
     {
       delay(500);
 
-	  // Once all the commands in the queue have been executed.
       if(queue[qcount] == NULL)
       {
-		// Remove all previous data from the command queue and reset the counter.
         for(int i = 0 ; i <= qcount; i++)
         {
           queue[i] = "";
         }
+        
         qcount = 0;
-		
-		// Go back to the start of the program to wait for another command queue string.
         continue;
       }
       
-	  // Move to the next command in the queue string array and increment the counter.
       data = queue[qcount];
       qcount += 1;
       
@@ -143,7 +135,7 @@ void loop()
       waitingInput = false;
   
       // Acknowledgement string to send back to the Raspberry Pi.
-      //Serial.print("ALG|MOV|"); Serial.println(readChar);
+      Serial.print("ALG|MOV|"); Serial.println(readChar);
     }
   }
   
@@ -157,32 +149,40 @@ void loop()
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
               // Insert while loop here for fixed number of iterations for tilt checking.
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
-			  // robot.calibrate();
               break;
 
     // Rotate to the left by 90 degrees.
     case 'L': robot.rotate90left();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
-			  // robot.calibrate();
               break;
 
     // Rotate to the right by 90 degrees.
     case 'R': robot.rotate90right();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
-			  // robot.calibrate();
               break;
 
     // Rotate 180 degrees from the left.
     case 'B': robot.rotate180();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              //robot.rightWallCheckTilt();
+              //robot.frontObstacleCheck();
+              //robot.rightWallCheckTilt();
               readChar = " ";
-			  // robot.calibrate();
               break;
   }
 }
