@@ -25,9 +25,9 @@ boolean waitingInput = true;    // Determines if the robot is waiting for input 
 // PID, sensor and motor shield objects are created in the movement file.
 Movement robot;
 
-String receiveData;
-String subData;
-int count = 4;
+String receiveData; // Holds the entire string of commands received.
+String subData;     // Holds the substring of an individual command extracted from the main string.
+int count = 4;      // Counter to track the position of the command being read from the string.
 
 // SETUP.
 void setup()
@@ -54,8 +54,6 @@ void setup()
   
   // Send initial string of sensor readings when the robot is ready and initialized.
   robot.readSensor();
-  
-  delay(2000);
   Serial.println("ALG|Robot Ready.");
 }
 
@@ -65,37 +63,46 @@ void loop()
   // Check if data has been received at the serial link (USB).
   while(waitingInput)
   {
+    // If the string is empty and there is serial data received.
     if(receiveData == NULL and Serial.available() > 0)
     {
       receiveData = Serial.readStringUntil("\n");
       //Serial.print("Data read in: "); Serial.println(receiveData);
-      //delay(50);
       continue;
     }
+    // As long as the string is not empty, split it into individual commands.
     else if(receiveData != NULL)
     {
+      // Delay here allowsone movement to stop before commencing another.
       delay(500);
-      
+
+      // Extract the next command from the main string.
       subData = receiveData.substring(count, count+2);
       //Serial.print("ALG|Movement Performed: "); Serial.println(subData);
+
+      // Read the movement character command.
       readChar = subData.charAt(0);
 
+      // If the character read is null, the end of the main string has been reached.
       if(readChar == '\n')
       {
         Serial.println("Reached end of command string.");
+
+        // Clear all the contents of the main string and reset the counter.
         count = 4;
         receiveData = "";
         readChar = ' ';
         continue;
       }
+
+      // Extract the number of steps to move for the given direction command.
       robot.distsub = subData.substring(1).toInt();
       count += 2;
       
       // Robot has received a command and does not need to wait for further input.
       waitingInput = false;
   
-      // Acknowledgement string to send back to the Raspberry Pi.
-      Serial.println("");
+      // Acknowledgement string to send back to the algorithm.
       Serial.print("ALG|MOV|"); Serial.print(readChar); Serial.println(robot.distsub);
     }
   
@@ -107,10 +114,17 @@ void loop()
       case 'F': robot.forwards();
                 // The robot needs to stop and wait for the next commmand after finishing its current one.
                 waitingInput = true;
+
+                // Acknowlegdement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
-                // Insert while loop here for fixed number of iterations for tilt checking.
+                
+                // Perform movement corrections for tilt and forward position.
                 robot.calibrate();
+
+                // Reset the command character to break out of the switch case.
                 readChar = " ";
+
+                // Read and print the sensor values to detect obstacles in the surroundings, sending it to algorithm.
                 robot.readSensor();
                 break;
   

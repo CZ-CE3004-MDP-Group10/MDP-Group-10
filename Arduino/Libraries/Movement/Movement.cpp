@@ -329,6 +329,14 @@ void Movement::stopIfReached()
 
 		// Decrement the number of steps left to travel.
 		distsub--;
+		
+		// If the robot moves too close to an obstacle in front when moving forwards,
+		// Set the 'distsub' to zero, apply the brakes and perform subsequent corrections.
+		sensor.readSensor();
+		if(sensor.distanceA0 < 15 or sensor.distanceA1 < 15 or sensor.distanceA2 < 15)
+		{
+			distsub = 0;
+		}
 
 		// The robot should only apply the brakes when it has finished the last step.
 		// The robot should only stop and wait for a command after its last step.
