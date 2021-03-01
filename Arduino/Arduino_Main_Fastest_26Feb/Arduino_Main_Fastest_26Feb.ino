@@ -54,8 +54,9 @@ void setup()
   
   // Send initial string of sensor readings when the robot is ready and initialized.
   robot.readSensor();
-
-  Serial.println("Robot Ready.");
+  
+  delay(2000);
+  Serial.println("ALG|Robot Ready.");
 }
 
 // LOOPING.
@@ -64,24 +65,27 @@ void loop()
   // Check if data has been received at the serial link (USB).
   while(waitingInput)
   {
-    //Serial.println("Enter condition");
     if(receiveData == NULL and Serial.available() > 0)
     {
       receiveData = Serial.readStringUntil("\n");
-      Serial.print("Data read in: "); Serial.println(receiveData);
+      //Serial.print("Data read in: "); Serial.println(receiveData);
+      //delay(50);
+      continue;
     }
     else if(receiveData != NULL)
     {
       delay(500);
       
       subData = receiveData.substring(count, count+2);
-      Serial.print("Substring obtained: "); Serial.println(subData);
+      //Serial.print("ALG|Movement Performed: "); Serial.println(subData);
       readChar = subData.charAt(0);
 
       if(readChar == '\n')
       {
+        Serial.println("Reached end of command string.");
         count = 4;
         receiveData = "";
+        readChar = ' ';
         continue;
       }
       robot.distsub = subData.substring(1).toInt();
@@ -91,49 +95,53 @@ void loop()
       waitingInput = false;
   
       // Acknowledgement string to send back to the Raspberry Pi.
-      Serial.print("ALG|MOV|"); Serial.println(readChar);
+      Serial.println("");
+      Serial.print("ALG|MOV|"); Serial.print(readChar); Serial.println(robot.distsub);
     }
   
-  // Read and execute the input command given.
-  // NOTE: Decrementing of this value 'distsub' is done in the 'stopIfReached()' and 'stopIfRotated()' functions.
-  switch(readChar)
-  {
-    // Move forward.
-    case 'F': Serial.println("Going to move forwards now.");
-              robot.forwards();
-              // The robot needs to stop and wait for the next commmand after finishing its current one.
-              waitingInput = true;
-              Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
-              // Insert while loop here for fixed number of iterations for tilt checking.
-              //robot.calibrate();
-              readChar = " ";
-              break;
-
-    // Rotate to the left by 90 degrees.
-    case 'L': robot.rotate90left();
-              waitingInput = true;
-              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.calibrate();
-              readChar = " ";
-              break;
-
-    // Rotate to the right by 90 degrees.
-    case 'R': robot.rotate90right();
-              waitingInput = true;
-              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.calibrate();
-              readChar = " ";
-              break;
-
-    // Rotate 180 degrees from the left.
-    case 'B': robot.rotate180();
-              waitingInput = true;
-              Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-              //robot.calibrate();
-              readChar = " ";
-              break;
+    // Read and execute the input command given.
+    // NOTE: Decrementing of this value 'distsub' is done in the 'stopIfReached()' and 'stopIfRotated()' functions.
+    switch(readChar)
+    {
+      // Move forward.
+      case 'F': robot.forwards();
+                // The robot needs to stop and wait for the next commmand after finishing its current one.
+                waitingInput = true;
+                Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
+                // Insert while loop here for fixed number of iterations for tilt checking.
+                robot.calibrate();
+                readChar = " ";
+                robot.readSensor();
+                break;
+  
+      // Rotate to the left by 90 degrees.
+      case 'L': robot.rotate90left();
+                waitingInput = true;
+                Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+                robot.calibrate();
+                readChar = " ";
+                robot.readSensor();
+                break;
+  
+      // Rotate to the right by 90 degrees.
+      case 'R': robot.rotate90right();
+                waitingInput = true;
+                Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+                robot.calibrate();
+                readChar = " ";
+                robot.readSensor();
+                break;
+  
+      // Rotate 180 degrees from the left.
+      case 'B': robot.rotate180();
+                waitingInput = true;
+                Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+                robot.calibrate();
+                readChar = " ";
+                robot.readSensor();
+                break;
+    }
   }
-}
 }
 
 // INTERRUPT HANDLERS TO INCREMENT THE MOTOR ENCODER TICK COUNTERS.
