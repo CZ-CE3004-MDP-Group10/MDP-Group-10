@@ -6,7 +6,6 @@
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
 
 // Include libraries.
-//#include <DualVNH5019MotorShield.h>
 #include <EnableInterrupt.h>
 #include <Movement.h>
 // PID, sensor and motor shield libraries are included in the movement library.
@@ -25,7 +24,7 @@ char readChar = ' ';            // Command character indicating the direction to
 boolean waitingInput = true;    // Determines if the robot is waiting for input from serial link.
 String data;
 
-// PID, sensor and motor shield objects are created in the movement file.
+// PID, sensor, motor shield, movement and correction objects are created in the movement file.
 Movement robot;
 
 // SETUP.
@@ -50,11 +49,10 @@ void setup()
 
   // Introduce an initial delay to prevent power up surges from interfering.
   delay(2000);
-
-  Serial.println("Robot Ready.");
   
   // Send initial string of sensor readings when the robot is ready and initialized.
   robot.readSensor();
+  Serial.println("ALG|Robot Ready.");
 }
 
 // LOOPING.
@@ -104,7 +102,7 @@ void loop()
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
 
               // Perform movement corrections for tilt and forward position.
-              robot.calibrate();
+              //robot.calibrate();
 
               // Reset the command character to break out of the switch case.
               readChar = " ";
@@ -118,7 +116,7 @@ void loop()
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
               
-              robot.calibrate();
+              //robot.calibrate();
               readChar = " ";
               robot.readSensor();
               break;
@@ -128,7 +126,7 @@ void loop()
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
               
-              robot.calibrate();
+              //robot.calibrate();
               readChar = " ";
               robot.readSensor();
               break;
@@ -138,7 +136,7 @@ void loop()
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
               
-              robot.calibrate();
+              //robot.calibrate();
               readChar = " ";
               robot.readSensor();
               break;

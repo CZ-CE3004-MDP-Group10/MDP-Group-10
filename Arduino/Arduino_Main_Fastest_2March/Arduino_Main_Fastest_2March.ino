@@ -1,13 +1,14 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
+// FASTEST PATH MAIN FILE.
+
 // CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
 // ENSURE BATTERY IS FULLY CHARGED BEFORE STARTING NAVIGATION.
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
+// IMPORTANT: CALIBRATION IS CURRENTLY NOT BEING PERFORMED FOR FASTEST PATH RUN.
 
 // Include libraries.
-//#include <DualVNH5019MotorShield.h>
 #include <EnableInterrupt.h>
 #include <Movement.h>
-// PID, sensor and motor shield libraries are included in the movement library.
 
 // Motor M1 = Encoder E1 = Right.
 // Motor M2 = Encoder E2 = Left.
@@ -22,7 +23,7 @@
 char readChar = ' ';            // Command character indicating the direction to move.
 boolean waitingInput = true;    // Determines if the robot is waiting for input from serial link.
 
-// PID, sensor and motor shield objects are created in the movement file.
+// PID, sensor, motor shield, movement and correction objects are created in the movement file.
 Movement robot;
 
 String receiveData; // Holds the entire string of commands received.
@@ -121,40 +122,34 @@ void loop()
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
                 
                 // Perform movement corrections for tilt and forward position.
-                robot.calibrate();
+                //robot.calibrate();
 
                 // Reset the command character to break out of the switch case.
                 readChar = " ";
-
-                // Read and print the sensor values to detect obstacles in the surroundings, sending it to algorithm.
-                robot.readSensor();
                 break;
   
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                robot.calibrate();
+                //robot.calibrate();
                 readChar = " ";
-                //robot.readSensor();
                 break;
   
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                robot.calibrate();
+                //robot.calibrate();
                 readChar = " ";
-                //robot.readSensor();
                 break;
   
       // Rotate 180 degrees from the left.
       case 'B': robot.rotate180();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                robot.calibrate();
+                //robot.calibrate();
                 readChar = " ";
-                //robot.readSensor();
                 break;
     }
   }
