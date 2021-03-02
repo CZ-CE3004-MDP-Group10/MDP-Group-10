@@ -106,8 +106,13 @@ void Sensors::doOffsets()
 	if(distanceA3 < 0) { distanceA3 = 100; }
 	if(distanceA4 < 0) { distanceA4 = 100; }
 	if(distanceA5 < 0) { distanceA5 = 100; }
+	
+	// Offsets for calibration.
+	distanceA0 -= 1.9;
+	distanceA2 -= 2.7;
+	distanceA4 -= 0.4;
 
-	print();	
+	//print();	
 }
 
 // Print and send the string over to algorithm.
