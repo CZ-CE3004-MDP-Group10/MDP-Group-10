@@ -69,9 +69,9 @@ void loop()
     // Check if the first 4 characters are "ARD|", indicating they are for Arduino.
     if(data.substring(0,4) == "ARD|")
     {
-		// Take only the substring starting from the 5th character onwards.
-		data = data.substring(4);
-	}
+		  // Take only the substring starting from the 5th character onwards.
+		  data = data.substring(4);
+	  }
     
     // Capture the first character indicating the direction to move.
     readChar = data.charAt(0);
@@ -87,7 +87,7 @@ void loop()
     // Robot has received a command and does not need to wait for further input.
     waitingInput = false;
 
-    // Acknowledgement string to send back to the Raspberry Pi.
+    // Acknowledgement string to send back to the algorithm.
     //Serial.print("ALG|MOV|"); Serial.println(readChar);
   }
   
@@ -99,34 +99,48 @@ void loop()
     case 'F': robot.forwards();
               // The robot needs to stop and wait for the next commmand after finishing its current one.
               waitingInput = true;
+
+              // Acknowlegdement string to send to the Android to update the movement.
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(data.substring(1).toInt()); Serial.println("]");
-              // Insert while loop here for fixed number of iterations for tilt checking.
+
+              // Perform movement corrections for tilt and forward position.
               robot.calibrate();
+
+              // Reset the command character to break out of the switch case.
               readChar = " ";
+
+              // Read and print the sensor values to detect obstacles in the surroundings, sending it to algorithm.
+              robot.readSensor();
               break;
 
     // Rotate to the left by 90 degrees.
     case 'L': robot.rotate90left();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              
               robot.calibrate();
               readChar = " ";
+              robot.readSensor();
               break;
 
     // Rotate to the right by 90 degrees.
     case 'R': robot.rotate90right();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              
               robot.calibrate();
               readChar = " ";
+              robot.readSensor();
               break;
 
     // Rotate 180 degrees from the left.
     case 'B': robot.rotate180();
               waitingInput = true;
               Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
+              
               robot.calibrate();
               readChar = " ";
+              robot.readSensor();
               break;
   }
 }
