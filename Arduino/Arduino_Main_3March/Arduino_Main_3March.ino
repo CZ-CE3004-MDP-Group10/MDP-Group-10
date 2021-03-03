@@ -6,7 +6,7 @@
 // IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
 // IMPORTANT: CALIBRATION IS CURRENTLY NOT BEING PERFORMED FOR FASTEST PATH RUN.
 
-// Include libraries.
+// Include libraries. Movement library contains all other robot component libraries.
 #include <EnableInterrupt.h>
 #include <Movement.h>
 
@@ -51,7 +51,7 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Introduce an initial delay to prevent power up surges from interfering.
-  delay(2000);  
+  delay(2000);
   Serial.println("ALG|Robot Ready.");
 }
 
@@ -65,7 +65,7 @@ void loop()
     if(receiveData == NULL and Serial.available() > 0)
     {
       receiveData = Serial.readStringUntil("\n");
-      Serial.print("Data read in: "); Serial.println(receiveData);
+      //Serial.print("Data read in: "); Serial.println(receiveData);
       Serial.println("AND|status(Running)");
       continue;
     }
@@ -81,8 +81,6 @@ void loop()
       // If the character read is null or newline, the end of the main string has been reached.
       if(readChar == '\n' or readChar == '\0')
       {
-        //Serial.println("Reached end of command string.");
-
         // Clear all the contents of the main string and reset the counter.
         count = 4;
         receiveData = "";
@@ -93,16 +91,22 @@ void loop()
       }
       //Serial.print("Movement to perform: "); Serial.println(subData);
 
+	  // If the command is not for calibration or sensor readings.
       if(readChar != 'C' and readChar != 'S')
       {
+		// Get the number of steps the robot should move in the particular direction.
         robot.distsub = subData.substring(1).toInt();
       }
+	  
+	  // If the command is meant for calibration, check the second character of the substring.
       else if(readChar == 'C')
       {
+		// Perform front calibration.
         if(subData.charAt(1) == 'F')
         {
           readChar = 'W';
         }
+		// Perform right side calibration.
         else if(subData.charAt(1) == 'R')
         {
           readChar = 'D';
@@ -120,6 +124,7 @@ void loop()
       Serial.print("ALG|MOV|"); Serial.print(readChar); Serial.println(robot.distsub);
     }
 
+	// Set a delay between robot movements.
     delay(500);
   
     // Read and execute the input command given.
@@ -182,6 +187,7 @@ void loop()
                 readChar = " ";
                 break;
 
+	  // If an invalid character is read.
       default:  readChar = " ";
                 waitingInput = true;
                 break;

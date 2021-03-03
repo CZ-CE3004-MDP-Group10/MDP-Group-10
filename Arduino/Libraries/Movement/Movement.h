@@ -18,19 +18,14 @@ class Movement
 	int distsub;
 	int distsubConstant;
 	boolean straightTransition;
-	boolean rotateTransition;
 	boolean loopSwitchCase;
 	
 	// Movement functions.
 	void init(void);
 	void forwards();
-	void forwardsLittle();
-	void backwards();
 	void rotate90left();
 	void rotate90right();
 	void rotate180();
-	void rotate3left();
-	void rotate3right();
 	void stopIfReached();
 	void stopIfRotated();
 	void calibrate();

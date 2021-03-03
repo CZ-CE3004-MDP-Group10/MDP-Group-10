@@ -3,115 +3,7 @@
 // Include the movement header file.
 #include "Movement.h"
 
-// Move forwards a little if the robot is too far from the stopping point in front.
-void Movement::forwardsLittle()
-{
-	pid.setZero();	
-	Serial.println("Moving forwards for correction.");
-	pid.M1_ticks_diff = 0;
-	pid.M2_ticks_diff = 0;
-	
-	// Using a much smaller ticks value.
-	pid.M1_ticks_to_move = 1; //OK
-	pid.M2_ticks_to_move = 1; //OK
-	
-	straightTransition = false;
-	rotateTransition = true;
-	distsub = 1;
-	
-	pid.control(1,1);
-	
-	// Manually set motor commanded power.
-	motorShield.setSpeeds(50,50);
-	
-	// Let the motor run manually for a short period of time.
-	delay(50);
-	
-	// Apply the brakes.
-	motorShield.setBrakes(400, 400);
-		
-	//stopIfFault();
-	//delay(10);
-	//stopIfReached();
-}
-
-// Move backwards a little if the robot is too close to an obstacle in front.
-void Movement::backwards()
-{
-	pid.setZero();
-	Serial.println("Moving backwards for correction.");
-	pid.M1_ticks_diff = 0;
-	pid.M2_ticks_diff = 0;
-	
-	pid.M1_ticks_to_move = 1; //OK
-	pid.M2_ticks_to_move = 1; //OK
-	
-	straightTransition = false;
-	rotateTransition = true;
-	distsub = 1;
-	
-	pid.control(-1,-1);
-	motorShield.setSpeeds(50,50);
-	delay(50);
-	motorShield.setBrakes(400, 400);
-		
-	//stopIfFault();
-	//delay(10);
-	//stopIfReached();
-}
-
-// Rotate 3 degrees to the left if the robot is detected to be tilted right.
-void Movement::rotate3left()
-{
-	//pid.setZero();
-	Serial.println("Tilting left for correction.");
-	//pid.M1_ticks_to_move = 1; //TO ADJUST
-	//pid.M2_ticks_to_move = 1; //TO ADJUST
-
-	//rotateTransition = false;
-	//straightTransition = true;
-	//distsub = 1;
-	
-	//while(distsub > 0)
-	//{
-		// Left motor is negative and right motor is positive.
-		//pid.control(-1,1);
-		motorShield.setSpeeds(-100,100);
-		//delay(100);
-		//motorShield.setBrakes(400, 400);
-		
-		//stopIfFault();
-		//delay(5);
-		//stopIfRotated();
-	//}
-}
-
-// Rotate 3 degrees to the right if the robot is detected to be tilted left.
-void Movement::rotate3right()
-{
-	//pid.setZero();
-	Serial.println("Tilting right for correction.");
-	//pid.M1_ticks_to_move = 1; //TO ADJUST
-	//pid.M2_ticks_to_move = 1; //TO ADJUST
-
-	//rotateTransition = false;
-	//straightTransition = true;
-	//distsub = 1;
-	
-	//while(distsub > 0)
-	//{
-		// Left motor is positive and right motor is negative.
-		//pid.control(1,-1);
-		motorShield.setSpeeds(100,-100);
-		//delay(100);
-		//motorShield.setBrakes(400, 400);
-		
-		//stopIfFault();
-		//delay(5);
-		//stopIfRotated();
-	//}
-}
-
+// Calibrate the robot using the right side sensors, followed by the front sensors.
 void Movement::calibrate()
 {
 	Serial.println("Right side calibration called.");
@@ -120,7 +12,7 @@ void Movement::calibrate()
 	//rightWallCheckTilt();
 }
 
-// Check if the robot is too close to the front, perform corrections if it is.
+// Calibrate the robot using only the front sensors.
 void Movement::frontObstacleCheck()
 {
 	Serial.println("Front calibration called.");
@@ -134,7 +26,7 @@ void Movement::frontDistanceCheck()
 	Serial.println("Proceeding to calibrate the distance from front.");
 	float error = 0;
 	float error_margin = 0.1;
-	float perfDist = 11;
+	float perfDist = 12;
 	
 	Serial.println("Front distance check function called.");
 	
@@ -152,16 +44,23 @@ void Movement::frontDistanceCheck()
 		{
 			Serial.println("Comparing front left and front right.");
 			
-			// Compare the front left and front right sensors.
+			// If the robot front is too close to an obstacle.
 			if(error < 0)
 			{
-				Serial.println("Too close to front.");
-				backwards();
+				Serial.println("Too close to front. Moving backwards for correction.");
+				motorShield.setSpeeds(-100,-100);
 			}
+			// If the robot front is too far from an obstacle.
 			else if(error > 0)
 			{
-				Serial.println("Too far from front.");
-				forwardsLittle();
+				Serial.println("Too far from front. Moving forwards for correction.");
+				motorShield.setSpeeds(100,100);
+			}
+			// Once the robot front has reached the correct distance from the obstacle.
+			else
+			{
+				Serial.println("Acceptable distance from front.");
+				motorShield.setBrakes(400, 400);
 			}
 			
 			// Read in the sensor values.
@@ -184,13 +83,18 @@ void Movement::frontDistanceCheck()
 			// Compare the front left and front right sensors.
 			if(error < 0)
 			{
-				Serial.println("Too close to front.");
-				backwards();
+				Serial.println("Too close to front. Moving backwards for correction.");
+				motorShield.setSpeeds(-100,-100);
 			}
 			else if(error > 0)
 			{
-				Serial.println("Too far from front.");
-				forwardsLittle();
+				Serial.println("Too far from front. Moving forwards for correction.");
+				motorShield.setSpeeds(100,100);
+			}
+			else
+			{
+				Serial.println("Acceptable distance from front.");
+				motorShield.setBrakes(400, 400);
 			}
 			
 			// Read in the sensor values.
@@ -213,19 +117,71 @@ void Movement::frontDistanceCheck()
 			// Compare the front left and front right sensors.
 			if(error < 0)
 			{
-				Serial.println("Too close to front.");
-				backwards();
+				Serial.println("Too close to front. Moving backwards for correction.");
+				motorShield.setSpeeds(-100,-100);
 			}
 			else if(error > 0)
 			{
-				Serial.println("Too far from front.");
-				forwardsLittle();
+				Serial.println("Too far from front. Moving forwards for correction.");
+				motorShield.setSpeeds(100,100);
+			}
+			else
+			{
+				Serial.println("Acceptable distance from front.");
+				motorShield.setBrakes(400, 400);
 			}
 			
 			// Read in the sensor values.
 			sensor.readSensor();
 			error = (sensor.distanceA1 + sensor.distanceA2) / 2 - perfDist;
 		}
+	}
+}
+
+// Right wall hugging - Check if the right mounted sensor values are equal, perform corrections if not.
+void Movement::rightWallCheckTilt()
+{
+	float error = 0;
+	float error_margin = 0.1;
+	
+	// Read in the sensor values.
+	sensor.readSensor();
+	error = sensor.distanceA3 - sensor.distanceA4;
+	
+	Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4); Serial.print(" Error: ");Serial.println(error); 
+	
+	while(abs(error) > error_margin and sensor.distanceA3 < 35 and sensor.distanceA4 < 35)
+	{
+		// Perform adjustments if the values are different.
+		// Tilt must be significant enough for sensors to detect at least 1cm difference.
+		
+		// If the robot is tilted left.
+		if(error > 0)
+		{
+			Serial.println("Tilted left. Tilting right for correction.");
+			motorShield.setSpeeds(100,-100);
+		}
+		
+		// If the robot is tilted right.
+		else if(error < 0)
+		{
+			Serial.println("Tilted right. Tilting left for correction.");
+			motorShield.setSpeeds(-100,100);
+		}
+		
+		// If no tilt is detected.
+		else
+		{
+			Serial.println("No tilt detected.");
+			motorShield.setBrakes(400, 400);
+			
+		}
+		
+		// Read in the sensor values.
+		sensor.readSensor();
+		error = sensor.distanceA3 - sensor.distanceA4;
+		
+		Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4);
 	}
 }
 
@@ -249,15 +205,15 @@ void Movement::frontWallCheckTilt()
 		{
 			if(error > 0 )
 			{
-				Serial.println("Tilted left.");
-				rotate3right();
+				Serial.println("Tilted left. Tilting right for correction.");
+				motorShield.setSpeeds(100,-100);
 			}
 			
 			// If the robot is tilted right.
 			else if(error < 0 )
 			{
-				Serial.println("Tilted right.");
-				rotate3left();
+				Serial.println("Tilted right. Tilting left for correction.");
+				motorShield.setSpeeds(-100,100);
 			}
 			
 			// If no tilt is detected.
@@ -283,15 +239,15 @@ void Movement::frontWallCheckTilt()
 		{
 			if(error > 0 )
 			{
-				Serial.println("Tilted left.");
-				rotate3right();
+				Serial.println("Tilted left. Tilting right for correction.");
+				motorShield.setSpeeds(100,-100);
 			}
 			
 			// If the robot is tilted right.
 			else if(error < 0 )
 			{
-				Serial.println("Tilted right.");
-				rotate3left();
+				Serial.println("Tilted right. Tilting left for correction.");
+				motorShield.setSpeeds(-100,100);
 			}
 			
 			// If no tilt is detected.
@@ -316,15 +272,15 @@ void Movement::frontWallCheckTilt()
 		{
 			if(error > 0 )
 			{
-				Serial.println("Tilted left.");
-				rotate3right();
+				Serial.println("Tilted left. Tilting right for correction.");
+				motorShield.setSpeeds(100,-100);
 			}
 			
 			// If the robot is tilted right.
 			else if(error < 0 )
 			{
-				Serial.println("Tilted right.");
-				rotate3left();
+				Serial.println("Tilted right. Tilting left for correction.");
+				motorShield.setSpeeds(-100,100);
 			}
 			
 			// If no tilt is detected.
@@ -337,53 +293,5 @@ void Movement::frontWallCheckTilt()
 			sensor.readSensor();
 			error = sensor.distanceA1 - sensor.distanceA2;
 		}
-	}
-}
-
-// Perform right wall hugging.
-// Check if the analog values of right mounted sensors are equal, perform corrections if not.
-void Movement::rightWallCheckTilt()
-{
-	float error = 0;
-	float error_margin = 0.1;
-	
-	// Read in the sensor values.
-	sensor.readSensor();
-	error = sensor.distanceA3 - sensor.distanceA4;
-	
-	Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4); Serial.print(" Error: ");Serial.println(error); 
-	
-	while(abs(error) > error_margin and sensor.distanceA3 < 35 and sensor.distanceA4 < 35)
-	{
-		// Perform adjustments if the values are different.
-		// Tilt must be significant enough for sensors to detect at least 1cm difference.
-		
-		// If the robot is tilted left.
-		if(error > 0)
-		{
-			Serial.println("Tilted left.");
-			rotate3right();
-		}
-		
-		// If the robot is tilted right.
-		else if(error < 0)
-		{
-			Serial.println("Tilted right.");
-			rotate3left();
-		}
-		
-		// If no tilt is detected.
-		else
-		{
-			Serial.println("No tilt detected.");
-			motorShield.setBrakes(400, 400);
-			
-		}
-		
-		// Read in the sensor values.
-		sensor.readSensor();
-		error = sensor.distanceA3 - sensor.distanceA4;
-		
-		Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4);
 	}
 }

@@ -43,6 +43,7 @@ void Sensors::readSensor()
 	sensorA4_avg = 0;
 	sensorA5_avg = 0;
 	
+	// Take 20 readings from each sensor.
 	for(int count = 0; count < 20; count++)
 	{
 		// Read the analog value of each sensor and accumulate them for averaging.
@@ -54,6 +55,7 @@ void Sensors::readSensor()
 		sensorA5_list[count] = analogRead(A5);
 	}
 	
+	// Take only the middle 10 readings out of the 20 samples for each sensor.
 	for(int i = 5; i < 15; i++)
 	{
 		sensorA0_avg += sensorA0_list[i];
@@ -72,6 +74,7 @@ void Sensors::readSensor()
 	sensorA4_avg /= 10;
 	sensorA5_avg /= 10;
 	
+	// Perform analog values to distance in cm conversion.
 	doOffsets();
 }
 
@@ -131,53 +134,66 @@ void Sensors::doOffsets()
 	distanceA4 -= 0.4;
 }
 
+// Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double Sensors::calculateDist1(double dist)
 {
+	// Within blind spot.
 	if(dist < 15)
 	{
 		return -1;
 	}
+	// Too far to be detected.
 	else if(dist > 35)
 	{
 		return 0;
 	}
+	// Obstacle is 1 step away.
 	else if( dist >= 15 and dist < 25)
 	{
 		return 1;
 	}
+	// Obstacle is 2 steps away.
 	else if( dist >= 25 and dist < 35)
 	{
 		return 2;
 	}
 }
 
+// Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
 double Sensors::calculateDist2(double dist)
 {
-	if(dist < 8)
+	// Within blind spot.
+	if(dist < 15)
 	{
 		return -1;
 	}
-	else if(dist > 55)
+	// Too far to be detected.
+	else if(dist > 75)
 	{
 		return 0;
 	}
-	else if( dist >= 8 and dist < 15)
+	// Obstacle is 1 step away.
+	else if( dist >= 25 and dist < 35)
 	{
 		return 1;
 	}
-	else if( dist >= 15 and dist < 25)
+	// Obstacle is 2 steps away.
+	else if( dist >= 35 and dist < 45)
 	{
 		return 2;
 	}
-	else if( dist >= 25 and dist < 35)
+	// Obstacle is 3 steps away.
+	else if( dist >= 45 and dist < 55)
 	{
 		return 3;
 	}
-	else if( dist >= 35 and dist < 45)
+	// Obstacle is 4 steps away.
+	else if( dist >= 55 and dist < 65)
 	{
 		return 4;
 	}
-	else if( dist >= 45 and dist < 55)
+	// Obstacle is 5 steps away.
+	else if( dist >= 65 and dist < 75)
 	{
 		return 5;
 	}
@@ -194,6 +210,7 @@ void Sensors::print()
 	obstacleA4 = calculateDist1(distanceA4);
 	obstacleA5 = calculateDist2(distanceA5);
 	
+	// Return the results to algorithm.
 	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + 
 	"," + String(obstacleA4));
 	

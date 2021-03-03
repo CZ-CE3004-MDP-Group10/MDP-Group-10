@@ -12,7 +12,6 @@ void Movement::init()
 	
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
-	rotateTransition = true;
 	loopSwitchCase = true;
 }
 
@@ -42,7 +41,6 @@ void Movement::forwards()
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
-		rotateTransition = true;
 		
 		// If it is moving straight after a rotation transition, the switch case within the while
 		// Loop body for forward movement below should not run at all.
@@ -120,27 +118,15 @@ void Movement::forwards()
 void Movement::rotate90left()
 {
 	pid.setZero();
-
-	if(rotateTransition)
-	{
-		//Serial.println("First rotate left transition.");
+	//Serial.println("First rotate left transition.");
 		
-		// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
-		// The ticks to move for each motor when rotating have to be individually adjusted.
-		pid.M1_ticks_to_move = 300; //OK
-		pid.M2_ticks_to_move = 340; //OK
+	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
+	// The ticks to move for each motor when rotating have to be individually adjusted.
+	pid.M1_ticks_to_move = 300; //OK
+	pid.M2_ticks_to_move = 340; //OK
 
-		// Set the boolean variables to keep track of movement transitions.
-		rotateTransition = false;
-		straightTransition = true;
-	}
-	// If a left rotation is required immediately after a right rotation.
-	else
-	{
-		//Serial.println("Subsequent rotate left.");
-		pid.M1_ticks_to_move = 300; //OK
-		pid.M2_ticks_to_move = 340; //OK
-	}
+	// Set the boolean variables to keep track of movement transitions.
+	straightTransition = true;
 
 	while(distsub > 0)
 	{
@@ -157,23 +143,12 @@ void Movement::rotate90left()
 void Movement::rotate90right()
 {
 	pid.setZero();
+	//Serial.println("First rotate right transition.");
+		
+	pid.M1_ticks_to_move = 330; //OK
+	pid.M2_ticks_to_move = 330; //OK
 
-	if(rotateTransition)
-	{
-		//Serial.println("First rotate right transition.");
-		pid.M1_ticks_to_move = 330; //OK
-		pid.M2_ticks_to_move = 330; //OK
-
-		rotateTransition = false;
-		straightTransition = true;
-	}
-	// If a right rotation is required immediately after a left rotation.
-	else
-	{
-		//Serial.println("Subsequent rotate right.");
-		pid.M1_ticks_to_move = 330; //OK
-		pid.M2_ticks_to_move = 330; //OK
-	}
+	straightTransition = true;
 
 	while(distsub > 0)
 	{
@@ -189,13 +164,12 @@ void Movement::rotate90right()
 // Rotate Left 180 Degrees.
 void Movement::rotate180()
 {
-	//Serial.println("First rotate 180 transition.");
 	pid.setZero();
+	//Serial.println("First rotate 180 transition.");
 
 	pid.M1_ticks_to_move = 555; //OK
 	pid.M2_ticks_to_move = 733; //OK
 
-	rotateTransition = false;
 	straightTransition = true;
 	
 	while(distsub > 0)
@@ -260,12 +234,7 @@ void Movement::stopIfReached()
 		  //motorShield.setM1Brake(400);
 		  //motorShield.setM2Brake(400);
 		  motorShield.setBrakes(400, 400);
-
-		  // When the robot stops moving after its last step, read in sensor data.
-		  //sensor.readSensor();
-		  //Serial.println("AND|" + 
 		}
-
 		// Reset the tick counters.
 		pid.M1_ticks_moved = 0;
 		pid.M2_ticks_moved = 0;
@@ -304,11 +273,7 @@ void Movement::stopIfRotated()
 		  // Set the brakes on both motors simultaneously to bring the robot to a stop.
 		  // Syntax: motorShield.setBrakes(M1 right motor, M2 left motor);
 		  motorShield.setBrakes(400, 400);
-
-		  // When the robot stops moving after its last step, read in sensor data.
-		  //sensor.readSensor();
 		}
-
 		// Reset the tick counters.
 		pid.M1_ticks_moved = 0;
 		pid.M2_ticks_moved = 0;
@@ -322,12 +287,12 @@ void Movement::stopIfFault()
 	if (motorShield.getM1Fault())
 	{
 		Serial.println("Left motor fault.");
-		while(1);
+		//while(1);
 	}
 	if (motorShield.getM2Fault())
 	{
 		Serial.println("Right motor fault.");
-		while(1);
+		//while(1);
 	}
 }
 
