@@ -122,7 +122,7 @@ void Sensors::doOffsets()
 	distanceA2 -= 2.7;
 	distanceA4 -= 0.4;
 
-	//print();	
+	print();	
 }
 
 // Print and send the string over to algorithm.

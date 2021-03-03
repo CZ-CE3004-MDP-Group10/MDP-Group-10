@@ -51,7 +51,7 @@ void setup()
   delay(2000);
   
   // Send initial string of sensor readings when the robot is ready and initialized.
-  robot.readSensor();
+  //robot.readSensor();
   Serial.println("ALG|Robot Ready.");
 }
 
@@ -76,7 +76,26 @@ void loop()
 
     // FOR COMMUNICATION COMMAND WITH SYNTAX "F1".
     // Capture the second integer in the string for number of steps to move.
-    robot.distsub = data.substring(1).toInt();
+    
+  
+    if(readChar != 'C' and readChar != 'S')
+    {
+      robot.distsub = data.substring(1).toInt();
+    }
+    else if(readChar == 'C')
+    {
+      if(data.charAt(1) == 'F')
+      {
+        readChar = 'W';
+      }
+      else if(data.charAt(1) == 'R')
+      {
+        readChar = 'D';
+      }
+    }
+    
+
+    
 
     // FOR COMMUNICATION COMMAND WITH SYNTAX "F".
     // Comment the above line of code and uncomment this line below, or vice versa.
@@ -108,7 +127,7 @@ void loop()
               readChar = " ";
 
               // Read and print the sensor values to detect obstacles in the surroundings, sending it to algorithm.
-              robot.readSensor();
+              //robot.readSensor();
               break;
 
     // Rotate to the left by 90 degrees.
@@ -118,7 +137,7 @@ void loop()
               
               //robot.calibrate();
               readChar = " ";
-              robot.readSensor();
+              //robot.readSensor();
               break;
 
     // Rotate to the right by 90 degrees.
@@ -128,7 +147,7 @@ void loop()
               
               //robot.calibrate();
               readChar = " ";
-              robot.readSensor();
+              //robot.readSensor();
               break;
 
     // Rotate 180 degrees from the left.
@@ -138,8 +157,28 @@ void loop()
               
               //robot.calibrate();
               readChar = " ";
-              robot.readSensor();
+              //robot.readSensor();
               break;
+
+    // Calibrate by the front
+    case 'W': robot.frontObstacleCheck();
+              Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+              readChar = " ";
+              //robot.readSensor();
+              break;
+              
+    // Calibrate by the right
+    case 'D': robot.rightWallCheckTilt();
+              Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+              readChar = " ";
+              //robot.readSensor();
+              break;
+
+    // Command to return sensor data to Algo
+    case 'S': robot.readSensor();
+              break;
+     
+              
   }
 }
 
