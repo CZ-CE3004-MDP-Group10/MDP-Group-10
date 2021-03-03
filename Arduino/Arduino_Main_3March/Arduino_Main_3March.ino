@@ -165,7 +165,7 @@ void loop()
                 break;
 
       // Calibrate by the front.
-      case 'W': //robot.frontObstacleCheck();
+      case 'W': robot.frontObstacleCheck();
                 //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CF");
                 waitingInput = true;
@@ -173,7 +173,7 @@ void loop()
                 break;
                 
       // Calibrate by the right.
-      case 'D': //robot.rightWallCheckTilt();
+      case 'D': robot.rightWallCheckTilt();
                 //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CR");
                 waitingInput = true;

@@ -129,31 +129,34 @@ void Sensors::doOffsets()
 	if(distanceA5 < 0) { distanceA5 = 100; }
 	
 	// Offsets for calibration.
-	distanceA0 -= 1.9;
-	distanceA2 -= 2.7;
-	distanceA4 -= 0.4;
+	//distanceA0 -= 0.0;
+	//distanceA1 -= 0.0;
+	//distanceA2 -= 0.0;
+	//distanceA3 -= 0.0;
+	//distanceA4 -= 0.0;
+	//distanceA5 -= 0.0;
 }
 
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double Sensors::calculateDist1(double dist)
 {
 	// Within blind spot.
-	if(dist < 15)
+	if(dist < 10)
 	{
 		return -1;
 	}
 	// Too far to be detected.
-	else if(dist > 35)
+	else if(dist > 25)
 	{
 		return 0;
 	}
 	// Obstacle is 1 step away.
-	else if( dist >= 15 and dist < 25)
+	else if( dist >= 10 and dist < 15)
 	{
 		return 1;
 	}
 	// Obstacle is 2 steps away.
-	else if( dist >= 25 and dist < 35)
+	else if( dist >= 15 and dist < 25)
 	{
 		return 2;
 	}
@@ -214,6 +217,6 @@ void Sensors::print()
 	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + 
 	"," + String(obstacleA4));
 	
-	/*Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
-	"," + String(distanceA4));*/
+	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
+	"," + String(distanceA4));
 }
