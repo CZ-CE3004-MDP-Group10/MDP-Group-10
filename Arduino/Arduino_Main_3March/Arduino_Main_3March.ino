@@ -65,49 +65,45 @@ void loop()
     if(receiveData == NULL and Serial.available() > 0)
     {
       receiveData = Serial.readStringUntil("\n");
-      //Serial.print("Data read in: "); Serial.println(receiveData);
+      Serial.print("Data read in: "); Serial.println(receiveData);
       Serial.println("AND|status(Running)");
       continue;
     }
     // As long as the string is not empty, split it into individual commands.
     else if(receiveData != NULL)
     {
-      // Delay here allow some movement to stop before commencing another.
-      delay(500);
-
       // Extract the next command from the main string.
       subData = receiveData.substring(count, count+2);
-      //Serial.print("ALG|Movement Performed: "); Serial.println(subData);
 
       // Read the movement character command.
       readChar = subData.charAt(0);
 
-      // If the character read is null, the end of the main string has been reached.
-      // NEED TO CHANGE FROM '\0' TO '\n' WHEN DEBUGGING ON ARDUINO.
-      if(readChar == '\n')
+      // If the character read is null or newline, the end of the main string has been reached.
+      if(readChar == '\n' or readChar == '\0')
       {
         //Serial.println("Reached end of command string.");
 
         // Clear all the contents of the main string and reset the counter.
         count = 4;
         receiveData = "";
-        readChar = ' ';
-        Serial.println("Command Finished.");
+        readChar = " ";
+        Serial.println(" ");
         Serial.println("AND|status(Stopped)");
         continue;
       }
+      //Serial.print("Movement to perform: "); Serial.println(subData);
 
       if(readChar != 'C' and readChar != 'S')
       {
-        robot.distsub = receiveData.substring(1).toInt();
+        robot.distsub = subData.substring(1).toInt();
       }
       else if(readChar == 'C')
       {
-        if(receiveData.charAt(1) == 'F')
+        if(subData.charAt(1) == 'F')
         {
           readChar = 'W';
         }
-        else if(receiveData.charAt(1) == 'R')
+        else if(subData.charAt(1) == 'R')
         {
           readChar = 'D';
         }
@@ -123,6 +119,8 @@ void loop()
       // Acknowledgement string to send back to the algorithm.
       Serial.print("ALG|MOV|"); Serial.print(readChar); Serial.println(robot.distsub);
     }
+
+    delay(500);
   
     // Read and execute the input command given.
     // NOTE: Decrementing of this value 'distsub' is done in the 'stopIfReached()' and 'stopIfRotated()' functions.
@@ -135,9 +133,6 @@ void loop()
 
                 // Acknowlegdement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(subData.substring(1).toInt()); Serial.println("]");
-                
-                // Perform movement corrections for tilt and forward position.
-                //robot.calibrate();
 
                 // Reset the command character to break out of the switch case.
                 readChar = " ";
@@ -147,7 +142,6 @@ void loop()
       case 'L': robot.rotate90left();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //robot.calibrate();
                 readChar = " ";
                 break;
   
@@ -155,7 +149,6 @@ void loop()
       case 'R': robot.rotate90right();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //robot.calibrate();
                 readChar = " ";
                 break;
   
@@ -163,28 +156,34 @@ void loop()
       case 'B': robot.rotate180();
                 waitingInput = true;
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //robot.calibrate();
                 readChar = " ";
                 break;
 
       // Calibrate by the front.
-      case 'W': robot.frontObstacleCheck();
-                Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+      case 'W': //robot.frontObstacleCheck();
+                //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+                Serial.println("ALG|CF");
                 waitingInput = true;
                 readChar = " ";
                 break;
                 
       // Calibrate by the right.
-      case 'D': robot.rightWallCheckTilt();
-                Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+      case 'D': //robot.rightWallCheckTilt();
+                //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
+                Serial.println("ALG|CR");
                 waitingInput = true;
                 readChar = " ";
                 break;
   
       // Command to return sensor data to algorithm.
       case 'S': robot.readSensor();
+                robot.printSensor();
                 waitingInput = true;
                 readChar = " ";
+                break;
+
+      default:  readChar = " ";
+                waitingInput = true;
                 break;
       }
   }

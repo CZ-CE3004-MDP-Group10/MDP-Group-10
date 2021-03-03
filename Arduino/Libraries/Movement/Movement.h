@@ -40,6 +40,7 @@ class Movement
 	void rightWallCheckTilt();
 	void stopIfFault();
 	void readSensor();
+	void printSensor();
 	void right_tick_increment();
 	void left_tick_increment();
 };

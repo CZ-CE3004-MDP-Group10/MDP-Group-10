@@ -46,5 +46,6 @@ class Sensors
 	void readSensor(void);
 	void doOffsets(void);
 	void print(void);
-	double calculateDist(double dist);
+	double calculateDist1(double dist);
+	double calculateDist2(double dist);
 };

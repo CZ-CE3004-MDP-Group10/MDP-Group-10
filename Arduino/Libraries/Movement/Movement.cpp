@@ -35,10 +35,10 @@ void Movement::forwards()
 	if(straightTransition and distsub == 1)
 	{
 		// Theoretically 298 ticks moves the robot forward by approximately 10cm.
-		Serial.println("First Straight Transition.");
+		//Serial.println("First Straight Transition.");
 
-		pid.M1_ticks_to_move = 215; //OK
-		pid.M2_ticks_to_move = 215; //OK
+		pid.M1_ticks_to_move = 220; //OK
+		pid.M2_ticks_to_move = 220; //OK
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
@@ -67,28 +67,28 @@ void Movement::forwards()
 			switch(distsubConstant)
 			{
 				// When moving in a straight line, need to include correction for each number of steps.
-				case 1: pid.M1_ticks_to_move = 215 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 215 - pid.M2_ticks_diff; //OK
+				case 1: pid.M1_ticks_to_move = 220 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 220 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 1 step forward.");
 						break;
 					
-				case 2: pid.M1_ticks_to_move = 258 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 258 - pid.M2_ticks_diff; //OK
+				case 2: pid.M1_ticks_to_move = 256 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 266 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 2 steps forward.");
 						break;
 			
-				case 3: pid.M1_ticks_to_move = 270 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 273 - pid.M2_ticks_diff; //OK
+				case 3: pid.M1_ticks_to_move = 275 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 275 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 3 steps forward.");
 						break;
 			
-				case 4: pid.M1_ticks_to_move = 275 - pid.M1_ticks_diff; //OK
+				case 4: pid.M1_ticks_to_move = 279 - pid.M1_ticks_diff; //OK
 						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 4 steps forward.");
 						break;
 			
-				case 5: pid.M1_ticks_to_move = 278 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 284 - pid.M2_ticks_diff; //OK
+				case 5: pid.M1_ticks_to_move = 285 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 5 steps forward.");
 						break;
 						
@@ -123,12 +123,12 @@ void Movement::rotate90left()
 
 	if(rotateTransition)
 	{
-		Serial.println("First rotate left transition.");
+		//Serial.println("First rotate left transition.");
 		
 		// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 		// The ticks to move for each motor when rotating have to be individually adjusted.
-		pid.M1_ticks_to_move = 290; //OK
-		pid.M2_ticks_to_move = 330; //OK
+		pid.M1_ticks_to_move = 300; //OK
+		pid.M2_ticks_to_move = 340; //OK
 
 		// Set the boolean variables to keep track of movement transitions.
 		rotateTransition = false;
@@ -137,9 +137,9 @@ void Movement::rotate90left()
 	// If a left rotation is required immediately after a right rotation.
 	else
 	{
-		Serial.println("Subsequent rotate left.");
-		pid.M1_ticks_to_move = 290; //OK
-		pid.M2_ticks_to_move = 330; //OK
+		//Serial.println("Subsequent rotate left.");
+		pid.M1_ticks_to_move = 300; //OK
+		pid.M2_ticks_to_move = 340; //OK
 	}
 
 	while(distsub > 0)
@@ -160,9 +160,9 @@ void Movement::rotate90right()
 
 	if(rotateTransition)
 	{
-		Serial.println("First rotate right transition.");
-		pid.M1_ticks_to_move = 340; //OK
-		pid.M2_ticks_to_move = 340; //OK
+		//Serial.println("First rotate right transition.");
+		pid.M1_ticks_to_move = 330; //OK
+		pid.M2_ticks_to_move = 330; //OK
 
 		rotateTransition = false;
 		straightTransition = true;
@@ -170,9 +170,9 @@ void Movement::rotate90right()
 	// If a right rotation is required immediately after a left rotation.
 	else
 	{
-		Serial.println("Subsequent rotate right.");
-		pid.M1_ticks_to_move = 340; //OK
-		pid.M2_ticks_to_move = 340; //OK
+		//Serial.println("Subsequent rotate right.");
+		pid.M1_ticks_to_move = 330; //OK
+		pid.M2_ticks_to_move = 330; //OK
 	}
 
 	while(distsub > 0)
@@ -262,7 +262,7 @@ void Movement::stopIfReached()
 		  motorShield.setBrakes(400, 400);
 
 		  // When the robot stops moving after its last step, read in sensor data.
-		  sensor.readSensor();
+		  //sensor.readSensor();
 		  //Serial.println("AND|" + 
 		}
 
@@ -306,7 +306,7 @@ void Movement::stopIfRotated()
 		  motorShield.setBrakes(400, 400);
 
 		  // When the robot stops moving after its last step, read in sensor data.
-		  sensor.readSensor();
+		  //sensor.readSensor();
 		}
 
 		// Reset the tick counters.
@@ -322,12 +322,12 @@ void Movement::stopIfFault()
 	if (motorShield.getM1Fault())
 	{
 		Serial.println("Left motor fault.");
-		//while(1);
+		while(1);
 	}
 	if (motorShield.getM2Fault())
 	{
 		Serial.println("Right motor fault.");
-		//while(1);
+		while(1);
 	}
 }
 
@@ -335,6 +335,12 @@ void Movement::stopIfFault()
 void Movement::readSensor()
 {
 	sensor.readSensor();
+}
+
+// Print the sensor values in terms of distance from obstacle.
+void Movement::printSensor()
+{
+	sensor.print();
 }
 
 // Function to increment the encoder's right ticks.

@@ -112,8 +112,8 @@ void Sensors::doOffsets()
 	// SENSOR 6 CALCULATION AND OFFSETS:
 	distanceA5 = -3.3012 + (12806.428 / (sensorA5_avg - 9.81909));
 	if(distanceA5 < 25) {distanceA5 -= 1;}
-	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
-	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
+	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 10;}
+	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 10;}
 	
 	// If the distance result is less than zero due to no obstacle being within the sensor's
 	// Blind spot distance, treat it as the obstacle being 100cm away from the sensor to avoid
@@ -129,21 +129,29 @@ void Sensors::doOffsets()
 	distanceA0 -= 1.9;
 	distanceA2 -= 2.7;
 	distanceA4 -= 0.4;
-	
-	
-	
-	// Calculate the distance of the obstacle from the sensor in steps.
-	obstacleA0 = calculateDist(distanceA0);
-	obstacleA1 = calculateDist(distanceA1);
-	obstacleA2 = calculateDist(distanceA2);
-	obstacleA3 = calculateDist(distanceA3);
-	obstacleA4 = calculateDist(distanceA4);
-	obstacleA5 = calculateDist(distanceA5);
-
-	print();
 }
 
-double Sensors::calculateDist(double dist)
+double Sensors::calculateDist1(double dist)
+{
+	if(dist < 15)
+	{
+		return -1;
+	}
+	else if(dist > 35)
+	{
+		return 0;
+	}
+	else if( dist >= 15 and dist < 25)
+	{
+		return 1;
+	}
+	else if( dist >= 25 and dist < 35)
+	{
+		return 2;
+	}
+}
+
+double Sensors::calculateDist2(double dist)
 {
 	if(dist < 8)
 	{
@@ -173,15 +181,22 @@ double Sensors::calculateDist(double dist)
 	{
 		return 5;
 	}
-	
 }
 
 // Print and send the string over to algorithm.
 void Sensors::print()
 {
+	// Calculate the distance of the obstacle from the sensor in steps.
+	obstacleA0 = calculateDist1(distanceA0);
+	obstacleA1 = calculateDist1(distanceA1);
+	obstacleA2 = calculateDist1(distanceA2);
+	obstacleA3 = calculateDist1(distanceA3);
+	obstacleA4 = calculateDist1(distanceA4);
+	obstacleA5 = calculateDist2(distanceA5);
+	
 	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + 
 	"," + String(obstacleA4));
 	
-	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
-	"," + String(distanceA4));
+	/*Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
+	"," + String(distanceA4));*/
 }
