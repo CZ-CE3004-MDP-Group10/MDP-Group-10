@@ -244,7 +244,7 @@ void Movement::stopIfReached()
 		
 		// If the robot moves too close to an obstacle in front when moving forwards,
 		// Set the 'distsub' to zero, apply the brakes and perform subsequent corrections.
-		if(sensor.distanceA0 < 15 or sensor.distanceA1 < 15 or sensor.distanceA2 < 15)
+		if(sensor.distanceA0 < 10 or sensor.distanceA1 < 10 or sensor.distanceA2 < 10)
 		{
 			pid.M1_ticks_moved = pid.M1_ticks_to_move;
 			pid.M2_ticks_moved = pid.M1_ticks_to_move;
