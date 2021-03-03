@@ -23,6 +23,14 @@ void Sensors::init()
 	distanceA3 = 0.0;
 	distanceA4 = 0.0;
 	distanceA5 = 0.0;
+	
+	// Integer variables to hold the obstacle distance away in steps.
+	obstacleA0 = 0;
+	obstacleA1 = 0;
+	obstacleA2 = 0;
+	obstacleA3 = 0;
+	obstacleA4 = 0;
+	obstacleA5 = 0;
 }
 
 // Read and obtain the average of all sensor's analog values.
@@ -39,11 +47,11 @@ void Sensors::readSensor()
 	{
 		// Read the analog value of each sensor and accumulate them for averaging.
 		sensorA0_list[count] = analogRead(A0);
-		sensorA0_list[count] = analogRead(A1);
-		sensorA0_list[count] = analogRead(A2);
-		sensorA0_list[count] = analogRead(A3);
-		sensorA0_list[count] = analogRead(A4);
-		sensorA0_list[count] = analogRead(A5);
+		sensorA1_list[count] = analogRead(A1);
+		sensorA2_list[count] = analogRead(A2);
+		sensorA3_list[count] = analogRead(A3);
+		sensorA4_list[count] = analogRead(A4);
+		sensorA5_list[count] = analogRead(A5);
 	}
 	
 	for(int i = 5; i < 15; i++)
@@ -106,7 +114,7 @@ void Sensors::doOffsets()
 	if(distanceA5 < 25) {distanceA5 -= 1;}
 	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
 	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
-
+	
 	// If the distance result is less than zero due to no obstacle being within the sensor's
 	// Blind spot distance, treat it as the obstacle being 100cm away from the sensor to avoid
 	// Getting a negative value distance output.
@@ -121,13 +129,59 @@ void Sensors::doOffsets()
 	distanceA0 -= 1.9;
 	distanceA2 -= 2.7;
 	distanceA4 -= 0.4;
+	
+	
+	
+	// Calculate the distance of the obstacle from the sensor in steps.
+	obstacleA0 = calculateDist(distanceA0);
+	obstacleA1 = calculateDist(distanceA1);
+	obstacleA2 = calculateDist(distanceA2);
+	obstacleA3 = calculateDist(distanceA3);
+	obstacleA4 = calculateDist(distanceA4);
+	obstacleA5 = calculateDist(distanceA5);
 
-	print();	
+	print();
+}
+
+double Sensors::calculateDist(double dist)
+{
+	if(dist < 8)
+	{
+		return -1;
+	}
+	else if(dist > 55)
+	{
+		return 0;
+	}
+	else if( dist >= 8 and dist < 15)
+	{
+		return 1;
+	}
+	else if( dist >= 15 and dist < 25)
+	{
+		return 2;
+	}
+	else if( dist >= 25 and dist < 35)
+	{
+		return 3;
+	}
+	else if( dist >= 35 and dist < 45)
+	{
+		return 4;
+	}
+	else if( dist >= 45 and dist < 55)
+	{
+		return 5;
+	}
+	
 }
 
 // Print and send the string over to algorithm.
 void Sensors::print()
 {
-	Serial.println("ALG|" + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2)
-      + "," + String(distanceA3) + "," + String(distanceA4) + "," + String(distanceA5));
+	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + 
+	"," + String(obstacleA4));
+	
+	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
+	"," + String(distanceA4));
 }

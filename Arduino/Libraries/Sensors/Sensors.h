@@ -33,9 +33,18 @@ class Sensors
 	double distanceA4;
 	double distanceA5;
 	
+	// Integer variables to hold the obstacle distance away in steps.
+	int obstacleA0 = 0;
+	int obstacleA1 = 0;
+	int obstacleA2 = 0;
+	int obstacleA3 = 0;
+	int obstacleA4 = 0;
+	int obstacleA5 = 0;
+	
 	// Functions for sensors.
 	void init(void);
 	void readSensor(void);
 	void doOffsets(void);
 	void print(void);
+	double calculateDist(double dist);
 };
