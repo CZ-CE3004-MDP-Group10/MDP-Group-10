@@ -127,79 +127,62 @@ void Sensors::doOffsets()
 	if(distanceA3 < 0) { distanceA3 = 100; }
 	if(distanceA4 < 0) { distanceA4 = 100; }
 	if(distanceA5 < 0) { distanceA5 = 100; }
-	
-	// Offsets for calibration.
-	//distanceA0 -= 0.0;
-	//distanceA1 -= 0.0;
-	//distanceA2 -= 0.0;
-	//distanceA3 -= 0.0;
-	//distanceA4 -= 0.0;
-	//distanceA5 -= 0.0;
 }
 
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double Sensors::calculateDist1(double dist)
 {
+	/*
 	// Within blind spot.
-	if(dist < 10)
-	{
-		return -1;
-	}
+	if(dist < 13) {return -1;}
+	
 	// Too far to be detected.
-	else if(dist > 25)
-	{
-		return 0;
-	}
+	else if(dist >= 35) {return 0;}
+	
 	// Obstacle is 1 step away.
-	else if( dist >= 10 and dist < 15)
-	{
-		return 1;
-	}
+	else if(dist >= 13 and dist < 25) {return 1;}
+	
 	// Obstacle is 2 steps away.
-	else if( dist >= 15 and dist < 25)
-	{
-		return 2;
-	}
+	else if(dist >= 25 and dist < 35) {return 2;}
+	*/
+
+	if(dist < 13) {return 1;}
+	else if(dist >= 25) {return 0;}
+	else if(dist >= 13 and dist < 25) {return 2;}
 }
 
 // Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
 double Sensors::calculateDist2(double dist)
 {
+	/*
 	// Within blind spot.
-	if(dist < 15)
-	{
-		return -1;
-	}
+	if(dist < 25) {return -1;}
+	
 	// Too far to be detected.
-	else if(dist > 75)
-	{
-		return 0;
-	}
+	else if(dist >= 50) {return 0;}
+	
 	// Obstacle is 1 step away.
-	else if( dist >= 25 and dist < 35)
-	{
-		return 1;
-	}
+	else if( dist >= 25 and dist < 35) {return 1;}
+	
 	// Obstacle is 2 steps away.
-	else if( dist >= 35 and dist < 45)
-	{
-		return 2;
-	}
+	else if(dist >= 35 and dist < 38) {return 2;}
+	
 	// Obstacle is 3 steps away.
-	else if( dist >= 45 and dist < 55)
-	{
-		return 3;
-	}
+	else if(dist >= 38 and dist < 41) {return 3;}
+	
 	// Obstacle is 4 steps away.
-	else if( dist >= 55 and dist < 65)
-	{
-		return 4;
-	}
+	else if(dist >= 41 and dist < 43) {return 4;}
+	
 	// Obstacle is 5 steps away.
-	else if( dist >= 65 and dist < 75)
-	{
-		return 5;
-	}
+	else if(dist >= 43 and dist < 50) {return 5;}
+	*/
+	
+	if(dist < 25) {return 1;}
+	else if(dist >= 43) {return 0;}
+	else if( dist >= 25 and dist < 35) {return 2;}
+	else if(dist >= 35 and dist < 38) {return 3;}
+	else if(dist >= 38 and dist < 41) {return 4;}
+	else if(dist >= 41 and dist < 43) {return 5;}
 }
 
 // Print and send the string over to algorithm.
@@ -214,9 +197,7 @@ void Sensors::print()
 	obstacleA5 = calculateDist2(distanceA5);
 	
 	// Return the results to algorithm.
-	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + 
-	"," + String(obstacleA4));
+	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
 	
-	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + 
-	"," + String(distanceA4));
+	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
 }

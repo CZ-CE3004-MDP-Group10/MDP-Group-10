@@ -115,9 +115,6 @@ void loop()
   else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
 
   // -----------------------------------------------------------------------------------
-  // ADDITIONAL OFFSETS FOR SENSOR DISTANCE VALUES.
-
-  // -----------------------------------------------------------------------------------
   // PRINT OUT ANALOG VALUES AND CALCULATED DISTANCES.
 
   //if(wholeCount < 20)
@@ -152,75 +149,51 @@ void loop()
   obstacleA5 = calculateDist2(distanceA5);
 	
   // Print the results for debugging.
-  Serial.print("LR_Dist: " + String(distanceA5) + ", LR_step: " + String(obstacleA5));
+  //Serial.println("LR_Dist: " + String(distanceA5) + ", LR_step: " + String(obstacleA5));
   Serial.print(", FL_Dist: " + String(distanceA0) + ", FL_step: " + String(obstacleA0));
   Serial.print(", FM_Dist: " + String(distanceA1) + ", FM_step: " + String(obstacleA1));
-  Serial.print(", FR_Dist: " + String(distanceA2) + ", FR_step: " + String(obstacleA2));
-  Serial.print(", RF_Dist: " + String(distanceA3) + ", RF_step: " + String(obstacleA3));
-  Serial.println(", RB_Dist: " + String(distanceA4) + ", RB_step: " + String(obstacleA4));
+  Serial.println(", FR_Dist: " + String(distanceA2) + ", FR_step: " + String(obstacleA2));
+  //Serial.print(", RF_Dist: " + String(distanceA3) + ", RF_step: " + String(obstacleA3));
+  //Serial.println(", RB_Dist: " + String(distanceA4) + ", RB_step: " + String(obstacleA4));
 }
 
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double calculateDist1(double dist)
 {
 	// Within blind spot.
-	if(dist < 10)
-	{
-		return -1;
-	}
-	// Too far to be detected.
-	else if(dist > 25)
-	{
-		return 0;
-	}
-	// Obstacle is 1 step away.
-	else if( dist >= 10 and dist < 15)
-	{
-		return 1;
-	}
-	// Obstacle is 2 steps away.
-	else if( dist >= 15 and dist < 25)
-	{
-		return 2;
-	}
+  if(dist < 13) {return -1;}
+  
+  // Too far to be detected.
+  else if(dist >= 35) {return 0;}
+  
+  // Obstacle is 1 step away.
+  else if(dist >= 13 and dist < 25) {return 1;}
+  
+  // Obstacle is 2 steps away.
+  else if(dist >= 25 and dist < 35) {return 2;}
 }
 
 // Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
 double calculateDist2(double dist)
 {
 	// Within blind spot.
-	if(dist < 20)
-	{
-		return -1;
-	}
-	// Too far to be detected.
-	else if(dist > 75)
-	{
-		return 0;
-	}
-	// Obstacle is 1 step away.
-	else if( dist >= 20 and dist < 35)
-	{
-		return 1;
-	}
-	// Obstacle is 2 steps away.
-	else if( dist >= 35 and dist < 45)
-	{
-		return 2;
-	}
-	// Obstacle is 3 steps away.
-	else if( dist >= 45 and dist < 55)
-	{
-		return 3;
-	}
-	// Obstacle is 4 steps away.
-	else if( dist >= 55 and dist < 65)
-	{
-		return 4;
-	}
-	// Obstacle is 5 steps away.
-	else if( dist >= 65 and dist < 75)
-	{
-		return 5;
-	}
+  if(dist < 25) {return -1;}
+  
+  // Too far to be detected.
+  else if(dist >= 50) {return 0;}
+  
+  // Obstacle is 1 step away.
+  else if( dist >= 25 and dist < 35) {return 1;}
+  
+  // Obstacle is 2 steps away.
+  else if(dist >= 35 and dist < 38) {return 2;}
+  
+  // Obstacle is 3 steps away.
+  else if(dist >= 38 and dist < 41) {return 3;}
+  
+  // Obstacle is 4 steps away.
+  else if(dist >= 41 and dist < 43) {return 4;}
+  
+  // Obstacle is 5 steps away.
+  else if(dist >= 43 and dist < 50) {return 5;}
 }

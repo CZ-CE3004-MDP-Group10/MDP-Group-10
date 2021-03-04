@@ -85,7 +85,7 @@ void loop()
         count = 4;
         receiveData = "";
         readChar = " ";
-        Serial.println(" ");
+        delay(500);
         Serial.println("AND|status(Stopped)");
         continue;
       }
@@ -165,7 +165,10 @@ void loop()
                 break;
 
       // Calibrate by the front.
+      // NEED TO PERFORM THE FRONT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
       case 'W': robot.frontObstacleCheck();
+                delay(500);
+                robot.frontObstacleCheck();
                 //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CF");
                 waitingInput = true;
@@ -173,7 +176,10 @@ void loop()
                 break;
                 
       // Calibrate by the right.
+      // NEED TO PERFORM THE RIGHT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
       case 'D': robot.rightWallCheckTilt();
+                delay(500);
+                robot.rightWallCheckTilt();
                 //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CR");
                 waitingInput = true;
