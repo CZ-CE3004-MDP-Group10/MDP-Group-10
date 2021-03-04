@@ -128,6 +128,7 @@ void Movement::rotate90left()
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
 
+	// While there are still steps to move.
 	while(distsub > 0)
 	{
 		// Left motor is negative and right motor is positive.
@@ -197,9 +198,8 @@ void Movement::stopIfReached()
 		// Error difference for how many ticks the current step exceeded by.
 		pid.M1_ticks_diff = pid.M1_ticks_moved - pid.M1_ticks_to_move;
 		pid.M2_ticks_diff = pid.M2_ticks_moved - pid.M2_ticks_to_move;
-		  
-		// For debugging, two master counters count the total number of ticks moved through
-		// the entire motor operation to check for tick discrepancies over time.
+		
+		// Count the total number of ticks over a period of time.
 		//Total_M1_moved += M1_ticks_moved;
 		//Total_M2_moved += M2_ticks_moved;
 		  
@@ -226,8 +226,8 @@ void Movement::stopIfReached()
 		}*/
 		// ################################################################################
 
-		// The robot should only apply the brakes when it has finished the last step.
-		// The robot should only stop and wait for a command after its last step.
+		// The robot should only apply the brakes when it has finished the last step, 
+		// Before stopping and waiting for a command.
 		if(distsub <= 0)
 		{
 		  // Set the brakes on both motors to bring the robot to a stop.
@@ -254,8 +254,7 @@ void Movement::stopIfRotated()
 
 		// NOTE: ERROR IN TICKS DIFFERENCE IS NOT NEEDED HERE AS EACH ROTATION IS INDEPENDENT.
 		  
-		// For debugging, two master counters count the total number of ticks moved through
-		// the entire motor operation to check for tick discrepancies over time.
+		// Count the total number of ticks over a period of time.
 		//Total_M1_moved += M1_ticks_moved;
 		//Total_M2_moved += M2_ticks_moved;
 		  
@@ -267,11 +266,8 @@ void Movement::stopIfRotated()
 		// Decrement the number of steps left to travel.
 		distsub--;
 
-		// The robot should only apply the brakes when it has finished the last step.
 		if(distsub == 0)
 		{
-		  // Set the brakes on both motors simultaneously to bring the robot to a stop.
-		  // Syntax: motorShield.setBrakes(M1 right motor, M2 left motor);
 		  motorShield.setBrakes(400, 400);
 		}
 		// Reset the tick counters.
@@ -296,13 +292,13 @@ void Movement::stopIfFault()
 	}
 }
 
-// Read the sensor values when the robot stops moving.
+// Read the sensor distance values when the robot stops moving.
 void Movement::readSensor()
 {
 	sensor.readSensor();
 }
 
-// Print the sensor values in terms of distance from obstacle.
+// Print the sensor values in terms of distance in steps from obstacle.
 void Movement::printSensor()
 {
 	sensor.print();

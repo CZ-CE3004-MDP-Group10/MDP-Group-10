@@ -1,10 +1,4 @@
-// MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO FILE.
-// FASTEST PATH MAIN FILE.
-
-// CAUTION: MOTOR MOVEMENT DISTANCES, ROTATION ANGLES AND SPEEDS ARE AFFECTED BY REMAINING BATTERY CAPACITIY.
-// ENSURE BATTERY IS FULLY CHARGED BEFORE STARTING NAVIGATION.
-// IMPORTANT: ALL SENSORS AND MOTORS MUST BE RECALIBRATED BEFORE ANY EVALUATION OR NAVIGATION.
-// IMPORTANT: CALIBRATION IS CURRENTLY NOT BEING PERFORMED FOR FASTEST PATH RUN.
+// MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO MAIN FILE.
 
 // Include libraries. Movement library contains all other robot component libraries.
 #include <EnableInterrupt.h>
@@ -85,8 +79,12 @@ void loop()
         count = 4;
         receiveData = "";
         readChar = " ";
+		
+		// Need to insert a delay here for the Android application to separate the last string.
         delay(500);
         Serial.println("AND|status(Stopped)");
+		
+		// Go back to wait for another input string command or set of commands.
         continue;
       }
       //Serial.print("Movement to perform: "); Serial.println(subData);

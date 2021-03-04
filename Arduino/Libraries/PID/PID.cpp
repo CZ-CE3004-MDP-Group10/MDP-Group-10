@@ -69,20 +69,13 @@ void PID::control(int right_mul , int left_mul)
 	// Perform PID calculation for the new motor speed for the left motor.
 	M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
 
-	// For debugging.
 	//Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
 	//Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
 
 	// Convert the adjusted ticks to the new motor power using the functions below.
 	right_speed = right_ticks_to_power(M1_ticks_PID) * right_mul;
 	left_speed = left_ticks_to_power(M2_ticks_PID) * left_mul;
-	
-	// Set both motors speed and direction with the multiplier simultaneously.
-	//Syntax: motorShield.setSpeeds(M1Speed (right), M2Speed (left));
-	//motorShield.setSpeeds(right_speed * right_mul, left_speed * left_mul);
-	//stopIfFault();
 
-	// For debugging.
 	//Serial.print(", R power: "); Serial.print(right_speed);
 	//Serial.print(", L power: "); Serial.println(left_speed);
 
@@ -100,30 +93,27 @@ void PID::control(int right_mul , int left_mul)
 
 	//Serial.print("M1 Error: "); Serial.print(E1_error_ticks); Serial.print(", M2 error: "); Serial.print(E2_error_ticks);
 	//Serial.print(", M1 prev error: "); Serial.print(E1_prev_error); Serial.print(", M2 prev error: "); Serial.print(E2_prev_error);
-	//Serial.print(", M1 sum error: "); Serial.print(E1_sum_error); Serial.print(", M2 sum error: "); Serial.print(E2_sum_error);
-	//Serial.println();
+	//Serial.print(", M1 sum error: "); Serial.print(E1_sum_error); Serial.print(", M2 sum error: "); Serial.println(E2_sum_error);
 }
 
-// Returns the number of right ticks.
+// Returns the commanded power for the right motor.
 int PID::getRightSpeed()
 {
 	return right_speed;
 }
 
-// Returns the number of left ticks.
+// Returns the commanded power for the left motor.
 int PID::getLeftSpeed()
 {
 	return left_speed;
 }
 
-// Based on obtained data of ticks moved vs set power for right motor,
 // Convert right motor ticks to commanded power.
 double PID::right_ticks_to_power(double right_ticks)
 {
   return (right_ticks * 0.22748) + 20.06839;
 }
 
-// Based on obtained data of ticks moved vs set power for left motor,
 // Convert left motor ticks to commanded power.
 double PID::left_ticks_to_power(double left_ticks)
 {
