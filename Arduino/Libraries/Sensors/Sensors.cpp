@@ -132,6 +132,7 @@ void Sensors::doOffsets()
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double Sensors::calculateDist1(double dist)
 {
+	// IF THE OBSTACLE NEXT TO ROBOT IS TREATED AS WITHIN BLIND SPOT.
 	/*
 	// Within blind spot.
 	if(dist < 13) {return -1;}
@@ -146,14 +147,21 @@ double Sensors::calculateDist1(double dist)
 	else if(dist >= 25 and dist < 35) {return 2;}
 	*/
 
+	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
+	// Obstacle is 1 step away.
 	if(dist < 13) {return 1;}
+	
+	// Too far to be detected.
 	else if(dist >= 25) {return 0;}
+	
+	// Obstacle is 2 steps away.
 	else if(dist >= 13 and dist < 25) {return 2;}
 }
 
 // Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
 double Sensors::calculateDist2(double dist)
 {
+	// IF THE OBSTACLE NEXT TO ROBOT IS TREATED AS WITHIN BLIND SPOT.
 	/*
 	// Within blind spot.
 	if(dist < 25) {return -1;}
@@ -177,11 +185,23 @@ double Sensors::calculateDist2(double dist)
 	else if(dist >= 43 and dist < 50) {return 5;}
 	*/
 	
+	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
+	// Obstacle is 1 step away.
 	if(dist < 25) {return 1;}
+	
+	// Too far to be detected.
 	else if(dist >= 43) {return 0;}
+	
+	// Obstacle is 2 steps away.
 	else if( dist >= 25 and dist < 35) {return 2;}
+	
+	// Obstacle is 3 steps away.
 	else if(dist >= 35 and dist < 38) {return 3;}
+	
+	// Obstacle is 4 steps away.
 	else if(dist >= 38 and dist < 41) {return 4;}
+	
+	// Obstacle is 5 steps away.
 	else if(dist >= 41 and dist < 43) {return 5;}
 }
 
@@ -196,8 +216,9 @@ void Sensors::print()
 	obstacleA4 = calculateDist1(distanceA4);
 	obstacleA5 = calculateDist2(distanceA5);
 	
-	// Return the results to algorithm.
+	// Return the results to algorithm in terms of steps from obstacle.
 	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
 	
-	Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
+	// Return the results to algorithm in terms of distance from obstacle.
+	//Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
 }
