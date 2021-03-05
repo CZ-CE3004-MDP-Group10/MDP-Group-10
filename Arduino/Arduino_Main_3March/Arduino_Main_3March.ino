@@ -164,7 +164,7 @@ void loop()
 
       // Calibrate by the front.
       // NEED TO PERFORM THE FRONT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
-      case 'W': robot.frontObstacleCheck();
+      case 'W': robot.frontCalibrate();
                 delay(500);
                 Serial.println("ALG|CF");
                 waitingInput = true;
@@ -173,9 +173,9 @@ void loop()
                 
       // Calibrate by the right.
       // NEED TO PERFORM THE RIGHT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
-      case 'D': robot.rightWallCheckTilt();
+      case 'D': robot.rightCalibrate();
                 delay(500);
-                robot.rightWallCheckTilt();
+                robot.rightCalibrate();
                 Serial.println("ALG|CR");
                 waitingInput = true;
                 readChar = " ";

@@ -3,16 +3,8 @@
 // Include the movement header file.
 #include "Movement.h"
 
-// Calibrate the robot using only the front sensors.
-void Movement::frontObstacleCheck()
-{
-	Serial.println("Front calibration called.");
-	frontDistanceCheck();
-	frontWallCheckTilt();
-}
-
 // Check and correct distance from front using front sensors.
-void Movement::frontDistanceCheck()
+void Movement::frontCalibrate()
 {
 	float error = 0;
 	float error_margin = 0.1;
@@ -52,6 +44,11 @@ void Movement::frontDistanceCheck()
 			error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 		}
 		motorShield.setBrakes(400, 400);
+		delay(500);
+		
+		// Perform the tilt check using front sensors after adjusting the front distance from an obstacle,
+		// To account for the sensor blind spot.
+		frontWallCheckTilt();
 		delay(500);
 		
 		// Move the robot forwards half a step after fixing tilt errors.
@@ -168,7 +165,7 @@ void Movement::frontDistanceCheck()
 }
 
 // Check and correct tilt angle using right side sensors.
-void Movement::rightWallCheckTilt()
+void Movement::rightCalibrate()
 {
 	Serial.println("rightWallCheckTilt called.");
 	float error = 0;

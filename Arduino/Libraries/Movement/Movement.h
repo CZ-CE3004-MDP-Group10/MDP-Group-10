@@ -29,10 +29,9 @@ class Movement
 	void stopIfReached();
 	void stopIfRotated();
 	void calibrate();
-	void frontObstacleCheck();
-	void frontDistanceCheck();
+	void frontCalibrate();
 	void frontWallCheckTilt();
-	void rightWallCheckTilt();
+	void rightCalibrate();
 	void stopIfFault();
 	void readSensor();
 	void printSensor();
