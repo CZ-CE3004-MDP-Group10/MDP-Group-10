@@ -168,8 +168,6 @@ void loop()
       // NEED TO PERFORM THE FRONT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
       case 'W': robot.frontObstacleCheck();
                 delay(500);
-                robot.frontObstacleCheck();
-                //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CF");
                 waitingInput = true;
                 readChar = " ";
@@ -180,7 +178,6 @@ void loop()
       case 'D': robot.rightWallCheckTilt();
                 delay(500);
                 robot.rightWallCheckTilt();
-                //Serial.print("AND|CAL("); Serial.print(readChar); Serial.println(")[1]");
                 Serial.println("ALG|CR");
                 waitingInput = true;
                 readChar = " ";
