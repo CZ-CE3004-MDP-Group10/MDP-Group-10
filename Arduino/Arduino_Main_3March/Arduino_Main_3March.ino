@@ -163,8 +163,8 @@ void loop()
                 break;
 
       // Calibrate by the front.
-      // NEED TO PERFORM THE FRONT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
       case 'W': robot.frontCalibrate();
+                //robot.frontWallCheckTilt();
                 delay(500);
                 Serial.println("ALG|CF");
                 waitingInput = true;
