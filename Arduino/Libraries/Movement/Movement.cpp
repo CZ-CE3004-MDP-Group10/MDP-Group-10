@@ -13,6 +13,7 @@ void Movement::init()
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
 	loopSwitchCase = true;
+	lastCommand = false;
 }
 
 // Move Forwards.
@@ -105,12 +106,56 @@ void Movement::forwards()
 		// Stop the motors if a fault is detected.
 		stopIfFault();
 		
+// ########################################################
+// FOR EXPLORATION, UNCOMMENT THIS PORTION.
+// FOR FASTEST PATH, COMMENT THIS PORTION.
+//*
 		// Include a sampling time.
 		delay(10);
-		
+			
 		// Stop the motor movement if the required distance or step is reached.
 		// Step distance and rotation angle are set at the top of this file.
 		stopIfReached();
+//*/	
+// ########################################################
+// FOR FASTEST PATH, UNCOMMENT THIS PORTION.
+// FOR EXPLORATION, COMMENT THIS PORTION.
+/*	
+	
+		// If the current forward command is the last command.
+		// The robot will keep moving forwards as long as it doesn't detect a wall in front.
+		if(lastCommand)
+		{
+			// Check the sensor readings to see if the robot is too close to the wall in front.
+			sensor.readSensor();
+			//Serial.println("Inside last command if.");
+			
+			if(sensor.distanceA0 < 10 or sensor.distanceA1 < 10 or sensor.distanceA2 < 10)
+			{
+				//Serial.println("Robot stopped last command.");
+				
+				// Stop the robot and reset the PID controller variables.
+				motorShield.setBrakes(400, 400);
+				distsub = 0;
+				pid.M1_ticks_moved = 0;
+				pid.M2_ticks_moved = 0;
+				
+				// Break out of this function.
+				return;
+			}
+			delay(10);
+		}
+		else
+		{
+			// Include a sampling time.
+			delay(10);
+			
+			// Stop the motor movement if the required distance or step is reached.
+			// Step distance and rotation angle are set at the top of this file.
+			stopIfReached();
+		}
+*/
+// ########################################################
 	}
 }
 
@@ -122,8 +167,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 300; //OK
-	pid.M2_ticks_to_move = 340; //OK
+	pid.M1_ticks_to_move = 297; //OK
+	pid.M2_ticks_to_move = 337; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -146,8 +191,8 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 330; //OK
-	pid.M2_ticks_to_move = 330; //OK
+	pid.M1_ticks_to_move = 333; //OK
+	pid.M2_ticks_to_move = 333; //OK
 
 	straightTransition = true;
 

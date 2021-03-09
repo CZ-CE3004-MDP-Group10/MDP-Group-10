@@ -19,6 +19,7 @@ class Movement
 	int distsubConstant;
 	boolean straightTransition;
 	boolean loopSwitchCase;
+	boolean lastCommand;
 	
 	// Movement functions.
 	void init(void);
