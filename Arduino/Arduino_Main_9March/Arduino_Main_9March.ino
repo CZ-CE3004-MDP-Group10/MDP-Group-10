@@ -170,8 +170,8 @@ void loop()
                 break;
 
       // Calibrate by the front.
-      case 'W': //robot.frontCalibrate();
-                //robot.frontWallCheckTilt();
+      case 'W': robot.frontCalibrate();
+                robot.frontWallCheckTilt();
                 //delay(500);
                 Serial.println("ALG|CF");
                 readChar = " ";
@@ -181,14 +181,14 @@ void loop()
       // NEED TO PERFORM THE RIGHT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
       case 'D': //robot.rightCalibrate();
                 //delay(500);
-                //robot.rightCalibrate();
+                robot.rightWallDistCheck();
                 Serial.println("ALG|CR");
                 readChar = " ";
                 break;
   
       // Command to return sensor data to algorithm.
-      case 'S': //robot.readSensor();
-                //robot.printSensor();
+      case 'S': robot.readSensor();
+                robot.printSensor();
 
                 // FOR DEBUGGING:
                 //Serial.println("ALG|0,0,0,0,0,0");
