@@ -24,6 +24,7 @@ String receiveData; // Holds the entire string of commands received.
 String subData;     // Holds the substring of an individual command extracted from the main string.
 int count = 4;      // Counter to track the position of the command being read from the string.
 
+// --------------------------------------------------------------------------------
 // SETUP.
 void setup()
 {
@@ -49,6 +50,7 @@ void setup()
   Serial.println("ALG|Robot Ready.");
 }
 
+// --------------------------------------------------------------------------------
 // LOOPING.
 void loop()
 {
@@ -135,9 +137,7 @@ void loop()
       //waitingInput = false;
     }
 
-	  // Set a delay between robot movements.
-    delay(200);
-  
+// --------------------------------------------------------------------------------
     // Read and execute the input command given.
     // NOTE: Decrementing of this value 'distsub' is done in the 'stopIfReached()' and 'stopIfRotated()' functions.
     switch(readChar)
@@ -152,42 +152,53 @@ void loop()
                 break;
   
       // Rotate to the left by 90 degrees.
-      case 'L': robot.rotate90left();
+      case 'L': // Set a delay when transitioning between straight movement and any other command.
+                // To avoid jerking start and stop movements with 2 consecutive forwards commands.
+                delay(200);
+                robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(200);
                 break;
   
       // Rotate to the right by 90 degrees.
-      case 'R': robot.rotate90right();
+      case 'R': delay(200);
+                robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(200);
                 break;
   
       // Rotate 180 degrees from the left.
-      case 'B': robot.rotate180();
+      case 'B': delay(200);
+                robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(200);
                 break;
 
       // Calibrate by the front.
-      case 'W': //robot.frontCalibrate();
+      case 'W': delay(200);
+                //robot.frontCalibrate();
                 //robot.frontWallCheckTilt();
-                //delay(500);
+                //delay(200);
                 Serial.println("ALG|CF");
                 readChar = " ";
                 break;
                 
       // Calibrate by the right.
       // NEED TO PERFORM THE RIGHT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
-      case 'D': //robot.rightCalibrate();
-                //delay(500);
+      case 'D': delay(200);
+                //robot.rightCalibrate();
+                //delay(200);
                 //robot.rightCalibrate();
                 Serial.println("ALG|CR");
                 readChar = " ";
                 break;
   
       // Command to return sensor data to algorithm.
-      case 'S': //robot.readSensor();
+      case 'S': delay(200);
+                //robot.readSensor();
                 //robot.printSensor();
 
                 // FOR DEBUGGING:
@@ -202,6 +213,7 @@ void loop()
   }
 }
 
+// --------------------------------------------------------------------------------
 // INTERRUPT HANDLERS TO INCREMENT THE MOTOR ENCODER TICK COUNTERS.
 void right_tick_increment()
 {
