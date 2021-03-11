@@ -18,13 +18,9 @@ class Movement
 	int distsub;
 	int distsubConstant;
 	int tiltCount;
-	
-	// Calibration correction variables.
 	float error;
 	float error_margin;
 	float perfDist;
-	
-	// Movement scenarios variables.
 	boolean straightTransition;
 	boolean loopSwitchCase;
 	boolean lastCommand;

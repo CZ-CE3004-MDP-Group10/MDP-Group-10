@@ -152,21 +152,27 @@ void loop()
                 break;
   
       // Rotate to the left by 90 degrees.
-      case 'L': robot.rotate90left();
+      case 'L': delay(100);
+                robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(100);
                 break;
   
       // Rotate to the right by 90 degrees.
-      case 'R': robot.rotate90right();
+      case 'R': delay(100);
+                robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(100);
                 break;
   
       // Rotate 180 degrees from the left.
-      case 'B': robot.rotate180();
+      case 'B': delay(100);
+                robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
+                delay(100);
                 break;
 
       // Calibrate by the front.
