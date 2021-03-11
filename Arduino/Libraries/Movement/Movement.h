@@ -33,6 +33,7 @@ class Movement
 	void frontCalibrate();
 	void frontWallCheckTilt();
 	void rightCalibrate();
+	void rightWallDistCheck();
 	void stopIfFault();
 	void readSensor();
 	void printSensor();
