@@ -61,7 +61,7 @@ void loop()
       //Serial.print("Data read in: "); Serial.println(receiveData);
 
       // UNCOMMENT THIS LINE FOR FASTEST PATH.
-      //Serial.println("AND|status(Running)");
+      Serial.println("AND|status(Running)");
       continue;
     }
     // As long as the string is not empty, split it into individual commands.
@@ -95,7 +95,7 @@ void loop()
         delay(500);
 
         // UNCOMMENT THIS LINE FOR FASTEST PATH.
-        //Serial.println("AND|status(Stopped)");
+        Serial.println("AND|status(Stopped)");
 		
 		    // Go back to wait for another input string command or set of commands.
         continue;
