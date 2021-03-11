@@ -17,6 +17,7 @@ class Movement
 	// Movement variables.
 	int distsub;
 	int distsubConstant;
+	int tiltCount;
 	boolean straightTransition;
 	boolean loopSwitchCase;
 	boolean lastCommand;

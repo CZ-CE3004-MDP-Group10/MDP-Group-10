@@ -170,7 +170,7 @@ void loop()
                 break;
 
       // Calibrate by the front.
-      case 'W': robot.frontCalibrate();
+      case 'W': //robot.frontCalibrate();
                 robot.frontWallCheckTilt();
                 //delay(500);
                 Serial.println("ALG|CF");

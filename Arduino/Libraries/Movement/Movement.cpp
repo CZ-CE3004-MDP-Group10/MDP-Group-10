@@ -14,6 +14,8 @@ void Movement::init()
 	straightTransition = true;
 	loopSwitchCase = true;
 	lastCommand = false;
+	
+	tiltCount = 7;
 }
 
 // Move Forwards.
@@ -188,6 +190,7 @@ void Movement::rotate90left()
 // Rotate Right 90 Degrees.
 void Movement::rotate90right()
 {
+	Serial.println("Called rotate right");
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
