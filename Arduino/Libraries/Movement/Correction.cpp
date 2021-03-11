@@ -6,9 +6,9 @@
 // Check and correct distance from front using front sensors.
 void Movement::frontCalibrate()
 {
-	float error = 0;
-	float error_margin = 0.1;
-	float perfDist = 9;
+	error = 0;
+	error_margin = 0.1;
+	perfDist = 9;
 	
 	Serial.println("frontDistanceCheck called.");
 	
@@ -53,11 +53,6 @@ void Movement::frontCalibrate()
 		// To account for the sensor blind spot.
 		frontWallCheckTilt();
 		delay(500);
-		
-		// Move the robot forwards half a step after fixing tilt errors.
-		//motorShield.setSpeeds(99, 100);
-		//delay(500);
-		//motorShield.setBrakes(400,400);
 	}
 }
 
@@ -65,8 +60,9 @@ void Movement::frontCalibrate()
 void Movement::rightCalibrate()
 {
 	Serial.println("rightWallCheckTilt called.");
-	float error = 0;
-	float error_margin = 0.1;
+	
+	error = 0;
+	error_margin = 0.1;
 	
 	// Read in the sensor values.
 	sensor.readSensor();
@@ -118,10 +114,13 @@ void Movement::rightCalibrate()
 
 void Movement::rightWallDistCheck()
 {
+	// First calibrate by right, then by front.
 	rightCalibrate();
+	delay(100);
 	frontCalibrate();
 	delay(100);
 	
+	// Read sensor values and determine if the right side of the robot is too far or close to the wall.
 	sensor.readSensor();
 	
 	if((sensor.distanceA3 < 7 and sensor.distanceA4 < 7) or (sensor.distanceA3 > 14 and sensor.distanceA4 > 14 and sensor.distanceA3 < 20 and sensor.distanceA4 < 20))
@@ -135,6 +134,7 @@ void Movement::rightWallDistCheck()
 		rotate90right();
 		delay(100);
 		
+		// Calibrate by front of the robot, which would now be facing right.
 		frontCalibrate();
 		delay(100);
 		
@@ -152,8 +152,8 @@ void Movement::rightWallDistCheck()
 void Movement::frontWallCheckTilt()
 {
 	Serial.println("frontWallCheckTilt called.");
-	float error = 0;
-	float error_margin = 0.1;
+	error = 0;
+	error_margin = 0.1;
 	
 	sensor.readSensor();
 	

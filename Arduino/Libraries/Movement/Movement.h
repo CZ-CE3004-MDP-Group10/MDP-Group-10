@@ -18,6 +18,13 @@ class Movement
 	int distsub;
 	int distsubConstant;
 	int tiltCount;
+	
+	// Calibration correction variables.
+	float error;
+	float error_margin;
+	float perfDist;
+	
+	// Movement scenarios variables.
 	boolean straightTransition;
 	boolean loopSwitchCase;
 	boolean lastCommand;
@@ -30,11 +37,15 @@ class Movement
 	void rotate180();
 	void stopIfReached();
 	void stopIfRotated();
+	
+	// Correction functions.
 	void calibrate();
 	void frontCalibrate();
 	void frontWallCheckTilt();
 	void rightCalibrate();
 	void rightWallDistCheck();
+	
+	// Other required functions.
 	void stopIfFault();
 	void readSensor();
 	void printSensor();

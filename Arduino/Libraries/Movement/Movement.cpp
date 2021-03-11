@@ -15,7 +15,11 @@ void Movement::init()
 	loopSwitchCase = true;
 	lastCommand = false;
 	
+	// Correction parameters for robot calibration.
 	tiltCount = 7;
+	error = 0.0;
+	error_margin = 0.0;
+	perfDist = 0.0;
 }
 
 // Move Forwards.
@@ -111,18 +115,18 @@ void Movement::forwards()
 // ########################################################
 // FOR EXPLORATION, UNCOMMENT THIS PORTION.
 // FOR FASTEST PATH, COMMENT THIS PORTION.
-//*
+/*
 		// Include a sampling time.
 		delay(10);
 			
 		// Stop the motor movement if the required distance or step is reached.
 		// Step distance and rotation angle are set at the top of this file.
 		stopIfReached();
-//*/	
+*/	
 // ########################################################
 // FOR FASTEST PATH, UNCOMMENT THIS PORTION.
 // FOR EXPLORATION, COMMENT THIS PORTION.
-/*	
+//*	
 	
 		// If the current forward command is the last command.
 		// The robot will keep moving forwards as long as it doesn't detect a wall in front.
@@ -145,6 +149,7 @@ void Movement::forwards()
 				// Break out of this function.
 				return;
 			}
+			// Otherwise continue moving forward at a slower pace.
 			delay(10);
 		}
 		else
@@ -156,7 +161,7 @@ void Movement::forwards()
 			// Step distance and rotation angle are set at the top of this file.
 			stopIfReached();
 		}
-*/
+//*/
 // ########################################################
 	}
 }
