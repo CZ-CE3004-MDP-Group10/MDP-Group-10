@@ -23,6 +23,7 @@ Movement robot;
 String receiveData; // Holds the entire string of commands received.
 String subData;     // Holds the substring of an individual command extracted from the main string.
 int count = 4;      // Counter to track the position of the command being read from the string.
+String prevCmd = " ";
 
 // SETUP.
 void setup()
@@ -61,7 +62,7 @@ void loop()
       //Serial.print("Data read in: "); Serial.println(receiveData);
 
       // UNCOMMENT THIS LINE FOR FASTEST PATH.
-      Serial.println("AND|status(Running)");
+      //Serial.println("AND|status(Running)");
       continue;
     }
     // As long as the string is not empty, split it into individual commands.
@@ -92,10 +93,10 @@ void loop()
         robot.lastCommand = false;
 		
 		    // Need to insert a delay here for the Android application to separate the last string.
-        delay(500);
+        delay(100);
 
         // UNCOMMENT THIS LINE FOR FASTEST PATH.
-        Serial.println("AND|status(Stopped)");
+        //Serial.println("AND|status(Stopped)");
 		
 		    // Go back to wait for another input string command or set of commands.
         continue;
@@ -149,60 +150,75 @@ void loop()
 
                 // Reset the command character to break out of the switch case.
                 readChar = " ";
+                prevCmd = "F";
                 break;
-  
+
+      // NOTE: FOR FASTEST PATH, BRIEF DELAYS NEED TO BE INSERTED BEFORE AND AFTER EACH ROTATION FUNCTION.
       // Rotate to the left by 90 degrees.
-      case 'L': delay(100);
-                robot.rotate90left();
+      case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
-                delay(100);
+                prevCmd = "L";
                 break;
   
       // Rotate to the right by 90 degrees.
-      case 'R': delay(100);
-                robot.rotate90right();
+      case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
-                delay(100);
+                prevCmd = "R";
                 break;
   
       // Rotate 180 degrees from the left.
-      case 'B': delay(100);
-                robot.rotate180();
+      case 'B': robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 readChar = " ";
-                delay(100);
+                prevCmd = "B";
                 break;
 
       // Calibrate by the front.
-      case 'W': //robot.frontCalibrate();
-                robot.frontWallCheckTilt();
-                //delay(500);
+      case 'W': readChar = " ";
+                if(prevCmd == "W")
+                {
+                  break;
+                }
+                //robot.frontCalibrate();
+                //robot.frontWallCheckTilt(); // THIS ONE.
+                //delay(100);
                 Serial.println("ALG|CF");
-                readChar = " ";
+                prevCmd = "W";
                 break;
                 
       // Calibrate by the right.
       // NEED TO PERFORM THE RIGHT CALIBRATION 2 TIMES ON AVERAGE TO CORRECT THE TILT.
-      case 'D': //robot.rightCalibrate();
-                //delay(500);
-                robot.rightWallDistCheck();
+      case 'D': readChar = " ";
+                if(prevCmd == "D")
+                {
+                  break;
+                }
+                //robot.rightCalibrate();
+                //delay(100);
+                //robot.rightWallDistCheck(); // THIS ONE.
                 Serial.println("ALG|CR");
-                readChar = " ";
+                prevCmd = "D";
                 break;
   
       // Command to return sensor data to algorithm.
-      case 'S': robot.readSensor();
+      case 'S': readChar = " ";
+                if(prevCmd == "SE")
+                {
+                  break;
+                }
+                robot.readSensor();
                 robot.printSensor();
 
                 // FOR DEBUGGING:
                 //Serial.println("ALG|0,0,0,0,0,0");
-                readChar = " ";
+                prevCmd = "SE";
                 break;
 
 	  // If an invalid character is read.
       default:  readChar = " ";
+                prevCmd = " ";
                 break;
       }
   }
