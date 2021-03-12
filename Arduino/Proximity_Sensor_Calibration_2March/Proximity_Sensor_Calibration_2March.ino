@@ -124,12 +124,12 @@ void loop()
 
   //wholeCount += 1;
   
-  //Serial.print("Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.print(distanceA0);
+  //Serial.print(", Sensor A0: "); Serial.print(sensorA0_avg); Serial.print(", Distance A0: "); Serial.print(distanceA0);
   //Serial.print(", Sensor A1: "); Serial.print(sensorA1_avg); Serial.print(", Distance A1: "); Serial.print(distanceA1);
   //Serial.print(", Sensor A2: "); Serial.print(sensorA2_avg); Serial.print(", Distance A2: "); Serial.print(distanceA2);
   //Serial.print(", Sensor A3: "); Serial.print(sensorA3_avg); Serial.print(", Distance A3: "); Serial.print(distanceA3);
   //Serial.print(", Sensor A4: "); Serial.print(sensorA4_avg); Serial.print(", Distance A4: "); Serial.print(distanceA4);
-  //Serial.print(", Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.println(distanceA5);
+  Serial.print(", Sensor A5: "); Serial.print(sensorA5_avg); Serial.print(", Distance A5: "); Serial.println(distanceA5);
 
   // Reset the counter and variables.
   count = 0;
@@ -149,10 +149,10 @@ void loop()
   obstacleA5 = calculateDist2(distanceA5);
 	
   // Print the results for debugging.
-  //Serial.println("LR_Dist: " + String(distanceA5) + ", LR_step: " + String(obstacleA5));
-  Serial.print(", FL_Dist: " + String(distanceA0) + ", FL_step: " + String(obstacleA0));
-  Serial.print(", FM_Dist: " + String(distanceA1) + ", FM_step: " + String(obstacleA1));
-  Serial.println(", FR_Dist: " + String(distanceA2) + ", FR_step: " + String(obstacleA2));
+  //Serial.println(", LR_Dist: " + String(distanceA5) + ", LR_step: " + String(obstacleA5));
+  //Serial.print(", FL_Dist: " + String(distanceA0) + ", FL_step: " + String(obstacleA0));
+  //Serial.print(", FM_Dist: " + String(distanceA1) + ", FM_step: " + String(obstacleA1));
+  //Serial.println(", FR_Dist: " + String(distanceA2) + ", FR_step: " + String(obstacleA2));
   //Serial.print(", RF_Dist: " + String(distanceA3) + ", RF_step: " + String(obstacleA3));
   //Serial.println(", RB_Dist: " + String(distanceA4) + ", RB_step: " + String(obstacleA4));
 }
@@ -177,23 +177,23 @@ double calculateDist1(double dist)
 double calculateDist2(double dist)
 {
 	// Within blind spot.
-  if(dist < 25) {return -1;}
+  if(dist < 18) {return -1;}
   
   // Too far to be detected.
-  else if(dist >= 50) {return 0;}
+  else if(dist >= 46) {return 0;}
   
   // Obstacle is 1 step away.
-  else if( dist >= 25 and dist < 35) {return 1;}
+  else if( dist >= 19 and dist < 23) {return 1;}
   
   // Obstacle is 2 steps away.
-  else if(dist >= 35 and dist < 38) {return 2;}
+  else if(dist >= 23 and dist < 33) {return 2;}
   
   // Obstacle is 3 steps away.
-  else if(dist >= 38 and dist < 41) {return 3;}
+  else if(dist >= 33 and dist < 40) {return 3;}
   
   // Obstacle is 4 steps away.
-  else if(dist >= 41 and dist < 43) {return 4;}
+  else if(dist >= 40 and dist < 43) {return 4;}
   
   // Obstacle is 5 steps away.
-  else if(dist >= 43 and dist < 50) {return 5;}
+  else if(dist >= 43 and dist < 46) {return 5;}
 }

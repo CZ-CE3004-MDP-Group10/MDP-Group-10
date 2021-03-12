@@ -115,8 +115,8 @@ void Sensors::doOffsets()
 	// SENSOR 6 CALCULATION AND OFFSETS:
 	distanceA5 = -3.3012 + (12806.428 / (sensorA5_avg - 9.81909));
 	if(distanceA5 < 25) {distanceA5 -= 1;}
-	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 10;}
-	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 10;}
+	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
+	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
 	
 	// If the distance result is less than zero due to no obstacle being within the sensor's
 	// Blind spot distance, treat it as the obstacle being 100cm away from the sensor to avoid
@@ -187,27 +187,27 @@ double Sensors::calculateDist2(double dist)
 	
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
 	// Obstacle is 1 step away.
-	if(dist < 25) {return 1;}
+	if(dist < 22) {return 1;}
 	
 	// Too far to be detected.
-	else if(dist >= 43) {return 0;}
+	else if(dist >= 45) {return 0;}
 	
 	// Obstacle is 2 steps away.
-	else if( dist >= 25 and dist < 35) {return 2;}
+	else if( dist >= 22 and dist < 33) {return 2;}
 	
 	// Obstacle is 3 steps away.
-	else if(dist >= 35 and dist < 38) {return 3;}
+	else if(dist >= 33 and dist < 41) {return 3;}
 	
 	// Obstacle is 4 steps away.
-	else if(dist >= 38 and dist < 41) {return 4;}
+	else if(dist >= 41 and dist < 43) {return 4;}
 	
 	// Obstacle is 5 steps away.
-	else if(dist >= 41 and dist < 43) {return 5;}
+	else if(dist >= 43 and dist < 45) {return 5;}
 }
 
 // Print and send the string over to algorithm.
 void Sensors::print()
-{
+{	
 	// Calculate the distance of the obstacle from the sensor in steps.
 	obstacleA0 = calculateDist1(distanceA0);
 	obstacleA1 = calculateDist1(distanceA1);

@@ -10,7 +10,7 @@ void Movement::frontCalibrate()
 	error_margin = 0.1;
 	perfDist = 9;
 	
-	Serial.println("frontDistanceCheck called.");
+	//Serial.println("frontDistanceCheck called.");
 	
 	// Read in the sensor values.
 	sensor.readSensor();
@@ -59,7 +59,7 @@ void Movement::frontCalibrate()
 // Check and correct tilt angle using right side sensors.
 void Movement::rightCalibrate()
 {
-	Serial.println("rightWallCheckTilt called.");
+	//Serial.println("rightWallCheckTilt called.");
 	
 	error = 0;
 	error_margin = 0.1;
@@ -151,7 +151,7 @@ void Movement::rightWallDistCheck()
 // Check and correct tilt angle using front sensors.
 void Movement::frontWallCheckTilt()
 {
-	Serial.println("frontWallCheckTilt called.");
+	//Serial.println("frontWallCheckTilt called.");
 	error = 0;
 	error_margin = 0.1;
 	
