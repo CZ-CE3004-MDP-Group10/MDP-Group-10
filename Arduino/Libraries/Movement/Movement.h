@@ -17,7 +17,6 @@ class Movement
 	// Movement variables.
 	int distsub;
 	int distsubConstant;
-	int tiltCount;
 	float error;
 	float error_margin;
 	float perfDist;
@@ -35,11 +34,10 @@ class Movement
 	void stopIfRotated();
 	
 	// Correction functions.
-	void calibrate();
-	void frontCalibrate();
-	void frontWallCheckTilt();
-	void rightCalibrate();
-	void rightWallDistCheck();
+	void frontDistanceCheck();
+	void rightDistanceCheck();
+	void frontTiltCheck();
+	void rightTiltCheck();
 	
 	// Other required functions.
 	void stopIfFault();

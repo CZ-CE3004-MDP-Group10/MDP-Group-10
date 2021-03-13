@@ -119,18 +119,18 @@ void loop()
                 Serial.println("ALG|DMV");
                 break;
 
-      // Calibrate by the front.
-      case 'W': //robot.frontCalibrate();
-                robot.frontWallCheckTilt();
+      // Calibrate by the front for both distance and tilt.
+      case 'W': //robot.frontDistanceCheck();
                 //delay(100);
+                robot.frontTiltCheck();
                 Serial.println("ALG|CF");
                 Serial.println("ALG|DMV");
                 break;
                 
-      // Calibrate by the right.
-      case 'D': robot.rightCalibrate();
+      // Calibrate by the right for both distance and tilt.
+      case 'D': //robot.rightDistanceCheck();
                 //delay(100);
-                //robot.rightWallDistCheck();
+                robot.rightTiltCheck();
                 Serial.println("ALG|CR");
                 Serial.println("ALG|DMV");
                 break;

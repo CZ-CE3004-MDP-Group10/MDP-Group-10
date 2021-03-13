@@ -16,7 +16,6 @@ void Movement::init()
 	lastCommand = false;
 	
 	// Correction parameters for robot calibration.
-	tiltCount = 7;
 	error = 0.0;
 	error_margin = 0.0;
 	perfDist = 0.0;
