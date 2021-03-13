@@ -95,9 +95,9 @@ void Movement::frontTiltCheck()
 	// Comparing front left and front right sensor values.
 	if(sensor.distanceA0 < 35 and sensor.distanceA2 < 35)
 	{
-		error = (sensor.distanceA0 + 2) - (sensor.distanceA2);
+		error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2);
 		
-		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
+		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
 		
 		for(int i = 0; i < 15; i++)
 		{
@@ -112,7 +112,7 @@ void Movement::frontTiltCheck()
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 2) - (sensor.distanceA2);
+					error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2);
 				}
 				
 				else if(error < 0)
@@ -124,10 +124,10 @@ void Movement::frontTiltCheck()
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 2) - (sensor.distanceA2);
+					error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2);
 				}
 				
-				Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
+				Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
 			}
 		}
 		motorShield.setBrakes(400, 400);
