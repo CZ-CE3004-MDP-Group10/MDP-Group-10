@@ -8,7 +8,7 @@ void Movement::frontDistanceCheck()
 {
 	error = 0;
 	error_margin = 0.1;
-	perfDist = 9;
+	perfDist = 10;
 	
 	// Read in the sensor values.
 	sensor.readSensor();
@@ -46,6 +46,7 @@ void Movement::frontDistanceCheck()
 	}
 }
 
+// ---------------------------------------------------------------------------------------------
 // Check if the robot is the correct distance from the right side wall.
 void Movement::rightDistanceCheck()
 {
@@ -82,7 +83,8 @@ void Movement::rightDistanceCheck()
 	}
 }
 
-// FRONT SIDE TILT CHECK REQUIRES FURTHER CALIBRATION.
+// ---------------------------------------------------------------------------------------------
+// FRONT SIDE TILT CHECK IS OK, NO NEED TO CHANGE FURTHER.
 // Check and correct tilt angle using front sensors.
 void Movement::frontTiltCheck()
 {
@@ -135,6 +137,7 @@ void Movement::frontTiltCheck()
 	}
 }
 
+// ---------------------------------------------------------------------------------------------
 // RIGHT SIDE TILT CHECK IS OK, NO NEED TO CHANGE FURTHER.
 // Check and correct tilt angle using right side sensors.
 void Movement::rightTiltCheck()
