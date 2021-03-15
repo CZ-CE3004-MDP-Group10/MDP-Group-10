@@ -8,38 +8,41 @@ void Movement::frontDistanceCheck()
 {
 	error = 0;
 	error_margin = 0.1;
-	perfDist = 10;
+	perfDist = 9.5;
 	
 	// Read in the sensor values.
 	sensor.readSensor();
 	
 	// Comparing front left and front right sensor values.
-	if(sensor.distanceA0 < 25 and sensor.distanceA2 < 25)
+	if(sensor.distanceA0 < 14 and sensor.distanceA2 < 14)
 	{
 		error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 		
 		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
 		
-		while(abs(error) > error_margin and sensor.distanceA0 < 25 and sensor.distanceA2 < 25)
+		for(int i = 0; i < 10; i++)
 		{
-			Serial.println("Comparing A0 AND A2.");
-				
-			// If the robot front is too close to an obstacle.
-			if(error < 0)
+			if(abs(error) > error_margin and sensor.distanceA0 < 14 and sensor.distanceA2 < 14)
 			{
-				Serial.println("Too close to front. Moving backwards for correction.");
-				motorShield.setSpeeds(-110,-100);
+				Serial.println("Comparing A0 AND A2.");
+					
+				// If the robot front is too close to an obstacle.
+				if(error < 0)
+				{
+					Serial.println("Too close to front. Moving backwards for correction.");
+					motorShield.setSpeeds(-110,-100);
+				}
+				// If the robot front is too far from an obstacle.
+				else if(error > 0)
+				{
+					Serial.println("Too far from front. Moving forwards for correction.");
+					motorShield.setSpeeds(110,100);
+				}
+					
+				// Read in the sensor values.
+				sensor.readSensor();
+				error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 			}
-			// If the robot front is too far from an obstacle.
-			else if(error > 0)
-			{
-				Serial.println("Too far from front. Moving forwards for correction.");
-				motorShield.setSpeeds(110,100);
-			}
-				
-			// Read in the sensor values.
-			sensor.readSensor();
-			error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 		}
 		motorShield.setBrakes(400, 400);
 		delay(500);
@@ -51,36 +54,38 @@ void Movement::frontDistanceCheck()
 void Movement::rightDistanceCheck()
 {
 	// First calibrate by right, then by front.
-	rightTiltCheck();
-	delay(100);
+	//rightTiltCheck();
+	//delay(100);
 	frontDistanceCheck();
-	delay(100);
+	delay(50);
+	frontTiltCheck();
+	delay(50);
 	
 	// Read sensor values and determine if the right side of the robot is too far or close to the wall.
 	sensor.readSensor();
 	
-	if((sensor.distanceA3 < 7 and sensor.distanceA4 < 7) or (sensor.distanceA3 > 14 and sensor.distanceA4 > 14 and sensor.distanceA3 < 20 and sensor.distanceA4 < 20))
-	{
+	//if((sensor.distanceA3 < 6 and sensor.distanceA4 < 6) or (sensor.distanceA3 > 12 and sensor.distanceA4 > 12 and sensor.distanceA3 < 20 and sensor.distanceA4 < 20))
+	//{
 		// CHECKING BOTH FRONT AND RIGHT, FRONT FIRST THEN RIGHT.
-		Serial.println("Right side too close or far.");
+		//Serial.println("Right side too close or far.");
 		
 		// Rotate the robot right.
 		distsub = 1;
 		rotate90right();
-		delay(100);
+		delay(50);
 		
 		// Calibrate by front of the robot, which would now be facing right.
 		frontDistanceCheck();
-		delay(100);
+		delay(50);
 		
 		// Rotate the robot left.
 		distsub = 1;
 		rotate90left();
-		delay(100);
+		delay(50);
 		
 		// Perform right side calibration.
 		rightTiltCheck();
-	}
+	//}
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -101,7 +106,7 @@ void Movement::frontTiltCheck()
 		
 		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2); Serial.print(" Error: ");Serial.println(error); 
 		
-		for(int i = 0; i < 15; i++)
+		for(int i = 0; i < 10; i++)
 		{
 			if(abs(error) > error_margin and (sensor.distanceA0) < 25 and sensor.distanceA2 < 25)
 			{
