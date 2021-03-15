@@ -120,7 +120,7 @@ void loop()
                 break;
 
       // Calibrate by the front for both distance and tilt.
-      case 'W': //robot.frontDistanceCheck();
+      case 'W': robot.frontDistanceCheck();
                 //delay(100);
                 robot.frontTiltCheck();
                 Serial.println("ALG|CF");
@@ -128,7 +128,7 @@ void loop()
                 break;
                 
       // Calibrate by the right for both distance and tilt.
-      case 'D': //robot.rightDistanceCheck();
+      case 'D': robot.rightDistanceCheck();
                 //delay(100);
                 robot.rightTiltCheck();
                 Serial.println("ALG|CR");
