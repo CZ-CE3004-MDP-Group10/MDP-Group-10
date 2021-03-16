@@ -17,6 +17,7 @@ class Movement
 	// Movement variables.
 	int distsub;
 	int distsubConstant;
+	int i;
 	float error;
 	float error_margin;
 	float perfDist;

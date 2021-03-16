@@ -57,14 +57,17 @@ void Movement::forwards()
 	{
 		// If it is moving straight but not after a transition, iterate through the switch case
 		// Statement with each decrement of distsub.
-		loopSwitchCase = true;
+		//loopSwitchCase = true;
+		
+		pid.M1_ticks_to_move = 220 - pid.M1_ticks_diff; //OK
+		pid.M2_ticks_to_move = 220 - pid.M2_ticks_diff; //OK
 	}
 
 	// Keep running while it is executing a command and has not reached the last step.
 	while(distsub > 0)
 	{
 		// If it is not the first transition after rotation and distsub is not equal to 1.
-		if(loopSwitchCase)
+		/*if(loopSwitchCase)
 		{
 			// To account for discrepancies in the distance moving forward, we need to include a switch case
 			// Statement here with 5 cases for 5 possible step distances when moving forwards up to 5 steps.
@@ -100,7 +103,7 @@ void Movement::forwards()
 						 pid.M2_ticks_to_move = 0;
 						 break;
 			}
-		}
+		}*/
 	
 		// Both motors have positive speed values.
 		pid.control(1,1);
@@ -194,7 +197,7 @@ void Movement::rotate90left()
 // Rotate Right 90 Degrees.
 void Movement::rotate90right()
 {
-	Serial.println("Called rotate right");
+	//Serial.println("Called rotate right");
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
@@ -334,12 +337,12 @@ void Movement::stopIfFault()
 {
 	if (motorShield.getM1Fault())
 	{
-		Serial.println("Left motor fault.");
+		//Serial.println("Left motor fault.");
 		//while(1);
 	}
 	if (motorShield.getM2Fault())
 	{
-		Serial.println("Right motor fault.");
+		//Serial.println("Right motor fault.");
 		//while(1);
 	}
 }

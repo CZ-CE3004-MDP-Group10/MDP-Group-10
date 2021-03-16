@@ -41,8 +41,28 @@ void setup()
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
   // Introduce an initial delay to prevent power up surges from interfering.
-  delay(1000);
+  //delay(1000);
+
+  // Infinite while loop waits for the starting command from the algorithm.
+  while(Serial.available() <= 0);
+
+  // Clear out the whole buffer.
+  readChar = Serial.read();
+  delay(5);
+  readChar = Serial.read();
+  delay(5);
+  readChar = Serial.read();
+  delay(5);
+  readChar = Serial.read();
+  delay(5);
+  readChar = Serial.read();
+  delay(5);
+
+  // Indicate to the algorithm that the robot is ready.
+  //delay(1000);
   Serial.println("ALG|Robot Ready.");
+  robot.readSensor();
+  robot.printSensor();
 }
 
 // LOOPING.
@@ -58,35 +78,19 @@ void loop()
     // If there is serial data received via USB.
     if(Serial.available() > 0)
     {
-      receiveData = Serial.readStringUntil("\n");
-	  
-	  // Remove the "ARD|" header at the beginning of the string to extract only the command.
-      receiveData = receiveData.substring(4,6);
-
-      // Break out of the while loop once a command has been received.
+      Serial.read();
+      delay(5);
+      Serial.read();
+      delay(5);
+      Serial.read();
+      delay(5);
+      Serial.read();
+      delay(5);
+      readChar = Serial.read();
       break;
     }
   }
-  
-  // Read the movement character command.
-  readChar = receiveData.charAt(0);
-  
-  // If the command is not for calibration or sensor readings.
-  if(readChar != 'C' and readChar != 'S')
-  {
-	// Get the number of steps the robot should move in the particular direction.
-    robot.distsub = receiveData.substring(1).toInt();
-  }
-	  
-  // If the command is meant for calibration, check the second character of the substring.
-  else if(readChar == 'C')
-  {
-    // Perform front calibration.
-    if(receiveData.charAt(1) == 'F') {readChar = 'W';}
-		
-	// Perform right side calibration.
-    else if(receiveData.charAt(1) == 'R') {readChar = 'D';}
-  }
+  robot.distsub = 1;
       
 // ---------------------------------------------------------
   
@@ -96,47 +100,60 @@ void loop()
     {
       // Move forward.
       case 'F': robot.forwards();
-                // Acknowlegdement string to send to the Android to update the movement.
+                // Acknowledgement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(receiveData.substring(1).toInt()); Serial.println("]");
-                Serial.println("ALG|DMV");
+                //Serial.println("ALG|DMV");
+                delay(10);
+
+                // Return sensor data to the algorithm after each movement.
+                robot.readSensor();
+                robot.printSensor();
                 break;
 
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                Serial.println("ALG|DMV");
+                //Serial.println("ALG|DMV");
+                delay(10);
+                robot.readSensor();
+                robot.printSensor();
                 break;
   
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                Serial.println("ALG|DMV");
+                //Serial.println("ALG|DMV");
+                delay(10);
+                robot.readSensor();
+                robot.printSensor();
                 break;
   
       // Rotate 180 degrees from the left.
       case 'B': robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                Serial.println("ALG|DMV");
+                //Serial.println("ALG|DMV");
+                delay(10);
+                robot.readSensor();
+                robot.printSensor();
                 break;
 
       // Calibrate by the front for both distance and tilt.
       case 'W': robot.frontDistanceCheck();
                 //delay(100);
                 robot.frontTiltCheck();
-                Serial.println("ALG|CF");
-                Serial.println("ALG|DMV");
+                Serial.println("ALG|W");
+                delay(50);
+                robot.readSensor();
+                robot.printSensor();
                 break;
                 
       // Calibrate by the right for both distance and tilt.
       case 'D': robot.rightDistanceCheck();
                 //delay(100);
                 robot.rightTiltCheck();
-                Serial.println("ALG|CR");
-                Serial.println("ALG|DMV");
-                break;
-  
-      // Return sensor data to algorithm.
-      case 'S': robot.readSensor();
+                Serial.println("ALG|D");
+                delay(50);
+                robot.readSensor();
                 robot.printSensor();
                 break;
 
