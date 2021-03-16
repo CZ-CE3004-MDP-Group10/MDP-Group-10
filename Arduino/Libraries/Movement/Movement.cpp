@@ -12,8 +12,10 @@ void Movement::init()
 	
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
-	loopSwitchCase = true;
-	lastCommand = false;
+	
+	// The following variables are only needed for fastest path, not exploration or image recognition.
+	//loopSwitchCase = true;
+	//lastCommand = false;
 	
 	// Correction parameters for robot calibration.
 	error = 0.0;
@@ -48,10 +50,15 @@ void Movement::forwards()
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
 		
+// ########################################################
+		// FOR FASTEST PATH, UNCOMMENT THIS PORTION.
+		// FOR EXPLORATION, COMMENT THIS PORTION.
+		
 		// If it is moving straight after a rotation transition, the switch case within the while
 		// Loop body for forward movement below should not run at all.
 		// The tick value set above will then move the robot one step forward.
-		loopSwitchCase = false;
+		//loopSwitchCase = false;
+// ########################################################
 	}
 	else
 	{
@@ -67,7 +74,12 @@ void Movement::forwards()
 	while(distsub > 0)
 	{
 		// If it is not the first transition after rotation and distsub is not equal to 1.
-		/*if(loopSwitchCase)
+		
+// ########################################################
+		// FOR FASTEST PATH, UNCOMMENT THIS PORTION.
+		// FOR EXPLORATION, COMMENT THIS PORTION.
+		/*
+		if(loopSwitchCase)
 		{
 			// To account for discrepancies in the distance moving forward, we need to include a switch case
 			// Statement here with 5 cases for 5 possible step distances when moving forwards up to 5 steps.
@@ -104,6 +116,7 @@ void Movement::forwards()
 						 break;
 			}
 		}*/
+// ########################################################
 	
 		// Both motors have positive speed values.
 		pid.control(1,1);
@@ -266,8 +279,9 @@ void Movement::stopIfReached()
 		// Decrement the number of steps left to travel.
 		distsub--;
 		
-		// ################################################################################
-		// COMMENT THIS PORTION BETWEEN THE HEX LINES FOR FASTEST PATH RUN ONLY.
+// ########################################################
+		// FOR FASTEST PATH, UNCOMMENT THIS PORTION.
+		// FOR EXPLORATION, COMMENT THIS PORTION.
 		
 		/*sensor.readSensor();
 		
@@ -279,7 +293,7 @@ void Movement::stopIfReached()
 			pid.M2_ticks_moved = pid.M1_ticks_to_move;
 			distsub = 0;
 		}*/
-		// ################################################################################
+// ########################################################
 
 		// The robot should only apply the brakes when it has finished the last step, 
 		// Before stopping and waiting for a command.

@@ -14,8 +14,7 @@
 #define encoder_M2_B 13  // Left motor output 2. Not used.
 
 // Variables for movement control when receiving commands for navigating around obstacles.
-char readChar = ' ';            // Command character indicating the direction to move.
-String receiveData;             // Holds the string for the command received.
+char readChar = ' ';            // Command character indicating the action to perform.
 
 // PID, sensor, motor shield, movement and correction objects are created in the movement file.
 Movement robot;
@@ -40,26 +39,21 @@ void setup()
   enableInterrupt(encoder_M1_A, right_tick_increment, RISING);
   enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
 
-  // Introduce an initial delay to prevent power up surges from interfering.
-  //delay(1000);
-
   // Infinite while loop waits for the starting command from the algorithm.
   while(Serial.available() <= 0);
 
-  // Clear out the whole buffer.
-  readChar = Serial.read();
-  delay(5);
-  readChar = Serial.read();
-  delay(5);
-  readChar = Serial.read();
-  delay(5);
-  readChar = Serial.read();
-  delay(5);
-  readChar = Serial.read();
-  delay(5);
+  // Once the starting command has been received, clear out the whole buffer.
+  for(int i = 0; i < 5; i++)
+  {
+    // Perform an empty serial read to clear a character out from the buffer.
+    Serial.read();
 
-  // Indicate to the algorithm that the robot is ready.
-  //delay(1000);
+    // Need to introduce a brief delay here for proper serial read above,
+    // Otherwise a race condition may lead to garbage data being read in.
+    delay(5);
+  }
+
+  // Indicate to the algorithm that the robot is ready after receiving the start command.
   Serial.println("ALG|Robot Ready.");
   robot.readSensor();
   robot.printSensor();
@@ -70,7 +64,6 @@ void loop()
 {
   // Reset the character and string commands.
   readChar = ' ';
-  receiveData = " ";
 
   // Wait to receive a command.
   while(1)
@@ -78,18 +71,19 @@ void loop()
     // If there is serial data received via USB.
     if(Serial.available() > 0)
     {
-      Serial.read();
-      delay(5);
-      Serial.read();
-      delay(5);
-      Serial.read();
-      delay(5);
-      Serial.read();
-      delay(5);
+      // Skip 4 characters to strip off the "ARD|" header.
+      for(int i = 0; i < 4; i++)
+      {
+        Serial.read();
+        delay(5);
+      }
+
+      // After stripping the header, read the command character.
       readChar = Serial.read();
       break;
     }
   }
+  // The robot always moves one step at a time for image recognition or exploration.
   robot.distsub = 1;
       
 // ---------------------------------------------------------
@@ -101,8 +95,7 @@ void loop()
       // Move forward.
       case 'F': robot.forwards();
                 // Acknowledgement string to send to the Android to update the movement.
-                Serial.print("AND|MOV("); Serial.print(readChar); Serial.print(")["); Serial.print(receiveData.substring(1).toInt()); Serial.println("]");
-                //Serial.println("ALG|DMV");
+                Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 delay(10);
 
                 // Return sensor data to the algorithm after each movement.
@@ -113,7 +106,6 @@ void loop()
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //Serial.println("ALG|DMV");
                 delay(10);
                 robot.readSensor();
                 robot.printSensor();
@@ -122,7 +114,6 @@ void loop()
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //Serial.println("ALG|DMV");
                 delay(10);
                 robot.readSensor();
                 robot.printSensor();
@@ -131,7 +122,6 @@ void loop()
       // Rotate 180 degrees from the left.
       case 'B': robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                //Serial.println("ALG|DMV");
                 delay(10);
                 robot.readSensor();
                 robot.printSensor();
@@ -142,6 +132,9 @@ void loop()
                 //delay(100);
                 robot.frontTiltCheck();
                 Serial.println("ALG|W");
+
+                // A longer delay is needed here to prevent the strings from being
+                // Accidentally concatenated when sent to the Raspberry Pi.
                 delay(50);
                 robot.readSensor();
                 robot.printSensor();
