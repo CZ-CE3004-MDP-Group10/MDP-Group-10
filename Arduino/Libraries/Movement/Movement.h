@@ -18,6 +18,7 @@ class Movement
 	int distsub;
 	int distsubConstant;
 	int i;
+	int limit;
 	float error;
 	float error_margin;
 	float perfDist;

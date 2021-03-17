@@ -21,6 +21,7 @@ void Movement::init()
 	error = 0.0;
 	error_margin = 0.0;
 	perfDist = 0.0;
+	limit = 14;
 }
 
 // Move Forwards.
