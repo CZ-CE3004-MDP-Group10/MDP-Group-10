@@ -53,34 +53,43 @@ void Movement::frontDistanceCheck()
 // Check if the robot is the correct distance from the right side wall.
 void Movement::rightDistanceCheck()
 {
-	// Read sensor values and determine if the right side of the robot is too far or close to the wall.
+	// Align the robot with the right wall.
 	rightTiltCheck();
-	limit = 24;
+	sensor.readSensor();
 	
-	// CHECKING BOTH FRONT AND RIGHT, FRONT FIRST THEN RIGHT.
-	//Serial.println("Right side too close or far.");
+	// If the robot is at a distance too close to, or far from the right side wall.
+	if((sensor.distanceA3 < 8 and sensor.distanceA4 < 8) or 
+	(sensor.distanceA3 > 11 and sensor.distanceA3 < 15 and sensor.distanceA4 > 11 and sensor.distanceA4 < 15)) 
+	{
+		// This limit value determines if the robot should move closer towards the right side wall,
+		// When it is more than one step out of position away from the wall.
+		limit = 24;
 		
-	// Rotate the robot right.
-	distsub = 1;
-	rotate90right();
-	delay(50);
+		// Rotate the robot right.
+		distsub = 1;
+		rotate90right();
+		delay(50);
+			
+		// Calibrate by front of the robot, which would now be facing right.
+		frontDistanceCheck();
+		delay(50);
+			
+		// Rotate the robot left.
+		distsub = 1;
+		rotate90left();
+		delay(50);
+			
+		// Perform right side calibration.
+		rightTiltCheck();
 		
-	// Calibrate by front of the robot, which would now be facing right.
-	frontDistanceCheck();
-	delay(50);
-		
-	// Rotate the robot left.
-	distsub = 1;
-	rotate90left();
-	delay(50);
-		
-	// Perform right side calibration.
-	rightTiltCheck();
-	limit = 14;
+		// Reset the limit value so that if the robot is called to calibrate by the front, and there is supposed
+		// To be one empty step space ahead of it, it will not move forward into that empty space and misalign
+		// Itself with the map on the algorithm and the android.
+		limit = 14;
+	}
 }
 
 // ---------------------------------------------------------------------------------------------
-// FRONT SIDE TILT CHECK IS OK, NO NEED TO CHANGE FURTHER.
 // Check and correct tilt angle using front sensors.
 void Movement::frontTiltCheck()
 {
@@ -95,7 +104,7 @@ void Movement::frontTiltCheck()
 	{
 		error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2 - 0.4);
 		
-		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+		//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
 		
 		for(i = 0; i < 15; i++)
 		{
@@ -103,7 +112,7 @@ void Movement::frontTiltCheck()
 			{
 				if(error > 0)
 				{
-					Serial.println("A0, A2, Tilted left. Tilting right for correction.");
+					//Serial.println("A0, A2, Tilted left. Tilting right for correction.");
 					motorShield.setSpeeds(100,-100);
 					delay(50);
 					motorShield.setBrakes(400, 400);
@@ -115,7 +124,7 @@ void Movement::frontTiltCheck()
 				
 				else if(error < 0)
 				{
-					Serial.println("A0, A2, Tilted right. Tilting left for correction.");
+					//Serial.println("A0, A2, Tilted right. Tilting left for correction.");
 					motorShield.setSpeeds(-100,100);
 					delay(50);
 					motorShield.setBrakes(400, 400);
@@ -125,7 +134,7 @@ void Movement::frontTiltCheck()
 					error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2 - 0.4);
 				}
 				
-				Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+				//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
 			}
 		}
 		motorShield.setBrakes(400, 400);
@@ -134,7 +143,6 @@ void Movement::frontTiltCheck()
 }
 
 // ---------------------------------------------------------------------------------------------
-// RIGHT SIDE TILT CHECK IS OK, NO NEED TO CHANGE FURTHER.
 // Check and correct tilt angle using right side sensors.
 void Movement::rightTiltCheck()
 {	

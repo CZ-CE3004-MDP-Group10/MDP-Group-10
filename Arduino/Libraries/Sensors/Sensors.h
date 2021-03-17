@@ -2,7 +2,6 @@
 
 // Include Arduino library for reading of analog pin values.
 #include <Arduino.h>
-#include "KickSort.h"
 
 class Sensors
 {
@@ -16,14 +15,17 @@ class Sensors
 	double sensorA3_avg;	// Proximity Sensor 4 on board - RIGHT SIDE FRONT SENSOR.
 	double sensorA4_avg;	// Proximity Sensor 5 on board - RIGHT SIDE BACK SENSOR.
 	double sensorA5_avg;	// Proximity Sensor 6 on board - FACING LEFT LONG RANGE SENSOR.
-	//int count;
-	
+
+	// Arrays to hold a collection of 20 sensor analog values captured at a time.
 	double sensorA0_list[20];
 	double sensorA1_list[20];
 	double sensorA2_list[20];
 	double sensorA3_list[20];
 	double sensorA4_list[20];
 	double sensorA5_list[20];
+	int temp;
+	int i;
+	int j;
 
 	// Stores the converted distance based on sensor analog value.
 	double distanceA0;
@@ -48,4 +50,5 @@ class Sensors
 	void print(void);
 	double calculateDist1(double dist);
 	double calculateDist2(double dist);
+	void sortReadings(double *list);
 };

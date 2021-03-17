@@ -6,7 +6,7 @@
 // Define sensor variables.
 void Sensors::init()
 {
-	//count = 0;
+	temp = 0;
 	
 	// Float variables to hold the voltage value of the sensor outputs.
 	sensorA0_avg = 0.0;		// Proximity Sensor 1 on board - FRONT LEFT SENSOR.
@@ -33,6 +33,25 @@ void Sensors::init()
 	obstacleA5 = 0;
 }
 
+// For each sensor's array of 20 captured readings, first arrange them from highest to lowest.
+void Sensors::sortReadings(double *list)
+{
+	for(i = 0; i < 19; i++)
+	{
+		for(j = 0; j < 20 - i - 1; j++)
+		{
+			if(list[j] > list[j+1]) 
+			{
+				temp = list[i];
+				list[i] = list[i + 1];
+				list[i + 1] = temp;
+			}
+		}
+	}
+	
+	
+}
+
 // Read and obtain the average of all sensor's analog values.
 void Sensors::readSensor()
 {
@@ -54,6 +73,14 @@ void Sensors::readSensor()
 		sensorA4_list[count] = analogRead(A4);
 		sensorA5_list[count] = analogRead(A5);
 	}
+	
+	// Sort the sensor analog readings from lowest to highest.
+	sortReadings(sensorA0_list);
+	sortReadings(sensorA1_list);
+	sortReadings(sensorA2_list);
+	sortReadings(sensorA3_list);
+	sortReadings(sensorA4_list);
+	sortReadings(sensorA5_list);
 	
 	// Take only the middle 10 readings out of the 20 samples for each sensor.
 	for(int i = 5; i < 15; i++)
