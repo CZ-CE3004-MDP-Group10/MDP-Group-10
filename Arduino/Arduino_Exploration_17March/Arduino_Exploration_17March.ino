@@ -20,6 +20,8 @@ char readChar = ' ';            // Command character indicating the action to pe
 // PID, sensor, motor shield, movement and correction objects are created in the movement file.
 Movement robot;
 
+bool stillrunning = true;
+
 // SETUP.
 void setup()
 {
@@ -67,7 +69,7 @@ void loop()
   readChar = ' ';
 
   // Wait to receive a command.
-  while(1)
+  while(1 and stillrunning)
   { 
     // If there is serial data received via USB.
     if(Serial.available() > 0)
@@ -149,6 +151,9 @@ void loop()
                 delay(50);
                 robot.readSensor();
                 robot.printSensor();
+                break;
+
+      case 'G': stillrunning = false;
                 break;
 
 	  // If an invalid character is received.
