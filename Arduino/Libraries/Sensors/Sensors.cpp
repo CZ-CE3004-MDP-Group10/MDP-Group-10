@@ -119,15 +119,15 @@ void Sensors::doOffsets()
 	else if(distanceA0 > 65 and distanceA0 < 70) {distanceA0 += 2;}
 
 	// SENSOR 2 CALCULATION AND OFFSETS:
-	distanceA1 = -3.53939 + (5891.966 / (sensorA1_avg - 11.84241));
-	if(distanceA1 < 10) {distanceA1 += 1;}
-	else if(distanceA1 > 15 and distanceA1 < 20) {distanceA1 += 1;}
+	distanceA2 = -3.53939 + (5891.966 / (sensorA2_avg - 11.84241));
+	if(distanceA2 < 10) {distanceA2 += 1;}
+	else if(distanceA2 > 15 and distanceA2 < 20) {distanceA2 += 1;}
 
 	// SENSOR 3 CALCULATION AND OFFSETS:
-	distanceA2 = 1.41294 + (4269.218 / (sensorA2_avg - 28.92149));
-	if(distanceA2 > 10 and distanceA2 < 40) {distanceA2 += 1;}
-	else if(distanceA2 > 55 and distanceA2 < 60) {distanceA2 += 1;}
-	else if(distanceA2 > 65) {distanceA2 += 2;}
+	distanceA1 = 1.41294 + (4269.218 / (sensorA1_avg - 28.92149));
+	if(distanceA1 > 10 and distanceA1 < 40) {distanceA1 += 1;}
+	else if(distanceA1 > 55 and distanceA1 < 60) {distanceA1 += 1;}
+	else if(distanceA1 > 65) {distanceA1 += 2;}
   
 	// SENSOR 4 CALCULATION AND OFFSETS:
 	distanceA3 = 0.252644 + (4894.633 / (sensorA3_avg - 26.90775));
@@ -159,21 +159,6 @@ void Sensors::doOffsets()
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
 double Sensors::calculateDist1(double dist)
 {
-	// IF THE OBSTACLE NEXT TO ROBOT IS TREATED AS WITHIN BLIND SPOT.
-	/*
-	// Within blind spot.
-	if(dist < 13) {return -1;}
-	
-	// Too far to be detected.
-	else if(dist >= 35) {return 0;}
-	
-	// Obstacle is 1 step away.
-	else if(dist >= 13 and dist < 25) {return 1;}
-	
-	// Obstacle is 2 steps away.
-	else if(dist >= 25 and dist < 35) {return 2;}
-	*/
-
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
 	// Obstacle is 1 step away.
 	if(dist < 13) {return 1;}
@@ -185,33 +170,22 @@ double Sensors::calculateDist1(double dist)
 	else if(dist >= 13 and dist < 25) {return 2;}
 }
 
-// Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
 double Sensors::calculateDist2(double dist)
 {
-	// IF THE OBSTACLE NEXT TO ROBOT IS TREATED AS WITHIN BLIND SPOT.
-	/*
-	// Within blind spot.
-	if(dist < 25) {return -1;}
+	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
+	// Obstacle is 1 step away.
+	if(dist < 15) {return 1;}
 	
 	// Too far to be detected.
-	else if(dist >= 50) {return 0;}
-	
-	// Obstacle is 1 step away.
-	else if( dist >= 25 and dist < 35) {return 1;}
+	else if(dist >= 24) {return 0;}
 	
 	// Obstacle is 2 steps away.
-	else if(dist >= 35 and dist < 38) {return 2;}
-	
-	// Obstacle is 3 steps away.
-	else if(dist >= 38 and dist < 41) {return 3;}
-	
-	// Obstacle is 4 steps away.
-	else if(dist >= 41 and dist < 43) {return 4;}
-	
-	// Obstacle is 5 steps away.
-	else if(dist >= 43 and dist < 50) {return 5;}
-	*/
-	
+	else if(dist >= 15 and dist < 24) {return 2;}
+}
+
+// Convert distance into steps of 10cm from obstacle block for long range infrared sensor.
+double Sensors::calculateDist3(double dist)
+{	
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
 	// Obstacle is 1 step away.
 	if(dist < 22) {return 1;}
@@ -239,9 +213,9 @@ void Sensors::print()
 	obstacleA0 = calculateDist1(distanceA0);
 	obstacleA1 = calculateDist1(distanceA1);
 	obstacleA2 = calculateDist1(distanceA2);
-	obstacleA3 = calculateDist1(distanceA3);
-	obstacleA4 = calculateDist1(distanceA4);
-	obstacleA5 = calculateDist2(distanceA5);
+	obstacleA3 = calculateDist2(distanceA3);
+	obstacleA4 = calculateDist2(distanceA4);
+	obstacleA5 = calculateDist3(distanceA5);
 	
 	// Return the results to algorithm in terms of steps from obstacle.
 	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));

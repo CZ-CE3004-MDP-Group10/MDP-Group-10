@@ -8,7 +8,7 @@ void Movement::frontDistanceCheck()
 {
 	error = 0;
 	error_margin = 0.1;
-	perfDist = 9.5;
+	perfDist = 8;
 	
 	// Read in the sensor values.
 	sensor.readSensor();
@@ -58,9 +58,9 @@ void Movement::rightDistanceCheck()
 	sensor.readSensor();
 	
 	// If the robot is at a distance too close to, or far from the right side wall.
-	if((sensor.distanceA3 < 8 and sensor.distanceA4 < 8) or 
-	(sensor.distanceA3 > 11 and sensor.distanceA3 < 15 and sensor.distanceA4 > 11 and sensor.distanceA4 < 15)) 
-	{
+	//if((sensor.distanceA3 < 8 and sensor.distanceA4 < 8) or 
+	//(sensor.distanceA3 > 11 and sensor.distanceA3 < 15 and sensor.distanceA4 > 11 and sensor.distanceA4 < 15)) 
+	//{
 		// This limit value determines if the robot should move closer towards the right side wall,
 		// When it is more than one step out of position away from the wall.
 		limit = 24;
@@ -86,7 +86,7 @@ void Movement::rightDistanceCheck()
 		// To be one empty step space ahead of it, it will not move forward into that empty space and misalign
 		// Itself with the map on the algorithm and the android.
 		limit = 14;
-	}
+	//}
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -99,14 +99,21 @@ void Movement::frontTiltCheck()
 	
 	sensor.readSensor();
 	
+	// If there is at least 10cm difference between the sensors,
+	// The robot may be facing a staircase obstacle and should not calibrate.
+	if(abs(sensor.distanceA0 - sensor.distanceA2) > 10)
+	{
+		return;
+	}
+	
 	// Comparing front left and front right sensor values.
 	if(sensor.distanceA0 < 15 and sensor.distanceA2 < 15)
 	{
-		error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2 - 0.4);
+		error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
 		
-		//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+		//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.4); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
 		
-		for(i = 0; i < 15; i++)
+		for(i = 0; i < 10; i++)
 		{
 			if(abs(error) > error_margin and (sensor.distanceA0) < 20 and sensor.distanceA2 < 20)
 			{
@@ -119,7 +126,7 @@ void Movement::frontTiltCheck()
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2 - 0.4);
+					error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
 				}
 				
 				else if(error < 0)
@@ -131,10 +138,10 @@ void Movement::frontTiltCheck()
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 0.2) - (sensor.distanceA2 - 0.4);
+					error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
 				}
 				
-				//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+				//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.4); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
 			}
 		}
 		motorShield.setBrakes(400, 400);
@@ -152,9 +159,16 @@ void Movement::rightTiltCheck()
 	// Read in the sensor values.
 	sensor.readSensor();
 	
+	// If there is at least 10cm difference between the sensors,
+	// The robot may be facing a staircase obstacle and should not calibrate.
+	if(abs(sensor.distanceA3 - sensor.distanceA4) > 10)
+	{
+		return;
+	}
+	
 	if(sensor.distanceA3 < 20 and sensor.distanceA4 < 20)
 	{
-		error = (sensor.distanceA3 - 0.25) - (sensor.distanceA4 + 0.4);
+		error = (sensor.distanceA3 - 0.2) - (sensor.distanceA4 + 0.4);
 		
 		//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0.25); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4 + 0.4); Serial.print(" Error: ");Serial.println(error); 
 		
@@ -176,7 +190,7 @@ void Movement::rightTiltCheck()
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0.25) - (sensor.distanceA4 + 0.1);
+					error = (sensor.distanceA3 - 0.2) - (sensor.distanceA4 + 0.1);
 				}
 				
 				// If the robot is tilted right.
@@ -188,7 +202,7 @@ void Movement::rightTiltCheck()
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0.25) - (sensor.distanceA4 + 0.4);
+					error = (sensor.distanceA3 - 0.2) - (sensor.distanceA4 + 0.4);
 				}
 				
 				//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0.25); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4 + 0.4); Serial.print(" Error: ");Serial.println(error);

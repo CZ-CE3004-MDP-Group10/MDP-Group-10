@@ -18,19 +18,24 @@ void Movement::init()
 	//lastCommand = false;
 	
 	// Correction parameters for robot calibration.
+	rotateCount = 0;
 	error = 0.0;
 	error_margin = 0.0;
 	perfDist = 0.0;
 	limit = 14;
+	previousCommand = ' ';
 }
 
 // Move Forwards.
 void Movement::forwards()
 {
+// ########################################################
+	// FOR FASTEST PATH ONLY:
 	// The normal distsub value is used for decrementing the movement steps.
 	// The constant value distsub is used for the switch case operation to determine the number
 	// Of ticks that are required for steps 1 to 5.
-	distsubConstant = distsub;
+	//distsubConstant = distsub;
+// ########################################################
 	
 	// Reset the PID controller variables after each movement.
 	pid.setZero();
@@ -45,8 +50,8 @@ void Movement::forwards()
 		// Theoretically 298 ticks moves the robot forward by approximately 10cm.
 		//Serial.println("First Straight Transition.");
 
-		pid.M1_ticks_to_move = 220; //OK
-		pid.M2_ticks_to_move = 220; //OK
+		pid.M1_ticks_to_move = 235; //OK
+		pid.M2_ticks_to_move = 235; //OK
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
@@ -67,8 +72,8 @@ void Movement::forwards()
 		// Statement with each decrement of distsub.
 		//loopSwitchCase = true;
 		
-		pid.M1_ticks_to_move = 220 - pid.M1_ticks_diff; //OK
-		pid.M2_ticks_to_move = 220 - pid.M2_ticks_diff; //OK
+		pid.M1_ticks_to_move = 225 - pid.M1_ticks_diff; //OK
+		pid.M2_ticks_to_move = 225 - pid.M2_ticks_diff; //OK
 	}
 
 	// Keep running while it is executing a command and has not reached the last step.
@@ -180,6 +185,9 @@ void Movement::forwards()
 //*/
 // ########################################################
 	}
+	
+	// Reset the rotation count if the robot moves straight next.
+	rotateCount = 0;
 }
 
 // Rotate Left 90 Degrees.
@@ -190,8 +198,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 297; //OK
-	pid.M2_ticks_to_move = 337; //OK
+	pid.M1_ticks_to_move = 310; //OK
+	pid.M2_ticks_to_move = 350; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -206,6 +214,44 @@ void Movement::rotate90left()
 		delay(10);
 		stopIfRotated();
 	}
+	
+	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
+	if(previousCommand == 'R')
+	{
+		// Increment the counter that will determine if the robot is stuck in a loop.
+		rotateCount++;
+		
+		// If the robot has rotated left and right 2 times consecutively.
+		if(rotateCount >= 9)
+		{
+			// Move forward by a small amount to get the sensor out of the stuck zone.
+			pid.setZero();
+			pid.M1_ticks_diff = 0;
+			pid.M2_ticks_diff = 0;
+			pid.M1_ticks_to_move = 25; //OK
+			pid.M2_ticks_to_move = 25; //OK
+			distsub = 1;
+			straightTransition = false;
+			
+			while(distsub > 0)
+			{
+				pid.control(1,1);
+				motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+				stopIfFault();
+				delay(10);
+				stopIfReached();
+			}
+			// Reset the counter for being stuck in a loop.
+			rotateCount = 0;
+		}
+	}
+	else
+	{
+		// If the robot does not follow the consecutive left right sequence, reset the stuck loop counter.
+		rotateCount = 0;
+	}
+	// Set the previous command for checking in the next command.
+	previousCommand = 'L';
 }
 
 // Rotate Right 90 Degrees.
@@ -229,6 +275,44 @@ void Movement::rotate90right()
 		delay(10);
 		stopIfRotated();
 	}
+	
+	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
+	if(previousCommand == 'L')
+	{
+		// Increment the counter that will determine if the robot is stuck in a loop.
+		rotateCount++;
+		
+		// If the robot has rotated left and right 2 times consecutively.
+		if(rotateCount >= 9)
+		{
+			// Move forward by a small amount to get the sensor out of the stuck zone.
+			pid.setZero();
+			pid.M1_ticks_diff = 0;
+			pid.M2_ticks_diff = 0;
+			pid.M1_ticks_to_move = 25; //OK
+			pid.M2_ticks_to_move = 25; //OK
+			distsub = 1;
+			straightTransition = false;
+			
+			while(distsub > 0)
+			{
+				pid.control(1,1);
+				motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+				stopIfFault();
+				delay(10);
+				stopIfReached();
+			}
+			// Reset the counter for being stuck in a loop.
+			rotateCount = 0;
+		}
+	}
+	else
+	{
+		// If the robot does not follow the consecutive left right sequence, reset the stuck loop counter.
+		rotateCount = 0;
+	}
+	// Set the previous command for checking in the next command.
+	previousCommand = 'R';
 }
 
 // Rotate Left 180 Degrees.

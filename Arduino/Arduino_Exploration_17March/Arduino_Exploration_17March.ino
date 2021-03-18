@@ -99,7 +99,7 @@ void loop()
       case 'F': robot.forwards();
                 // Acknowledgement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(10);
+                delay(250);
 
                 // Return sensor data to the algorithm after each movement.
                 robot.readSensor();
@@ -109,7 +109,7 @@ void loop()
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(10);
+                delay(250);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -117,7 +117,7 @@ void loop()
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(10);
+                delay(250);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -125,7 +125,7 @@ void loop()
       // Rotate 180 degrees from the left.
       case 'B': robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(10);
+                delay(250);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -138,7 +138,7 @@ void loop()
 
                 // A longer delay is needed here to prevent the strings from being
                 // Accidentally concatenated when sent to the Raspberry Pi.
-                delay(50);
+                delay(250);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -148,7 +148,7 @@ void loop()
                 //delay(100);
                 robot.rightTiltCheck();
                 Serial.println("ALG|D");
-                delay(50);
+                delay(250);
                 robot.readSensor();
                 robot.printSensor();
                 break;

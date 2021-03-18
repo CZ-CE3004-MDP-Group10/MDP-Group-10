@@ -50,5 +50,6 @@ class Sensors
 	void print(void);
 	double calculateDist1(double dist);
 	double calculateDist2(double dist);
+	double calculateDist3(double dist);
 	void sortReadings(double *list);
 };

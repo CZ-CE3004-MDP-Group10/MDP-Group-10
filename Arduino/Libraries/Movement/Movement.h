@@ -19,9 +19,11 @@ class Movement
 	int distsubConstant;
 	int i;
 	int limit;
+	int rotateCount;
 	float error;
 	float error_margin;
 	float perfDist;
+	char previousCommand;
 	boolean straightTransition;
 	boolean loopSwitchCase;
 	boolean lastCommand;
