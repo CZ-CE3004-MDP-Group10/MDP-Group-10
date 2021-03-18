@@ -153,6 +153,12 @@ void loop()
                 robot.printSensor();
                 break;
 
+      // Read and send back sensor step readings.
+      case 'S': robot.readSensor();
+                robot.printSensor();
+                break;
+
+      // Stops the robot from running permenantly.
       case 'G': stillrunning = false;
                 break;
 
