@@ -188,6 +188,15 @@ void Movement::forwards()
 	
 	// Reset the rotation count if the robot moves straight next.
 	rotateCount = 0;
+	
+	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	sensor.readSensor();
+	
+	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	{
+		motorShield.setSpeeds(-110, -100);
+		delay(500);
+	}
 }
 
 // Rotate Left 90 Degrees.
@@ -252,6 +261,15 @@ void Movement::rotate90left()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'L';
+	
+	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	sensor.readSensor();
+	
+	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	{
+		motorShield.setSpeeds(-110, -100);
+		delay(500);
+	}
 }
 
 // Rotate Right 90 Degrees.
@@ -313,6 +331,15 @@ void Movement::rotate90right()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'R';
+	
+	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	sensor.readSensor();
+	
+	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	{
+		motorShield.setSpeeds(-110, -100);
+		delay(500);
+	}
 }
 
 // Rotate Left 180 Degrees.
@@ -334,6 +361,15 @@ void Movement::rotate180()
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
+	}
+	
+	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	sensor.readSensor();
+	
+	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	{
+		motorShield.setSpeeds(-110, -100);
+		delay(500);
 	}
 }
 

@@ -48,8 +48,6 @@ void Sensors::sortReadings(double *list)
 			}
 		}
 	}
-	
-	
 }
 
 // Read and obtain the average of all sensor's analog values.
@@ -119,15 +117,15 @@ void Sensors::doOffsets()
 	else if(distanceA0 > 65 and distanceA0 < 70) {distanceA0 += 2;}
 
 	// SENSOR 2 CALCULATION AND OFFSETS:
-	distanceA2 = -3.53939 + (5891.966 / (sensorA2_avg - 11.84241));
-	if(distanceA2 < 10) {distanceA2 += 1;}
-	else if(distanceA2 > 15 and distanceA2 < 20) {distanceA2 += 1;}
-
-	// SENSOR 3 CALCULATION AND OFFSETS:
 	distanceA1 = 1.41294 + (4269.218 / (sensorA1_avg - 28.92149));
 	if(distanceA1 > 10 and distanceA1 < 40) {distanceA1 += 1;}
 	else if(distanceA1 > 55 and distanceA1 < 60) {distanceA1 += 1;}
 	else if(distanceA1 > 65) {distanceA1 += 2;}
+
+	// SENSOR 3 CALCULATION AND OFFSETS:
+	distanceA2 = -3.53939 + (5891.966 / (sensorA2_avg - 11.84241));
+	if(distanceA2 < 10) {distanceA2 += 1;}
+	else if(distanceA2 > 15 and distanceA2 < 20) {distanceA2 += 1;}
   
 	// SENSOR 4 CALCULATION AND OFFSETS:
 	distanceA3 = 0.252644 + (4894.633 / (sensorA3_avg - 26.90775));

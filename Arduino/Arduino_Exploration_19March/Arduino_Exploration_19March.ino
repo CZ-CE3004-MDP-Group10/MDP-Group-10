@@ -56,6 +56,10 @@ void setup()
     delay(5);
   }
 
+  // Indicate to the android that the robot is starting its navigation.
+  Serial.println("AND|status(Running)");
+  delay(250);
+
   // Indicate to the algorithm that the robot is ready after receiving the start command.
   Serial.println("ALG|Robot Ready.");
   robot.readSensor();
@@ -99,7 +103,7 @@ void loop()
       case 'F': robot.forwards();
                 // Acknowledgement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(250);
+                delay(150);
 
                 // Return sensor data to the algorithm after each movement.
                 robot.readSensor();
@@ -109,7 +113,7 @@ void loop()
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(250);
+                delay(150);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -117,7 +121,7 @@ void loop()
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(250);
+                delay(150);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -125,7 +129,7 @@ void loop()
       // Rotate 180 degrees from the left.
       case 'B': robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(250);
+                delay(150);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -138,7 +142,7 @@ void loop()
 
                 // A longer delay is needed here to prevent the strings from being
                 // Accidentally concatenated when sent to the Raspberry Pi.
-                delay(250);
+                delay(150);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -148,18 +152,21 @@ void loop()
                 //delay(100);
                 robot.rightTiltCheck();
                 Serial.println("ALG|D");
-                delay(250);
+                delay(150);
                 robot.readSensor();
                 robot.printSensor();
                 break;
 
       // Read and send back sensor step readings.
-      case 'S': robot.readSensor();
+      case 'S': delay(150);
+                robot.readSensor();
                 robot.printSensor();
                 break;
 
       // Stops the robot from running permenantly.
       case 'G': stillrunning = false;
+                delay(150);
+                Serial.println("AND|status(Stopped)");
                 break;
 
 	  // If an invalid character is received.

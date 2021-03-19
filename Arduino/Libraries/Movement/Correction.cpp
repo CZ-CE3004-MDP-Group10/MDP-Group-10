@@ -44,6 +44,7 @@ void Movement::frontDistanceCheck()
 				error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 			}
 		}
+		// Stop the robot once it is at approxiately the right distance from the front of the wall.
 		motorShield.setBrakes(400, 400);
 		delay(500);
 	}
@@ -57,36 +58,31 @@ void Movement::rightDistanceCheck()
 	rightTiltCheck();
 	sensor.readSensor();
 	
-	// If the robot is at a distance too close to, or far from the right side wall.
-	//if((sensor.distanceA3 < 8 and sensor.distanceA4 < 8) or 
-	//(sensor.distanceA3 > 11 and sensor.distanceA3 < 15 and sensor.distanceA4 > 11 and sensor.distanceA4 < 15)) 
-	//{
-		// This limit value determines if the robot should move closer towards the right side wall,
-		// When it is more than one step out of position away from the wall.
-		limit = 24;
+	// This limit value determines if the robot should move closer towards the right side wall,
+	// When it is more than one step out of position away from the wall.
+	limit = 24;
 		
-		// Rotate the robot right.
-		distsub = 1;
-		rotate90right();
-		delay(50);
+	// Rotate the robot right.
+	distsub = 1;
+	rotate90right();
+	delay(50);
 			
-		// Calibrate by front of the robot, which would now be facing right.
-		frontDistanceCheck();
-		delay(50);
+	// Calibrate by front of the robot, which would now be facing right.
+	frontDistanceCheck();
+	delay(50);
 			
-		// Rotate the robot left.
-		distsub = 1;
-		rotate90left();
-		delay(50);
+	// Rotate the robot left.
+	distsub = 1;
+	rotate90left();
+	delay(50);
 			
-		// Perform right side calibration.
-		rightTiltCheck();
+	// Perform right side calibration.
+	rightTiltCheck();
 		
-		// Reset the limit value so that if the robot is called to calibrate by the front, and there is supposed
-		// To be one empty step space ahead of it, it will not move forward into that empty space and misalign
-		// Itself with the map on the algorithm and the android.
-		limit = 14;
-	//}
+	// Reset the limit value so that if the robot is called to calibrate by the front, and there is supposed
+	// To be one empty step space ahead of it, it will not move forward into that empty space and misalign
+	// Itself with the map on the algorithm and the android.
+	limit = 14;
 }
 
 // ---------------------------------------------------------------------------------------------
