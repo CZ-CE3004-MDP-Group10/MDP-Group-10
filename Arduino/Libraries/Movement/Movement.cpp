@@ -192,7 +192,7 @@ void Movement::forwards()
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
 	
-	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
 	{
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
@@ -265,7 +265,7 @@ void Movement::rotate90left()
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
 	
-	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
 	{
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
@@ -335,7 +335,7 @@ void Movement::rotate90right()
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
 	
-	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
 	{
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
@@ -366,7 +366,7 @@ void Movement::rotate180()
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
 	
-	if(sensor.distanceA0 < 5 or sensor.distanceA2 < 5)
+	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
 	{
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
