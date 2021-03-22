@@ -191,11 +191,16 @@ void Movement::forwards()
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
+	Serial.println(sensor.distanceA0);
+	Serial.println(sensor.distanceA2);
 	
-	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
+	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
+		//Serial.println("Too close to front, reversing.");
+		delay(250);
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
+		motorShield.setBrakes(400, 400);
 	}
 }
 
@@ -264,11 +269,16 @@ void Movement::rotate90left()
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
+	Serial.println(sensor.distanceA0);
+	Serial.println(sensor.distanceA2);
 	
-	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
+	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
+		//Serial.println("Too close to front, reversing.");
+		delay(250);
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
+		motorShield.setBrakes(400, 400);
 	}
 }
 
@@ -279,8 +289,8 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 333; //OK
-	pid.M2_ticks_to_move = 333; //OK
+	pid.M1_ticks_to_move = 340; //OK
+	pid.M2_ticks_to_move = 337; //OK
 
 	straightTransition = true;
 
@@ -334,11 +344,16 @@ void Movement::rotate90right()
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
+	Serial.println(sensor.distanceA0);
+	Serial.println(sensor.distanceA2);
 	
-	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
+	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
+		//Serial.println("Too close to front, reversing.");
+		delay(250);
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
+		motorShield.setBrakes(400, 400);
 	}
 }
 
@@ -365,11 +380,16 @@ void Movement::rotate180()
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
+	Serial.println(sensor.distanceA0);
+	Serial.println(sensor.distanceA2);
 	
-	if((sensor.distanceA0 < 5 and sensor.distanceA2 > 5) or (sensor.distanceA0 > 5 and sensor.distanceA2 < 5))
+	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
+		//Serial.println("Too close to front, reversing.");
+		delay(250);
 		motorShield.setSpeeds(-110, -100);
 		delay(500);
+		motorShield.setBrakes(400, 400);
 	}
 }
 

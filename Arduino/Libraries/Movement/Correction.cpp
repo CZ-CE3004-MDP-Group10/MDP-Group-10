@@ -111,7 +111,7 @@ void Movement::frontTiltCheck()
 		
 		for(i = 0; i < 10; i++)
 		{
-			if(abs(error) > error_margin and (sensor.distanceA0) < 20 and sensor.distanceA2 < 20)
+			if(abs(error) > error_margin and (sensor.distanceA0) < 10 and sensor.distanceA2 < 10)
 			{
 				if(error > 0)
 				{
@@ -172,7 +172,7 @@ void Movement::rightTiltCheck()
 		// Number of iterations must be sufficient to cater for the maximum tilt error during run.
 		for(i = 0; i < 10; i++)
 		{
-			if(abs(error) > error_margin and sensor.distanceA3 < 20 and sensor.distanceA4 < 20)
+			if(abs(error) > error_margin and sensor.distanceA3 < 10 and sensor.distanceA4 < 10)
 			{
 				// Perform adjustments if the values are different.
 				// Tilt must be significant enough for sensors to detect at least 1cm difference.

@@ -16,11 +16,10 @@
 
 // Variables for movement control when receiving commands for navigating around obstacles.
 char readChar = ' ';            // Command character indicating the action to perform.
+bool stillrunning = true;       // Determines if the robot continues running or permenantly halts to stop.
 
 // PID, sensor, motor shield, movement and correction objects are created in the movement file.
 Movement robot;
-
-bool stillrunning = true;
 
 // SETUP.
 void setup()
