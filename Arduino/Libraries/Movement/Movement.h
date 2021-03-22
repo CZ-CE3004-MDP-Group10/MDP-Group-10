@@ -25,8 +25,9 @@ class Movement
 	float perfDist;
 	char previousCommand;
 	boolean straightTransition;
-	boolean loopSwitchCase;
-	boolean lastCommand;
+	//boolean loopSwitchCase;
+	//boolean lastCommand;
+	boolean calibrateRightRotate;
 	
 	// Movement functions.
 	void init(void);

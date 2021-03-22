@@ -12,6 +12,7 @@ void Movement::init()
 	
 	// Boolean variables determine movement transition state.
 	straightTransition = true;
+	calibrateRightRotate = false;
 	
 	// The following variables are only needed for fastest path, not exploration or image recognition.
 	//loopSwitchCase = true;
@@ -50,8 +51,8 @@ void Movement::forwards()
 		// Theoretically 298 ticks moves the robot forward by approximately 10cm.
 		//Serial.println("First Straight Transition.");
 
-		pid.M1_ticks_to_move = 235; //OK
-		pid.M2_ticks_to_move = 235; //OK
+		pid.M1_ticks_to_move = 225; //OK
+		pid.M2_ticks_to_move = 225; //OK
 
 		// Set boolean values to account for observed transition accuracy errors.
 		straightTransition = false;
@@ -291,6 +292,14 @@ void Movement::rotate90right()
 		
 	pid.M1_ticks_to_move = 340; //OK
 	pid.M2_ticks_to_move = 337; //OK
+	
+	// When rotating right during right wall calibration, right turn is observed to fall short.
+	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
+	if(calibrateRightRotate)
+	{
+		pid.M1_ticks_to_move = 380; //OK
+		pid.M2_ticks_to_move = 377; //OK
+	}
 
 	straightTransition = true;
 
