@@ -8,11 +8,15 @@ void Movement::frontDistanceCheck()
 {
 	error = 0;
 	error_margin = 0.1;
+	
+	// Specify the distance of the robot's front sensors from the obstacle or wall in front of it.
 	perfDist = 8;
 	
 	// Read in the sensor values.
 	sensor.readSensor();
 	
+	// If the distance between the frontmost left and right sensors is greater than a specific threshold,
+	// The robot is possibly facing a staircase shaped obstacle and should not calibrate.
 	if(abs(sensor.distanceA0 - sensor.distanceA2) > 6)
 	{
 		return;
@@ -109,8 +113,8 @@ void Movement::frontTiltCheck()
 	
 	sensor.readSensor();
 	
-	// If there is at least 5cm difference between the sensors,
-	// The robot may be facing a staircase obstacle and should not calibrate.
+	// If the distance between the frontmost left and right sensors is greater than a specific threshold,
+	// The robot is possibly facing a staircase shaped obstacle and should not calibrate.
 	if(abs(sensor.distanceA0 - sensor.distanceA2) > 6)
 	{
 		return;
@@ -169,8 +173,8 @@ void Movement::rightTiltCheck()
 	// Read in the sensor values.
 	sensor.readSensor();
 	
-	// If there is at least 5cm difference between the sensors,
-	// The robot may be facing a staircase obstacle and should not calibrate.
+	// If the distance between the right side front and back sensors is greater than a specific threshold,
+	// The robot is possibly facing a staircase shaped obstacle on the right and should not calibrate.
 	if(abs(sensor.distanceA3 - sensor.distanceA4) > 6)
 	{
 		return;

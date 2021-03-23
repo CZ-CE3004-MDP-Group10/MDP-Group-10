@@ -102,7 +102,7 @@ void loop()
       case 'F': robot.forwards();
                 // Acknowledgement string to send to the Android to update the movement.
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(150);
+                delay(100);
 
                 // Return sensor data to the algorithm after each movement.
                 robot.readSensor();
@@ -112,7 +112,7 @@ void loop()
       // Rotate to the left by 90 degrees.
       case 'L': robot.rotate90left();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(150);
+                delay(100);
                 robot.readSensor();
                 robot.printSensor();
                 break;
@@ -120,12 +120,12 @@ void loop()
       // Rotate to the right by 90 degrees.
       case 'R': robot.rotate90right();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
-                delay(150);
+                delay(100);
                 robot.readSensor();
                 robot.printSensor();
                 break;
   
-      // Rotate 180 degrees from the left.
+      // Rotate 180 degrees from the left, not used for the time being.
       case 'B': /*robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 delay(150);
@@ -135,7 +135,7 @@ void loop()
 
       // Calibrate by the front for both distance and tilt.
       case 'W': robot.frontDistanceCheck();
-                //delay(100);
+                delay(50);
                 robot.frontTiltCheck();
                 Serial.println("ALG|W");
 
@@ -148,23 +148,23 @@ void loop()
                 
       // Calibrate by the right for both distance and tilt.
       case 'D': robot.rightDistanceCheck();
-                //delay(100);
+                delay(50);
                 robot.rightTiltCheck();
                 Serial.println("ALG|D");
-                delay(150);
+                delay(100);
                 robot.readSensor();
                 robot.printSensor();
                 break;
 
       // Read and send back sensor step readings.
-      case 'S': delay(150);
+      case 'S': delay(100);
                 robot.readSensor();
                 robot.printSensor();
                 break;
 
-      // Stops the robot from running permenantly.
-      case 'G': stillrunning = false;
-                delay(150);
+      // Stops the robot from running permenantly, requiring a reset afterwards. Use only as a last resort.
+      case 'G': //stillrunning = false;
+                delay(100);
                 Serial.println("AND|status(Stopped)");
                 break;
 

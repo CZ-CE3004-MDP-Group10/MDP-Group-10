@@ -215,9 +215,24 @@ void Sensors::print()
 	obstacleA4 = calculateDist2(distanceA4);
 	obstacleA5 = calculateDist3(distanceA5);
 	
-	// Return the results to algorithm in terms of steps from obstacle.
-	Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
-	
-	// Return the results to algorithm in terms of distance from obstacle.
-	//Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
+	if(robot.exitStuckLoop)
+	{
+		//Serial.println("Detected multiple consecutive left and right rotations. Breaking out of loop.");
+		
+		// Return a modified version of the obstacle step detection string that marks the right rear sensor and 
+		// Front right sensor as having an obstacle one step away, so as to break out of a possible rotational loop.
+		Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + ",1," + String(obstacleA3) + ",1");
+		
+		// Reset the boolean that breaks the robot out of a stuck loop.
+		robot.exitStuckLoop = false;
+		return;
+	}
+	else
+	{
+		// Return the results to algorithm in terms of steps from obstacle.
+		Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
+		
+		// Return the results to algorithm in terms of distance from obstacle.
+		//Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
+	}
 }

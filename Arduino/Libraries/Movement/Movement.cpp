@@ -10,9 +10,14 @@ void Movement::init()
 	pid.init();
 	sensor.init();
 	
-	// Boolean variables determine movement transition state.
+	// Determines if the robot is moving straight after a rotation.
 	straightTransition = true;
+	
+	// Determines if the robot is rotating right during a right wall calibration only.
 	calibrateRightRotate = false;
+	
+	// Determines if the robot should take measures to exit a potential loop of rotating left and right continuously.
+	exitStuckLoop = false;
 	
 	// The following variables are only needed for fastest path, not exploration or image recognition.
 	//loopSwitchCase = true;
@@ -24,7 +29,7 @@ void Movement::init()
 	error_margin = 0.0;
 	perfDist = 0.0;
 	limit = 14;
-	//previousCommand = ' ';
+	previousCommand = ' ';
 }
 
 // Move Forwards.
@@ -193,15 +198,15 @@ void Movement::forwards()
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	/*
 	sensor.readSensor();
-	Serial.println(sensor.distanceA0);
-	Serial.println(sensor.distanceA2);
+	//Serial.println(sensor.distanceA0);
+	//Serial.println(sensor.distanceA2);
 	
 	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
-		motorShield.setSpeeds(-110, -100);
-		delay(250);
+		motorShield.setSpeeds(-90, -80);
+		delay(500);
 		motorShield.setBrakes(400, 400);
 	}*/
 }
@@ -232,7 +237,7 @@ void Movement::rotate90left()
 	}
 	
 	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
-	/*
+	
 	if(previousCommand == 'R')
 	{
 		// Increment the counter that will determine if the robot is stuck in a loop.
@@ -241,23 +246,9 @@ void Movement::rotate90left()
 		// If the robot has rotated left and right 2 times consecutively.
 		if(rotateCount >= 9)
 		{
-			// Move forward by a small amount to get the sensor out of the stuck zone.
-			pid.setZero();
-			pid.M1_ticks_diff = 0;
-			pid.M2_ticks_diff = 0;
-			pid.M1_ticks_to_move = 25; //OK
-			pid.M2_ticks_to_move = 25; //OK
-			distsub = 1;
-			straightTransition = false;
+			// Set the boolean variable to exit the potential rotating loop that the robot may be stuck in.
+			exitStuckLoop = true;
 			
-			while(distsub > 0)
-			{
-				pid.control(1,1);
-				motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
-				stopIfFault();
-				delay(10);
-				stopIfReached();
-			}
 			// Reset the counter for being stuck in a loop.
 			rotateCount = 0;
 		}
@@ -269,22 +260,21 @@ void Movement::rotate90left()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'L';
-	*/
 	
-	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	/*
 	sensor.readSensor();
-	Serial.println(sensor.distanceA0);
-	Serial.println(sensor.distanceA2);
+	//Serial.println(sensor.distanceA0);
+	//Serial.println(sensor.distanceA2);
 	
 	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
-		motorShield.setSpeeds(-110, -100);
+		motorShield.setSpeeds(-90, -80);
 		delay(250);
 		motorShield.setBrakes(400, 400);
-	}*/
+	}
+	*/
 }
 
 // Rotate Right 90 Degrees.
@@ -318,7 +308,7 @@ void Movement::rotate90right()
 	}
 	
 	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
-	/*
+	
 	if(previousCommand == 'L')
 	{
 		// Increment the counter that will determine if the robot is stuck in a loop.
@@ -327,24 +317,7 @@ void Movement::rotate90right()
 		// If the robot has rotated left and right 2 times consecutively.
 		if(rotateCount >= 9)
 		{
-			// Move forward by a small amount to get the sensor out of the stuck zone.
-			pid.setZero();
-			pid.M1_ticks_diff = 0;
-			pid.M2_ticks_diff = 0;
-			pid.M1_ticks_to_move = 25; //OK
-			pid.M2_ticks_to_move = 25; //OK
-			distsub = 1;
-			straightTransition = false;
-			
-			while(distsub > 0)
-			{
-				pid.control(1,1);
-				motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
-				stopIfFault();
-				delay(10);
-				stopIfReached();
-			}
-			// Reset the counter for being stuck in a loop.
+			exitStuckLoop = true;
 			rotateCount = 0;
 		}
 	}
@@ -355,26 +328,25 @@ void Movement::rotate90right()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'R';
-	*/
 	
-	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	/*
 	sensor.readSensor();
-	Serial.println(sensor.distanceA0);
-	Serial.println(sensor.distanceA2);
+	//Serial.println(sensor.distanceA0);
+	//Serial.println(sensor.distanceA2);
 	
 	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
 	{
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
-		motorShield.setSpeeds(-110, -100);
+		motorShield.setSpeeds(-90, -80);
 		delay(250);
 		motorShield.setBrakes(400, 400);
-	}*/
+	}
+	*/
 }
 
 /*
-// ROTATE 180 DEGREES IS NOT USED FOR EXPLORATION. IT MAY BE USED FOR FASTEST PATH.
+// ROTATE 180 DEGREES ENDED UP NOT BEING USED FOR FASTEST PATH OR EXPLORATION.
 // Rotate Left 180 Degrees.
 void Movement::rotate180()
 {
@@ -396,7 +368,6 @@ void Movement::rotate180()
 		stopIfRotated();
 	}
 	
-	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
 	sensor.readSensor();
 	Serial.println(sensor.distanceA0);
 	Serial.println(sensor.distanceA2);
@@ -405,7 +376,7 @@ void Movement::rotate180()
 	{
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
-		motorShield.setSpeeds(-110, -100);
+		motorShield.setSpeeds(-90, -80);
 		delay(250);
 		motorShield.setBrakes(400, 400);
 	}
@@ -450,7 +421,7 @@ void Movement::stopIfReached()
 		if(sensor.distanceA0 < 10 or sensor.distanceA1 < 10 or sensor.distanceA2 < 10)
 		{
 			pid.M1_ticks_moved = pid.M1_ticks_to_move;
-			pid.M2_ticks_moved = pid.M1_ticks_to_move;
+			pid.M2_ticks_moved = pid.M2_ticks_to_move;
 			distsub = 0;
 		}*/
 // ########################################################
@@ -460,9 +431,12 @@ void Movement::stopIfReached()
 		if(distsub <= 0)
 		{
 		  // Set the brakes on both motors to bring the robot to a stop.
-		  motorShield.setM1Brake(400);
-		  delay(5);
 		  motorShield.setM2Brake(400);
+		  
+		  // Delay is added here intentionally to make the left motor brake before the right motor,
+		  // Due to observation that the robot tended to shift to the right after moving straight.
+		  delay(5);
+		  motorShield.setM1Brake(400);
 		  //motorShield.setBrakes(400, 400);
 		}
 		// Reset the tick counters.
