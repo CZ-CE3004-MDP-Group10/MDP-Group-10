@@ -24,7 +24,7 @@ void Movement::init()
 	error_margin = 0.0;
 	perfDist = 0.0;
 	limit = 14;
-	previousCommand = ' ';
+	//previousCommand = ' ';
 }
 
 // Move Forwards.
@@ -73,8 +73,8 @@ void Movement::forwards()
 		// Statement with each decrement of distsub.
 		//loopSwitchCase = true;
 		
-		pid.M1_ticks_to_move = 225 - pid.M1_ticks_diff; //OK
-		pid.M2_ticks_to_move = 225 - pid.M2_ticks_diff; //OK
+		pid.M1_ticks_to_move = 227 - pid.M1_ticks_diff; //OK
+		pid.M2_ticks_to_move = 227 - pid.M2_ticks_diff; //OK
 	}
 
 	// Keep running while it is executing a command and has not reached the last step.
@@ -191,6 +191,7 @@ void Movement::forwards()
 	rotateCount = 0;
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	/*
 	sensor.readSensor();
 	Serial.println(sensor.distanceA0);
 	Serial.println(sensor.distanceA2);
@@ -200,9 +201,9 @@ void Movement::forwards()
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
 		motorShield.setSpeeds(-110, -100);
-		delay(500);
+		delay(250);
 		motorShield.setBrakes(400, 400);
-	}
+	}*/
 }
 
 // Rotate Left 90 Degrees.
@@ -213,8 +214,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 310; //OK
-	pid.M2_ticks_to_move = 350; //OK
+	pid.M1_ticks_to_move = 315; //OK
+	pid.M2_ticks_to_move = 355; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -231,6 +232,7 @@ void Movement::rotate90left()
 	}
 	
 	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
+	/*
 	if(previousCommand == 'R')
 	{
 		// Increment the counter that will determine if the robot is stuck in a loop.
@@ -267,8 +269,10 @@ void Movement::rotate90left()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'L';
+	*/
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	/*
 	sensor.readSensor();
 	Serial.println(sensor.distanceA0);
 	Serial.println(sensor.distanceA2);
@@ -278,9 +282,9 @@ void Movement::rotate90left()
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
 		motorShield.setSpeeds(-110, -100);
-		delay(500);
+		delay(250);
 		motorShield.setBrakes(400, 400);
-	}
+	}*/
 }
 
 // Rotate Right 90 Degrees.
@@ -290,15 +294,15 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 340; //OK
-	pid.M2_ticks_to_move = 337; //OK
+	pid.M1_ticks_to_move = 335; //OK
+	pid.M2_ticks_to_move = 332; //OK
 	
 	// When rotating right during right wall calibration, right turn is observed to fall short.
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
 	if(calibrateRightRotate)
 	{
-		pid.M1_ticks_to_move = 380; //OK
-		pid.M2_ticks_to_move = 377; //OK
+		pid.M1_ticks_to_move = 350; //OK
+		pid.M2_ticks_to_move = 347; //OK
 	}
 
 	straightTransition = true;
@@ -314,6 +318,7 @@ void Movement::rotate90right()
 	}
 	
 	// To check if the robot is stuck in an infinite loop, check if left and right rotations are executed simultaneously.
+	/*
 	if(previousCommand == 'L')
 	{
 		// Increment the counter that will determine if the robot is stuck in a loop.
@@ -350,8 +355,10 @@ void Movement::rotate90right()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'R';
+	*/
 	
 	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
+	/*
 	sensor.readSensor();
 	Serial.println(sensor.distanceA0);
 	Serial.println(sensor.distanceA2);
@@ -361,11 +368,13 @@ void Movement::rotate90right()
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
 		motorShield.setSpeeds(-110, -100);
-		delay(500);
+		delay(250);
 		motorShield.setBrakes(400, 400);
-	}
+	}*/
 }
 
+/*
+// ROTATE 180 DEGREES IS NOT USED FOR EXPLORATION. IT MAY BE USED FOR FASTEST PATH.
 // Rotate Left 180 Degrees.
 void Movement::rotate180()
 {
@@ -397,10 +406,11 @@ void Movement::rotate180()
 		//Serial.println("Too close to front, reversing.");
 		delay(250);
 		motorShield.setSpeeds(-110, -100);
-		delay(500);
+		delay(250);
 		motorShield.setBrakes(400, 400);
 	}
 }
+*/
 
 // Stop the robot after it has moved the required straight distance.
 void Movement::stopIfReached()
@@ -450,9 +460,10 @@ void Movement::stopIfReached()
 		if(distsub <= 0)
 		{
 		  // Set the brakes on both motors to bring the robot to a stop.
-		  //motorShield.setM1Brake(400);
-		  //motorShield.setM2Brake(400);
-		  motorShield.setBrakes(400, 400);
+		  motorShield.setM1Brake(400);
+		  delay(5);
+		  motorShield.setM2Brake(400);
+		  //motorShield.setBrakes(400, 400);
 		}
 		// Reset the tick counters.
 		pid.M1_ticks_moved = 0;

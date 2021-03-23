@@ -23,7 +23,7 @@ class Movement
 	float error;
 	float error_margin;
 	float perfDist;
-	char previousCommand;
+	//char previousCommand;
 	boolean straightTransition;
 	//boolean loopSwitchCase;
 	//boolean lastCommand;

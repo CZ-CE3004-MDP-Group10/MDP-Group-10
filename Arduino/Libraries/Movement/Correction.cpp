@@ -13,6 +13,11 @@ void Movement::frontDistanceCheck()
 	// Read in the sensor values.
 	sensor.readSensor();
 	
+	if(abs(sensor.distanceA0 - sensor.distanceA2) > 6)
+	{
+		return;
+	}
+	
 	// Comparing front left and front right sensor values.
 	if(sensor.distanceA0 < limit and sensor.distanceA2 < limit)
 	{
@@ -41,6 +46,11 @@ void Movement::frontDistanceCheck()
 					
 				// Read in the sensor values.
 				sensor.readSensor();
+				
+				// Check the sensor values for debugging.
+				//Serial.println(sensor.distanceA0);
+				//Serial.println(sensor.distanceA2);
+				
 				error = (sensor.distanceA0 + sensor.distanceA2) / 2 - perfDist;
 			}
 		}
@@ -99,9 +109,9 @@ void Movement::frontTiltCheck()
 	
 	sensor.readSensor();
 	
-	// If there is at least 10cm difference between the sensors,
+	// If there is at least 5cm difference between the sensors,
 	// The robot may be facing a staircase obstacle and should not calibrate.
-	if(abs(sensor.distanceA0 - sensor.distanceA2) > 10)
+	if(abs(sensor.distanceA0 - sensor.distanceA2) > 6)
 	{
 		return;
 	}
@@ -109,39 +119,39 @@ void Movement::frontTiltCheck()
 	// Comparing front left and front right sensor values.
 	if(sensor.distanceA0 < 15 and sensor.distanceA2 < 15)
 	{
-		error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
+		error = (sensor.distanceA0 + 1.2) - (sensor.distanceA2 - 0);
 		
-		Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.4); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+		//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 1.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0); Serial.print(" Error: ");Serial.println(error); 
 		
-		for(i = 0; i < 12; i++)
+		for(i = 0; i < 30; i++)
 		{
 			if(abs(error) > error_margin and (sensor.distanceA0) < 20 and sensor.distanceA2 < 20)
 			{
 				if(error > 0)
 				{
-					Serial.println("A0, A2, Tilted left. Tilting right for correction.");
-					motorShield.setSpeeds(100,-100);
+					//Serial.println("A0, A2, Tilted left. Tilting right for correction.");
+					motorShield.setSpeeds(80,-80);
 					delay(50);
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
+					error = (sensor.distanceA0 + 1.2) - (sensor.distanceA2 - 0);
 				}
 				
 				else if(error < 0)
 				{
-					Serial.println("A0, A2, Tilted right. Tilting left for correction.");
-					motorShield.setSpeeds(-100,100);
+					//Serial.println("A0, A2, Tilted right. Tilting left for correction.");
+					motorShield.setSpeeds(-80,80);
 					delay(50);
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					
 					sensor.readSensor();
-					error = (sensor.distanceA0 + 1) - (sensor.distanceA2 - 0);
+					error = (sensor.distanceA0 + 1.2) - (sensor.distanceA2 - 0);
 				}
 				
-				Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 0.4); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0.4); Serial.print(" Error: ");Serial.println(error); 
+				//Serial.print("Left Front sensor: "); Serial.print(sensor.distanceA0 + 1.2); Serial.print(", Right Front sensor: "); Serial.print(sensor.distanceA2 - 0); Serial.print(" Error: ");Serial.println(error); 
 			}
 		}
 		motorShield.setBrakes(400, 400);
@@ -159,22 +169,22 @@ void Movement::rightTiltCheck()
 	// Read in the sensor values.
 	sensor.readSensor();
 	
-	// If there is at least 10cm difference between the sensors,
+	// If there is at least 5cm difference between the sensors,
 	// The robot may be facing a staircase obstacle and should not calibrate.
-	if(abs(sensor.distanceA3 - sensor.distanceA4) > 10)
+	if(abs(sensor.distanceA3 - sensor.distanceA4) > 6)
 	{
 		return;
 	}
 	
 	if(sensor.distanceA3 < 20 and sensor.distanceA4 < 20)
 	{
-		error = (sensor.distanceA3 - 0.1) - (sensor.distanceA4 + 0.4);
+		error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
 		
-		Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0.1); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4 + 0.4); Serial.print(" Error: ");Serial.println(error); 
+		//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4 + 0); Serial.print(" Error: ");Serial.println(error); 
 		
 		// Perform only 10 iterations to prevent endless tilting left and right.
 		// Number of iterations must be sufficient to cater for the maximum tilt error during run.
-		for(i = 0; i < 12; i++)
+		for(i = 0; i < 30; i++)
 		{
 			if(abs(error) > error_margin and sensor.distanceA3 < 20 and sensor.distanceA4 < 20)
 			{
@@ -184,28 +194,28 @@ void Movement::rightTiltCheck()
 				// If the robot is tilted left.
 				if(error > 0)
 				{
-					Serial.println("A4, A5, Tilted left. Tilting right for correction.");
-					motorShield.setSpeeds(100,-100);
+					//Serial.println("A4, A5, Tilted left. Tilting right for correction.");
+					motorShield.setSpeeds(80,-80);
 					delay(50);
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0.1) - (sensor.distanceA4 + 0.1);
+					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
 				}
 				
 				// If the robot is tilted right.
 				else if(error < 0)
 				{
-					Serial.println("A4, A5, Tilted right. Tilting left for correction.");
-					motorShield.setSpeeds(-120,120);
+					//Serial.println("A4, A5, Tilted right. Tilting left for correction.");
+					motorShield.setSpeeds(-80,80);
 					delay(50);
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0.1) - (sensor.distanceA4 + 0.4);
+					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
 				}
 				
-				Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0.1); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4 + 0.4); Serial.print(" Error: ");Serial.println(error);
+				//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4 + 0); Serial.print(" Error: ");Serial.println(error);
 			}
 		}
 		// Set the brakes once the correct tilt correction angle has been reached.

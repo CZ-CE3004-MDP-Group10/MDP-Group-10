@@ -126,11 +126,11 @@ void loop()
                 break;
   
       // Rotate 180 degrees from the left.
-      case 'B': robot.rotate180();
+      case 'B': /*robot.rotate180();
                 Serial.print("AND|MOV("); Serial.print(readChar); Serial.println(")[1]");
                 delay(150);
                 robot.readSensor();
-                robot.printSensor();
+                robot.printSensor();*/
                 break;
 
       // Calibrate by the front for both distance and tilt.
