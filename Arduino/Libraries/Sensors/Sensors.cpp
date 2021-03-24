@@ -31,6 +31,8 @@ void Sensors::init()
 	obstacleA3 = 0;
 	obstacleA4 = 0;
 	obstacleA5 = 0;
+	
+	exitStuckLoop = false;
 }
 
 // For each sensor's array of 20 captured readings, first arrange them from highest to lowest.
@@ -215,7 +217,7 @@ void Sensors::print()
 	obstacleA4 = calculateDist2(distanceA4);
 	obstacleA5 = calculateDist3(distanceA5);
 	
-	if(robot.exitStuckLoop)
+	if(exitStuckLoop)
 	{
 		//Serial.println("Detected multiple consecutive left and right rotations. Breaking out of loop.");
 		
@@ -224,7 +226,7 @@ void Sensors::print()
 		Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + ",1," + String(obstacleA3) + ",1");
 		
 		// Reset the boolean that breaks the robot out of a stuck loop.
-		robot.exitStuckLoop = false;
+		exitStuckLoop = false;
 		return;
 	}
 	else

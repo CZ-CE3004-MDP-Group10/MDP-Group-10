@@ -36,6 +36,8 @@ void PID::init()
 	KP = 0.2;        // Adjust for proportional component.
 	KD = 0.3;        // Adjust for derivative component.
 	KI = 7;          // Adjust for integral component.
+	
+	moveStraight = true;
 }
 
 // Increment the number of ticks at the rising edge of the right motor encoder square wave.
@@ -51,30 +53,32 @@ void PID::left_ticks_increment()
 }
 
 // PID controller - Input multipliers determine the rotation direction of each wheel.
-void PID::control(int right_mul , int left_mul)
+void PID::control(int left_mul , int right_mul)
 {
 	// Sum up the total number of ticks per iteration of PID computation.
-	M1_ticks_moved += right_ticks;
-	M2_ticks_moved += left_ticks;
+	M1_ticks_moved += left_ticks;
+	M2_ticks_moved += right_ticks;
 
 	// Determine the error difference in the number of ticks.
-	E1_error_ticks = M1_setpoint_ticks - right_ticks;
-	E2_error_ticks = M2_setpoint_ticks - left_ticks;
+	E1_error_ticks = M1_setpoint_ticks - left_ticks;
+	E2_error_ticks = M2_setpoint_ticks - right_ticks;
 
 	// NOTE: PID CALCULATION 'KP', 'KI', 'KD' VALUES NEED TO BE MANUALLY TUNED FOR EACH MOTOR.
   
-	// Perform PID calculation for the new motor speed for the right motor.
-	M1_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
-
 	// Perform PID calculation for the new motor speed for the left motor.
-	M2_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
+	//M1_ticks_PID = left_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
+	M1_ticks_PID = left_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
+  
+	// Perform PID calculation for the new motor speed for the right motor.
+	//M2_ticks_PID = right_ticks + (E2_error_ticks * KP) + (E2_prev_error * KD) + (E2_sum_error * KI * 1.19);
+	M2_ticks_PID = right_ticks + (E1_error_ticks * KP * 0.95) + (E1_prev_error * (KD + 0.2)) + (E1_sum_error * KI * 0.98);
 
-	//Serial.print(", Right (M1) PID ticks: "); Serial.print(M1_ticks_PID);
-	//Serial.print(", Left (M2) PID ticks: "); Serial.println(M2_ticks_PID);
+	//Serial.print(", Left (M1) PID ticks: "); Serial.print(M1_ticks_PID);
+	//Serial.print(", Right (M2) PID ticks: "); Serial.println(M2_ticks_PID);
 
 	// Convert the adjusted ticks to the new motor power using the functions below.
-	right_speed = right_ticks_to_power(M1_ticks_PID) * right_mul;
-	left_speed = left_ticks_to_power(M2_ticks_PID) * left_mul;
+	right_speed = right_ticks_to_power(M2_ticks_PID) * right_mul;
+	left_speed = left_ticks_to_power(M1_ticks_PID) * left_mul;
 
 	//Serial.print(", R power: "); Serial.print(right_speed);
 	//Serial.print(", L power: "); Serial.println(left_speed);
@@ -99,7 +103,15 @@ void PID::control(int right_mul , int left_mul)
 // Returns the commanded power for the right motor.
 int PID::getRightSpeed()
 {
-	return right_speed;
+	if(moveStraight)
+	{
+		// Add offset here to correct tilt in straight movement only.
+		return right_speed * 1.05;
+	}
+	else
+	{
+		return right_speed;
+	}
 }
 
 // Returns the commanded power for the left motor.
@@ -111,13 +123,13 @@ int PID::getLeftSpeed()
 // Convert right motor ticks to commanded power.
 double PID::right_ticks_to_power(double right_ticks)
 {
-  return (right_ticks * 0.22748) + 20.06839;
+	return (right_ticks * 0.22748) + 20.06839; 
 }
 
 // Convert left motor ticks to commanded power.
 double PID::left_ticks_to_power(double left_ticks)
 {
-  return (left_ticks * 0.221907) + 31.70289;
+	return (left_ticks * 0.221907) + 31.70289;
 }
 
 // Reset the PID controller values after each movement.

@@ -26,6 +26,7 @@ class Sensors
 	int temp;
 	int i;
 	int j;
+	boolean exitStuckLoop;
 
 	// Stores the converted distance based on sensor analog value.
 	double distanceA0;

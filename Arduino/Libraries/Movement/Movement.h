@@ -24,11 +24,11 @@ class Movement
 	float error_margin;
 	float perfDist;
 	char previousCommand;
-	boolean straightTransition;
-	boolean calibrateRightRotate;
-	boolean exitStuckLoop;
-	//boolean loopSwitchCase;
-	//boolean lastCommand;
+	bool straightTransition;
+	bool calibrateRightRotate;
+	//bool exitStuckLoop;
+	//bool loopSwitchCase;
+	//bool lastCommand;
 	
 	// Movement functions.
 	void init(void);

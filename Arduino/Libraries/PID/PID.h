@@ -34,6 +34,7 @@ class PID
 	double KP;        	// Adjust for proportional component.
 	double KD;        	// Adjust for derivative component.
 	double KI;          // Adjust for integral component.
+	bool moveStraight;
 	
 	// PID Controller Functions.
 	void init();

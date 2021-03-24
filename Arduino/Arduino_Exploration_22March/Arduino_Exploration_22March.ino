@@ -57,7 +57,7 @@ void setup()
 
   // Indicate to the android that the robot is starting its navigation.
   Serial.println("AND|status(Running)");
-  delay(250);
+  delay(100);
 
   // Indicate to the algorithm that the robot is ready after receiving the start command.
   Serial.println("ALG|Robot Ready.");

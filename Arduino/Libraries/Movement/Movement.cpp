@@ -17,7 +17,7 @@ void Movement::init()
 	calibrateRightRotate = false;
 	
 	// Determines if the robot should take measures to exit a potential loop of rotating left and right continuously.
-	exitStuckLoop = false;
+	//exitStuckLoop = false;
 	
 	// The following variables are only needed for fastest path, not exploration or image recognition.
 	//loopSwitchCase = true;
@@ -45,6 +45,7 @@ void Movement::forwards()
 	
 	// Reset the PID controller variables after each movement.
 	pid.setZero();
+	pid.moveStraight = true;
 
 	// Before moving forwards after a rotation or stationary stop, reset the differences in ticks.
 	pid.M1_ticks_diff = 0;
@@ -103,8 +104,8 @@ void Movement::forwards()
 						//Serial.println("Taking 1 step forward.");
 						break;
 					
-				case 2: pid.M1_ticks_to_move = 256 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 266 - pid.M2_ticks_diff; //OK
+				case 2: pid.M1_ticks_to_move = 266 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 256 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 2 steps forward.");
 						break;
 			
@@ -113,13 +114,13 @@ void Movement::forwards()
 						//Serial.println("Taking 3 steps forward.");
 						break;
 			
-				case 4: pid.M1_ticks_to_move = 279 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
+				case 4: pid.M1_ticks_to_move = 280 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 279 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 4 steps forward.");
 						break;
 			
-				case 5: pid.M1_ticks_to_move = 285 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
+				case 5: pid.M1_ticks_to_move = 280 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 285 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 5 steps forward.");
 						break;
 						
@@ -134,7 +135,7 @@ void Movement::forwards()
 		pid.control(1,1);
 		
 		// Set the motor commanded power based on the number of ticks it should be moving.
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		
 		// Stop the motors if a fault is detected.
 		stopIfFault();
@@ -209,6 +210,8 @@ void Movement::forwards()
 		delay(500);
 		motorShield.setBrakes(400, 400);
 	}*/
+	
+	pid.moveStraight = false;
 }
 
 // Rotate Left 90 Degrees.
@@ -219,8 +222,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 315; //OK
-	pid.M2_ticks_to_move = 355; //OK
+	pid.M1_ticks_to_move = 330; //OK
+	pid.M2_ticks_to_move = 305; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -230,7 +233,7 @@ void Movement::rotate90left()
 	{
 		// Left motor is negative and right motor is positive.
 		pid.control(-1,1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
@@ -247,7 +250,8 @@ void Movement::rotate90left()
 		if(rotateCount >= 9)
 		{
 			// Set the boolean variable to exit the potential rotating loop that the robot may be stuck in.
-			exitStuckLoop = true;
+			//exitStuckLoop = true;
+			sensor.exitStuckLoop = true;
 			
 			// Reset the counter for being stuck in a loop.
 			rotateCount = 0;
@@ -284,8 +288,8 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 335; //OK
-	pid.M2_ticks_to_move = 332; //OK
+	pid.M1_ticks_to_move = 332; //OK
+	pid.M2_ticks_to_move = 335; //OK
 	
 	// When rotating right during right wall calibration, right turn is observed to fall short.
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
@@ -294,14 +298,13 @@ void Movement::rotate90right()
 		pid.M1_ticks_to_move = 350; //OK
 		pid.M2_ticks_to_move = 347; //OK
 	}
-
 	straightTransition = true;
 
 	while(distsub > 0)
 	{
 		// Left motor is positive and right motor is negative.
 		pid.control(1,-1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
@@ -317,7 +320,8 @@ void Movement::rotate90right()
 		// If the robot has rotated left and right 2 times consecutively.
 		if(rotateCount >= 9)
 		{
-			exitStuckLoop = true;
+			//exitStuckLoop = true;
+			sensor.exitStuckLoop = true;
 			rotateCount = 0;
 		}
 	}
@@ -362,7 +366,7 @@ void Movement::rotate180()
 	{
 		// Left motor is negative and right motor is positive.
 		pid.control(-1,1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
@@ -431,12 +435,12 @@ void Movement::stopIfReached()
 		if(distsub <= 0)
 		{
 		  // Set the brakes on both motors to bring the robot to a stop.
-		  motorShield.setM2Brake(400);
-		  
-		  // Delay is added here intentionally to make the left motor brake before the right motor,
-		  // Due to observation that the robot tended to shift to the right after moving straight.
-		  delay(5);
 		  motorShield.setM1Brake(400);
+		  
+		  // A very short delay is added here intentionally to make the left motor brake before the right motor,
+		  // Due to observation that the robot tended to shift to the right after moving straight.
+		  //delay(1);
+		  motorShield.setM2Brake(400);
 		  //motorShield.setBrakes(400, 400);
 		}
 		// Reset the tick counters.
