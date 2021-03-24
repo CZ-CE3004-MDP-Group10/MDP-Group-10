@@ -222,8 +222,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 330; //OK
-	pid.M2_ticks_to_move = 305; //OK
+	pid.M1_ticks_to_move = 350; //OK
+	pid.M2_ticks_to_move = 325; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -288,15 +288,15 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 332; //OK
-	pid.M2_ticks_to_move = 335; //OK
+	pid.M1_ticks_to_move = 320; //OK
+	pid.M2_ticks_to_move = 328; //OK
 	
 	// When rotating right during right wall calibration, right turn is observed to fall short.
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
 	if(calibrateRightRotate)
 	{
 		pid.M1_ticks_to_move = 350; //OK
-		pid.M2_ticks_to_move = 347; //OK
+		pid.M2_ticks_to_move = 357; //OK
 	}
 	straightTransition = true;
 
@@ -406,8 +406,8 @@ void Movement::stopIfReached()
 		//Total_M1_moved += M1_ticks_moved;
 		//Total_M2_moved += M2_ticks_moved;
 		  
-		//Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-		//Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
+		Serial.print("R ticks moved : "); Serial.print(pid.M1_ticks_moved);
+		Serial.println(", L ticks moved : "); Serial.println(pid.M2_ticks_moved);
 		//Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
 		//Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
 
