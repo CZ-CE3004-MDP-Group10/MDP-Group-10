@@ -10,7 +10,7 @@ void Movement::frontDistanceCheck()
 	error_margin = 0.1;
 	
 	// Specify the distance of the robot's front sensors from the obstacle or wall in front of it.
-	perfDist = 8;
+	perfDist = 9;
 	
 	// Read in the sensor values.
 	sensor.readSensor();

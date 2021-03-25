@@ -142,6 +142,9 @@ void Sensors::doOffsets()
 
 	// SENSOR 6 CALCULATION AND OFFSETS:
 	distanceA5 = -3.3012 + (12806.428 / (sensorA5_avg - 9.81909));
+	
+	//Serial.print("Long range sensor : " ); Serial.println(sensorA5_avg);
+	
 	if(distanceA5 < 25) {distanceA5 -= 1;}
 	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
 	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
@@ -189,22 +192,22 @@ double Sensors::calculateDist3(double dist)
 {	
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
 	// Obstacle is 1 step away.
-	if(dist < 22) {return 1;}
+	if(dist < 24) {return 1;}
 	
 	// Too far to be detected.
-	else if(dist >= 46) {return 0;}
+	else if(dist >= 47.5) {return 0;}
 	
 	// Obstacle is 2 steps away.
-	else if( dist >= 22 and dist < 33) {return 2;}
+	else if( dist >= 24 and dist < 33.5) {return 2;}
 	
 	// Obstacle is 3 steps away.
-	else if(dist >= 33 and dist < 41) {return 3;}
+	else if(dist >= 33.5 and dist < 42) {return 3;}
 	
 	// Obstacle is 4 steps away.
-	else if(dist >= 41 and dist < 43.5) {return 4;}
+	else if(dist >= 42 and dist < 45.5) {return 4;}
 	
 	// Obstacle is 5 steps away.
-	else if(dist >= 43.5 and dist < 46) {return 5;}
+	else if(dist >= 45.5 and dist < 47.5) {return 5;}
 }
 
 // Print and send the string over to algorithm.
@@ -236,6 +239,6 @@ void Sensors::print()
 		Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
 		
 		// Return the results to algorithm in terms of distance from obstacle.
-		//Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
+		Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
 	}
 }
