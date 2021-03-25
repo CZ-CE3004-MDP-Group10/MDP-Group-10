@@ -32,6 +32,7 @@ void Sensors::init()
 	obstacleA4 = 0;
 	obstacleA5 = 0;
 	
+	// Boolean to determine if robot should break out of stuck loop.
 	exitStuckLoop = false;
 }
 
@@ -191,7 +192,7 @@ double Sensors::calculateDist3(double dist)
 	if(dist < 22) {return 1;}
 	
 	// Too far to be detected.
-	else if(dist >= 45) {return 0;}
+	else if(dist >= 46) {return 0;}
 	
 	// Obstacle is 2 steps away.
 	else if( dist >= 22 and dist < 33) {return 2;}
@@ -200,10 +201,10 @@ double Sensors::calculateDist3(double dist)
 	else if(dist >= 33 and dist < 41) {return 3;}
 	
 	// Obstacle is 4 steps away.
-	else if(dist >= 41 and dist < 43) {return 4;}
+	else if(dist >= 41 and dist < 43.5) {return 4;}
 	
 	// Obstacle is 5 steps away.
-	else if(dist >= 43 and dist < 45) {return 5;}
+	else if(dist >= 43.5 and dist < 46) {return 5;}
 }
 
 // Print and send the string over to algorithm.

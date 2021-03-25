@@ -182,7 +182,7 @@ void Movement::rightTiltCheck()
 	
 	if(sensor.distanceA3 < 20 and sensor.distanceA4 < 20)
 	{
-		error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
+		error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0.2);
 		
 		//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0); Serial.print(", Right back sensor: "); Serial.print(sensor.distanceA4 + 0); Serial.print(" Error: ");Serial.println(error); 
 		
@@ -204,7 +204,7 @@ void Movement::rightTiltCheck()
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
+					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0.2);
 				}
 				
 				// If the robot is tilted right.
@@ -216,7 +216,7 @@ void Movement::rightTiltCheck()
 					motorShield.setBrakes(400, 400);
 					delay(100);
 					sensor.readSensor();
-					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0);
+					error = (sensor.distanceA3 - 0) - (sensor.distanceA4 + 0.2);
 				}
 				
 				//Serial.print("Right front sensor: "); Serial.print(sensor.distanceA3 - 0); Serial.print(", Right back sensor: "); Serial.println(sensor.distanceA4 + 0); Serial.print(" Error: ");Serial.println(error);

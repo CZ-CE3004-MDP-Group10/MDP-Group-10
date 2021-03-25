@@ -26,7 +26,6 @@ class Sensors
 	int temp;
 	int i;
 	int j;
-	boolean exitStuckLoop;
 
 	// Stores the converted distance based on sensor analog value.
 	double distanceA0;
@@ -43,6 +42,9 @@ class Sensors
 	int obstacleA3 = 0;
 	int obstacleA4 = 0;
 	int obstacleA5 = 0;
+	
+	// Boolean to determine if robot should break out of stuck loop.
+	boolean exitStuckLoop;
 	
 	// Functions for sensors.
 	void init(void);
