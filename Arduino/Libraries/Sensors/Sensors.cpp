@@ -239,6 +239,6 @@ void Sensors::print()
 		Serial.println("ALG|" + String(obstacleA5) + "," + String(obstacleA0) + "," + String(obstacleA1) + "," + String(obstacleA2) + "," + String(obstacleA3) + "," + String(obstacleA4));
 		
 		// Return the results to algorithm in terms of distance from obstacle.
-		Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
+		//Serial.println("ALG|" + String(distanceA5) + "," + String(distanceA0) + "," + String(distanceA1) + "," + String(distanceA2) + "," + String(distanceA3) + "," + String(distanceA4));
 	}
 }
