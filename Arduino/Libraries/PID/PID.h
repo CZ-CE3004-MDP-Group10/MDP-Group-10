@@ -1,5 +1,8 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 PID CONTROLLER HEADER FILE.
 
+// Include the Arduino library for printing debugging statements.
+#include <Arduino.h>
+
 class PID
 {
 	public:

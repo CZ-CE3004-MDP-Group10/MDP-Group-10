@@ -1,6 +1,7 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 MOVEMENT HEADER FILE.
 
 // Include the motor shield library, sensors library and PID controller library.
+// Arduino library for printing debugging statements is included by the already included libraries.
 #include "DualVNH5019MotorShield.h"
 #include "PID.h"
 #include "Sensors.h"

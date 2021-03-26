@@ -142,12 +142,16 @@ void Sensors::doOffsets()
 
 	// SENSOR 6 CALCULATION AND OFFSETS:
 	distanceA5 = -3.3012 + (12806.428 / (sensorA5_avg - 9.81909));
-	
-	//Serial.print("Long range sensor : " ); Serial.println(sensorA5_avg);
-	
 	if(distanceA5 < 25) {distanceA5 -= 1;}
 	else if(distanceA5 > 25 and distanceA5 < 45) {distanceA5 += 1;}
 	else if(distanceA5 > 75 and distanceA5 < 80) {distanceA5 -= 1;}
+	
+	//Serial.print("Front Left Analog A0: " ); Serial.println(sensorA0_avg);
+	//Serial.print("Front Middle Analog A1: " ); Serial.println(sensorA1_avg);
+	//Serial.print("Front Right Analog A2: " ); Serial.println(sensorA2_avg);
+	//Serial.print("Right Front Analog A3: " ); Serial.println(sensorA3_avg);
+	//Serial.print("Right Back Analog A4: " ); Serial.println(sensorA4_avg);
+	//Serial.print("Left Long Analog A5: " ); Serial.println(sensorA5_avg);
 	
 	// If the distance result is less than zero due to no obstacle being within the sensor's
 	// Blind spot distance, treat it as the obstacle being 100cm away from the sensor to avoid
@@ -158,6 +162,13 @@ void Sensors::doOffsets()
 	if(distanceA3 < 0) { distanceA3 = 100; }
 	if(distanceA4 < 0) { distanceA4 = 100; }
 	if(distanceA5 < 0) { distanceA5 = 100; }
+	
+	//Serial.print("Front Left Distance A0: " ); Serial.println(sensorA0_avg);
+	//Serial.print("Front Middle Distance A1: " ); Serial.println(sensorA1_avg);
+	//Serial.print("Front Right Distance A2: " ); Serial.println(sensorA2_avg);
+	//Serial.print("Right Front Distance A3: " ); Serial.println(sensorA3_avg);
+	//Serial.print("Right Back Distance A4: " ); Serial.println(sensorA4_avg);
+	//Serial.print("Left Long Distance A5: " ); Serial.println(sensorA5_avg);
 }
 
 // Convert distance into steps of 10cm from obstacle block for short range infrared sensor for the front sensors.

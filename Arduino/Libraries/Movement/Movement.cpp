@@ -288,8 +288,8 @@ void Movement::rotate90right()
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
 	if(calibrateRightRotate)
 	{
-		pid.M1_ticks_to_move = 344; //OK
-		pid.M2_ticks_to_move = 341; //OK
+		pid.M1_ticks_to_move = 343; //OK
+		pid.M2_ticks_to_move = 340; //OK
 	}
 
 	straightTransition = true;

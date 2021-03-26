@@ -1,6 +1,6 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 SENSORS HEADER FILE.
 
-// Include Arduino library for reading of analog pin values.
+// Include Arduino library for printing debugging statements and reading of analog pin values.
 #include <Arduino.h>
 
 class Sensors
