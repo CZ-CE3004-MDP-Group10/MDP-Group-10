@@ -1,18 +1,19 @@
 // MULTIDISCIPLINARY DESIGN PROJECT SEMESTER 2 YEAR 20-21 GROUP 10 ARDUINO EXPLORATION MAIN FILE.
 // NOTE: FOR EXPLORATION, THE ROBOT ALWAYS MOVES ONLY ONE STEP AT A TIME.
+// NOTE: UNCOMMENTING TOO MANY DEBUGGING PRINT STATEMENTS AT A TIME CAN RESULT IN INSUFFICIENT MEMORY.
 
 // Include libraries. Movement library contains all other robot component libraries.
 #include <EnableInterrupt.h>
 #include <Movement.h>
 
-// Motor M1 = Encoder E1 = Right.
-// Motor M2 = Encoder E2 = Left.
+// Motor M1 = Encoder E1 = Left.
+// Motor M2 = Encoder E2 = Right.
 
 // Motor encoder inputs.
-#define encoder_M1_A 3   // Right motor output 1.
-#define encoder_M1_B 5   // Right motor output 2. Not used.
-#define encoder_M2_A 11  // Left motor output 1.
-#define encoder_M2_B 13  // Left motor output 2. Not used.
+#define encoder_M1_A 3   // Left motor encoder output 1.
+#define encoder_M1_B 5   // Left motor encoder output 2 - Not used.
+#define encoder_M2_A 11  // Right motor encoder output 1.
+#define encoder_M2_B 13  // Right motor encoder output 2 - Not used.
 
 // Variables for movement control when receiving commands for navigating around obstacles.
 char readChar = ' ';            // Command character indicating the action to perform.
@@ -37,9 +38,9 @@ void setup()
   pinMode(encoder_M2_B, INPUT);
 
   // Enable interrupts for each encoder input pin 1 on the rising edge.
-  // Function 'right_tick_increment" is called on rising edge of input 'encoder_M1_A'.
-  enableInterrupt(encoder_M1_A, right_tick_increment, RISING);
-  enableInterrupt(encoder_M2_A, left_tick_increment, RISING);
+  // Function 'left_tick_increment" is called on rising edge of input 'encoder_M1_A'.
+  enableInterrupt(encoder_M1_A, left_tick_increment, RISING);
+  enableInterrupt(encoder_M2_A, right_tick_increment, RISING);
 
   // Infinite while loop waits for the starting command from the algorithm.
   while(Serial.available() <= 0);

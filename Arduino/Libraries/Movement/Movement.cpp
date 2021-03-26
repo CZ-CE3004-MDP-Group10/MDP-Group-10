@@ -100,8 +100,8 @@ void Movement::forwards()
 						//Serial.println("Taking 1 step forward.");
 						break;
 					
-				case 2: pid.M1_ticks_to_move = 256 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 266 - pid.M2_ticks_diff; //OK
+				case 2: pid.M1_ticks_to_move = 265 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 255 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 2 steps forward.");
 						break;
 			
@@ -110,13 +110,13 @@ void Movement::forwards()
 						//Serial.println("Taking 3 steps forward.");
 						break;
 			
-				case 4: pid.M1_ticks_to_move = 279 - pid.M1_ticks_diff; //OK
+				case 4: pid.M1_ticks_to_move = 280 - pid.M1_ticks_diff; //OK
 						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 4 steps forward.");
 						break;
 			
-				case 5: pid.M1_ticks_to_move = 285 - pid.M1_ticks_diff; //OK
-						pid.M2_ticks_to_move = 280 - pid.M2_ticks_diff; //OK
+				case 5: pid.M1_ticks_to_move = 280 - pid.M1_ticks_diff; //OK
+						pid.M2_ticks_to_move = 285 - pid.M2_ticks_diff; //OK
 						//Serial.println("Taking 5 steps forward.");
 						break;
 						
@@ -131,7 +131,7 @@ void Movement::forwards()
 		pid.control(1,1);
 		
 		// Set the motor commanded power based on the number of ticks it should be moving.
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		
 		// Stop the motors if a fault is detected.
 		stopIfFault();
@@ -191,21 +191,6 @@ void Movement::forwards()
 	
 	// Reset the rotation count if the robot moves straight next.
 	rotateCount = 0;
-	
-	// One side of the robot's front is too close to a single obstacle block, reverse the robot a little.
-	/*
-	sensor.readSensor();
-	//Serial.println(sensor.distanceA0);
-	//Serial.println(sensor.distanceA2);
-	
-	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
-	{
-		//Serial.println("Too close to front, reversing.");
-		delay(250);
-		motorShield.setSpeeds(-90, -80);
-		delay(500);
-		motorShield.setBrakes(400, 400);
-	}*/
 }
 
 // Rotate Left 90 Degrees.
@@ -216,8 +201,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 307; //OK
-	pid.M2_ticks_to_move = 347; //OK
+	pid.M1_ticks_to_move = 347; //OK
+	pid.M2_ticks_to_move = 307; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -227,7 +212,7 @@ void Movement::rotate90left()
 	{
 		// Left motor is negative and right motor is positive.
 		pid.control(-1,1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
@@ -257,21 +242,6 @@ void Movement::rotate90left()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'L';
-	
-	/*
-	sensor.readSensor();
-	//Serial.println(sensor.distanceA0);
-	//Serial.println(sensor.distanceA2);
-	
-	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
-	{
-		//Serial.println("Too close to front, reversing.");
-		delay(250);
-		motorShield.setSpeeds(-90, -80);
-		delay(250);
-		motorShield.setBrakes(400, 400);
-	}
-	*/
 }
 
 // Rotate Right 90 Degrees.
@@ -281,24 +251,23 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 330; //OK
-	pid.M2_ticks_to_move = 328; //OK
+	pid.M1_ticks_to_move = 328; //OK
+	pid.M2_ticks_to_move = 330; //OK
 	
 	// When rotating right during right wall calibration, right turn is observed to fall short.
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
 	if(calibrateRightRotate)
 	{
-		pid.M1_ticks_to_move = 343; //OK
-		pid.M2_ticks_to_move = 340; //OK
+		pid.M1_ticks_to_move = 340; //OK
+		pid.M2_ticks_to_move = 343; //OK
 	}
-
 	straightTransition = true;
 
 	while(distsub > 0)
 	{
 		// Left motor is positive and right motor is negative.
 		pid.control(1,-1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
@@ -325,21 +294,6 @@ void Movement::rotate90right()
 	}
 	// Set the previous command for checking in the next command.
 	previousCommand = 'R';
-	
-	/*
-	sensor.readSensor();
-	//Serial.println(sensor.distanceA0);
-	//Serial.println(sensor.distanceA2);
-	
-	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
-	{
-		//Serial.println("Too close to front, reversing.");
-		delay(250);
-		motorShield.setSpeeds(-90, -80);
-		delay(250);
-		motorShield.setBrakes(400, 400);
-	}
-	*/
 }
 
 /*
@@ -350,8 +304,8 @@ void Movement::rotate180()
 	pid.setZero();
 	//Serial.println("First rotate 180 transition.");
 
-	pid.M1_ticks_to_move = 555; //OK
-	pid.M2_ticks_to_move = 733; //OK
+	pid.M1_ticks_to_move = 733; //OK
+	pid.M2_ticks_to_move = 555; //OK
 
 	straightTransition = true;
 	
@@ -359,23 +313,10 @@ void Movement::rotate180()
 	{
 		// Left motor is negative and right motor is positive.
 		pid.control(-1,1);
-		motorShield.setSpeeds(pid.getRightSpeed(),pid.getLeftSpeed());
+		motorShield.setSpeeds(pid.getLeftSpeed(),pid.getRightSpeed());
 		stopIfFault();
 		delay(10);
 		stopIfRotated();
-	}
-	
-	sensor.readSensor();
-	Serial.println(sensor.distanceA0);
-	Serial.println(sensor.distanceA2);
-	
-	if((sensor.distanceA0 < 10 and sensor.distanceA2 > 10) or (sensor.distanceA0 > 10 and sensor.distanceA2 < 10))
-	{
-		//Serial.println("Too close to front, reversing.");
-		delay(250);
-		motorShield.setSpeeds(-90, -80);
-		delay(250);
-		motorShield.setBrakes(400, 400);
 	}
 }
 */
@@ -386,23 +327,25 @@ void Movement::stopIfReached()
 	// Once the desired number of ticks to move the required distance has been reached.
 	if(pid.M1_ticks_moved > pid.M1_ticks_to_move and pid.M2_ticks_moved > pid.M2_ticks_to_move)
 	{
-		//Serial.print("Ticks to move M1: "); Serial.print(M1_ticks_to_move);
+		// Robot movement variables are held in the PID controller object created during initialization.
+		
+		//Serial.print("Ticks to move M1: "); Serial.print(pid.M1_ticks_to_move);
 		//Serial.print(", Ticks moved M1: "); Serial.println(pid.M1_ticks_moved);
-		//Serial.print(", Ticks to move M2: "); Serial.print(M2_ticks_to_move);
+		//Serial.print(", Ticks to move M2: "); Serial.print(pid.M2_ticks_to_move);
 		//Serial.print(", Ticks moved M2: "); Serial.println(pid.M2_ticks_moved);
 
 		// Error difference for how many ticks the current step exceeded by.
-		pid.M1_ticks_diff = pid.M1_ticks_moved - pid.M1_ticks_to_move;
-		pid.M2_ticks_diff = pid.M2_ticks_moved - pid.M2_ticks_to_move;
+		//pid.M1_ticks_diff = pid.M1_ticks_moved - pid.M1_ticks_to_move;
+		//pid.M2_ticks_diff = pid.M2_ticks_moved - pid.M2_ticks_to_move;
 		
 		// Count the total number of ticks over a period of time.
 		//Total_M1_moved += M1_ticks_moved;
 		//Total_M2_moved += M2_ticks_moved;
 		  
-		//Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-		//Serial.print(", L ticks moved : "); Serial.println(M2_ticks_moved);
-		//Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
-		//Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
+		//Serial.print(", Left ticks moved : "); Serial.print(pid.M1_ticks_moved);
+		//Serial.print(", Right ticks moved : "); Serial.println(pid.M2_ticks_moved);
+		//Serial.print(", Total left ticks moved : "); Serial.print(pid.Total_M1_moved);
+		//Serial.print(", Total right ticks moved : "); Serial.println(pid.Total_M2_moved);
 
 		// Decrement the number of steps left to travel.
 		distsub--;
@@ -448,9 +391,9 @@ void Movement::stopIfRotated()
 	// Once the number of ticks moved by both wheels exceed the ticks to be moved for each wheel.
 	if(pid.M1_ticks_moved > pid.M1_ticks_to_move and pid.M2_ticks_moved > pid.M2_ticks_to_move)
 	{
-		//Serial.print("Ticks to move M1: "); Serial.print(M1_ticks_to_move);
+		//Serial.print("Ticks to move M1: "); Serial.print(pid.M1_ticks_to_move);
 		//Serial.print(", Ticks moved M1: "); Serial.println(pid.M1_ticks_moved);
-		//Serial.print(", Ticks to move M2: "); Serial.print(M2_ticks_to_move);
+		//Serial.print(", Ticks to move M2: "); Serial.print(pid.M2_ticks_to_move);
 		//Serial.print(", Ticks moved M2: "); Serial.println(pid.M2_ticks_moved);
 
 		// NOTE: ERROR IN TICKS DIFFERENCE IS NOT NEEDED HERE AS EACH ROTATION IS INDEPENDENT.
@@ -459,10 +402,10 @@ void Movement::stopIfRotated()
 		//Total_M1_moved += M1_ticks_moved;
 		//Total_M2_moved += M2_ticks_moved;
 		  
-		//Serial.print("R ticks moved : "); Serial.print(M1_ticks_moved);
-		//Serial.print(", L ticks moved : "); Serial.print(M2_ticks_moved);
-		//Serial.print(", Total right ticks moved : "); Serial.print(Total_M1_moved);
-		//Serial.print(", Total left ticks moved : "); Serial.println(Total_M2_moved);
+		//Serial.print(", Left ticks moved : "); Serial.print(pid.M1_ticks_moved);
+		//Serial.print(", Right ticks moved : "); Serial.print(pid.M2_ticks_moved);
+		//Serial.print(", Total left ticks moved : "); Serial.print(pid.Total_M1_moved);
+		//Serial.print(", Total right ticks moved : "); Serial.println(pid.Total_M2_moved);
 
 		// Decrement the number of steps left to travel.
 		distsub--;
