@@ -144,7 +144,7 @@ void loop()
   // Setting of brakes is only performed after the step in which an obstacle is detected.
   // Whenever done moving forward, need to set the brakes.
   Serial.println("Obstacle detected in front.");
-  delay(500);
+  delay(100);
 
   // Setting of brakes for rotation is done in 'stopIfRotated()' function.
   // Rotate left 45 degrees.
@@ -152,7 +152,7 @@ void loop()
   distsub = 1;
   rotate45left();
   Serial.println("Rotated left 45 degrees.");
-  delay(500);
+  delay(100);
 
   // If there is no obstacle at half left.
   if(distanceA0 > 20 and distanceA1 > 20 and distanceA2 > 20)
@@ -164,42 +164,42 @@ void loop()
     distsub = 2;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
     
     // Rotate right 45 degrees.
     waitingInput = false;
     distsub = 1;
     rotate45right();
     Serial.println("Rotated right 45 degrees.");
-    delay(500);
+    delay(100);
 
     // Move forward for 3 steps.
     waitingInput = false;
     distsub = 2;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
 
     // Rotate right 45 degrees.
     waitingInput = false;
     distsub = 1;
     rotate45right();
     Serial.println("Rotated right 45 degrees.");
-    delay(500);
+    delay(100);
 
     // Move forward for 3 steps.
     waitingInput = false;
     distsub = 2;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
 
     // Rotate left 45 degrees.
     waitingInput = false;
     distsub = 1;
     rotate45left();
     Serial.println("Rotated left 45 degrees.");
-    delay(500);
+    delay(100);
 
     // Go back to the start of the program from here.
     needCheckRight = false;
@@ -214,7 +214,7 @@ void loop()
     distsub = 2;
     rotate45right();
     Serial.println("Rotated right 90 degrees.");
-    delay(500);
+    delay(100);
   }
 
   // If there is an obstacle at half right.
@@ -227,7 +227,7 @@ void loop()
     distsub = 3;
     rotate45right();
     Serial.println("Rotated right 135 degrees.");
-    delay(500);
+    delay(100);
   }
 
   // If there is no obstacle at half right.
@@ -240,7 +240,7 @@ void loop()
     distsub = 2;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
 
     // For this particular action of manouvering right to avoid an obstacle, the number of
     // Ticks has to be increased for angle accuracy.
@@ -252,28 +252,28 @@ void loop()
     distsub = 1;
     rotate45left();
     Serial.println("Rotated left 45 degrees.");
-    delay(500);
+    delay(100);
 
     // Move forwards for 3 steps.
     waitingInput = false;
     distsub = 2;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
 
     // Rotate left 45 degrees.
     waitingInput = false;
     distsub = 1;
     rotate45left();
     Serial.println("Rotated left 45 degrees.");
-    delay(500);
+    delay(100);
 
     // Move forwards 3 steps.
     waitingInput = false;
     distsub = 3;
     forwards();
     Serial.println("Moved forwards 3 steps.");
-    delay(500);
+    delay(100);
 
     // Reset the number of ticks after performing this manouvere.
     Right_ticks = 200;
@@ -284,7 +284,7 @@ void loop()
     distsub = 1;
     rotate45right();
     Serial.println("Rotated right 45 degrees.");
-    delay(500);
+    delay(100);
   }
 }
 
@@ -307,8 +307,6 @@ void forwards()
     // Step distance and rotation angle are set at the top of this file.
     stopIfReached();
   }
-  // Insert delay here between steps if necessary.
-  //delay(2000);
 }
 
 // Rotating left 90 degrees.
@@ -326,7 +324,6 @@ void rotate45left()
     // Anywhere from 5 to 15 ticks more than the set value at the top of this file.
     stopIfRotated();
   }
-  //delay(2000);
 }
 
 // Rotating right 90 degrees.
@@ -342,7 +339,6 @@ void rotate45right()
     PID(1,-1);
     stopIfRotated();
   }
-  //delay(2000);
 }
 
 // Rotating left 180 degrees.
@@ -358,7 +354,6 @@ void rotate180()
     PID(-1,1);
     stopIfRotated();
   }
-  //delay(2000);
 }
 
 // STOP MOVING OR ROTATING IF THE DISTANCE OR ANGLE HAS BEEN REACHED. *************************************

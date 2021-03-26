@@ -160,20 +160,21 @@ void Sensors::doOffsets()
 	if(distanceA5 < 0) { distanceA5 = 100; }
 }
 
-// Convert distance into steps of 10cm from obstacle block for short range infrared sensor.
+// Convert distance into steps of 10cm from obstacle block for short range infrared sensor for the front sensors.
 double Sensors::calculateDist1(double dist)
 {
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.
 	// Obstacle is 1 step away.
-	if(dist < 13) {return 1;}
+	if(dist < 12) {return 1;}
 	
 	// Too far to be detected.
 	else if(dist >= 25) {return 0;}
 	
 	// Obstacle is 2 steps away.
-	else if(dist >= 13 and dist < 25) {return 2;}
+	else if(dist >= 12 and dist < 25) {return 2;}
 }
 
+// Convert distance into steps of 10cm from obstacle block for short range infrared sensor for the right sensors.
 double Sensors::calculateDist2(double dist)
 {
 	// IF THE OBSTACLE NEXT TO THE ROBOT IS TREATED AS ONE STEP AWAY.

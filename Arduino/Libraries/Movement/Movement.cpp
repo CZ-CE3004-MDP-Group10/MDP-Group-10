@@ -216,8 +216,8 @@ void Movement::rotate90left()
 		
 	// Theoretically 398 ticks rotates the robot by approximately 90 degrees.
 	// The ticks to move for each motor when rotating have to be individually adjusted.
-	pid.M1_ticks_to_move = 310; //OK
-	pid.M2_ticks_to_move = 350; //OK
+	pid.M1_ticks_to_move = 307; //OK
+	pid.M2_ticks_to_move = 347; //OK
 
 	// Set the boolean variables to keep track of movement transitions.
 	straightTransition = true;
@@ -281,15 +281,15 @@ void Movement::rotate90right()
 	pid.setZero();
 	//Serial.println("First rotate right transition.");
 		
-	pid.M1_ticks_to_move = 340; //OK
-	pid.M2_ticks_to_move = 337; //OK
+	pid.M1_ticks_to_move = 330; //OK
+	pid.M2_ticks_to_move = 328; //OK
 	
 	// When rotating right during right wall calibration, right turn is observed to fall short.
 	// Extra ticks specified here and triggered by boolean variable are to fix the issue.
 	if(calibrateRightRotate)
 	{
-		pid.M1_ticks_to_move = 350; //OK
-		pid.M2_ticks_to_move = 347; //OK
+		pid.M1_ticks_to_move = 344; //OK
+		pid.M2_ticks_to_move = 341; //OK
 	}
 
 	straightTransition = true;
@@ -432,7 +432,7 @@ void Movement::stopIfReached()
 		  
 		  // Delay is added here intentionally to make the left motor brake before the right motor,
 		  // Due to observation that the robot tended to shift to the right after moving straight.
-		  delay(2);
+		  delay(3);
 		  motorShield.setM2Brake(400);
 		  //motorShield.setBrakes(400, 400);
 		}
