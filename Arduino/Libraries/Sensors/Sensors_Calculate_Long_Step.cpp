@@ -10,9 +10,6 @@ double Sensors::calculateStepLong(double dist)
 	// Obstacle is 1 step away.
 	if(dist < 24) {return 1;}
 	
-	// Too far to be detected.
-	else if(dist >= 47.5) {return 0;}
-	
 	// Obstacle is 2 steps away.
 	else if( dist >= 24 and dist < 33.5) {return 2;}
 	
@@ -24,4 +21,7 @@ double Sensors::calculateStepLong(double dist)
 	
 	// Obstacle is 5 steps away.
 	else if(dist >= 45.5 and dist < 47.5) {return 5;}
+	
+	// Too far to be detected.
+	else if(dist >= 47.5) {return 0;}
 }

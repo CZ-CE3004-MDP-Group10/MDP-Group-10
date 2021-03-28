@@ -8,7 +8,7 @@ void Sensors::calculateDistance()
 {
 	// EQUATIONS TO CONVERT THE ANALOG VALUES INTO CENTIMETERS:
 
-	// SENSOR 1 CALCULATION AND OFFSETS:   READINGS DIFFERENT FROM EXCEL
+	// SENSOR 1 CALCULATION AND OFFSETS:
 	distanceA0 = -9.1042 + (8155.745 / (sensorA0_avg + 22.11502));
 	if(distanceA0 < 15) {distanceA0 += 2;}
 	else if(distanceA0 > 15 and distanceA0 < 30) {distanceA0 -= 1;}
