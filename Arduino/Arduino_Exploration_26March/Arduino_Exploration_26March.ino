@@ -73,7 +73,7 @@ void loop()
   readChar = ' ';
 
   // Wait to receive a command.
-  while(1 and stillrunning)
+  while(stillrunning)
   { 
     // If there is serial data received via USB.
     if(Serial.available() > 0)

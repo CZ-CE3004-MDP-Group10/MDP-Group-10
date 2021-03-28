@@ -70,24 +70,24 @@ void loop()
       // Extract the next command from the main string.
       subData = receiveData.substring(count, count+2);
 
-    // Check if the current command is the last command. 
-    if(receiveData.charAt(count + 2) == '\0' or receiveData.charAt(count + 2) == '\n')
-    {
-      // Set the last command boolean.
-      robot.lastCommand = true;
-    }
+      // Check if the current command is the last command. 
+      if(receiveData.charAt(count + 2) == '\0' or receiveData.charAt(count + 2) == '\n')
+      {
+        // Set the last command boolean.
+        robot.lastCommand = true;
+      }
 
-    // Read the movement character command.
-    readChar = subData.charAt(0);
+      // Read the movement character command.
+      readChar = subData.charAt(0);
 
-    // If the character read is null or newline, the end of the main string has been reached.
-    if(readChar == '\n' or readChar == '\0')
-    {
-      // Clear all the contents of the main string and reset the last command boolean and counters.
-      count = 4;
-      receiveData = "";
-      readChar = " ";
-      robot.lastCommand = false;
+      // If the character read is null or newline, the end of the main string has been reached.
+      if(readChar == '\n' or readChar == '\0')
+      {
+        // Clear all the contents of the main string and reset the last command boolean and counters.
+        count = 4;
+        receiveData = "";
+        readChar = " ";
+        robot.lastCommand = false;
 		
 		    // Need to insert a delay here for the Android application to separate the last string.
         delay(100);

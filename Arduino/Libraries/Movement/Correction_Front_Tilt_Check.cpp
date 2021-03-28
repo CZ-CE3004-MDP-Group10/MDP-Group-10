@@ -30,6 +30,7 @@ void Movement::frontTiltCheck()
 		{
 			if(abs(error) > error_margin and (sensor.distanceA0) < 20 and sensor.distanceA2 < 20)
 			{
+				// If the robot is tilted left.
 				if(error > 0)
 				{
 					//Serial.println("A0, A2, Tilted left. Tilting right for correction.");
@@ -42,6 +43,7 @@ void Movement::frontTiltCheck()
 					error = (sensor.distanceA0 + 1.2) - (sensor.distanceA2 - 0);
 				}
 				
+				// If the robot is tilted right.
 				else if(error < 0)
 				{
 					//Serial.println("A0, A2, Tilted right. Tilting left for correction.");
