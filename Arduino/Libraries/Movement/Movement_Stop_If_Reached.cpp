@@ -52,14 +52,7 @@ void Movement::stopIfReached()
 		// Before stopping and waiting for a command.
 		if(distsub <= 0)
 		{
-		  // Set the brakes on both motors to bring the robot to a stop.
-		  motorShield.setM1Brake(400);
-		  
-		  // Delay is added here intentionally to make the left motor brake before the right motor,
-		  // Due to observation that the robot tended to shift to the right after moving straight.
-		  delay(3);
-		  motorShield.setM2Brake(400);
-		  //motorShield.setBrakes(400, 400);
+			motorShield.setBrakes(400, 400);
 		}
 		// Reset the tick counters.
 		pid.M1_ticks_moved = 0;
