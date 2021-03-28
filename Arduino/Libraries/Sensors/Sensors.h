@@ -49,10 +49,10 @@ class Sensors
 	// Functions for sensors.
 	void init(void);
 	void readSensor(void);
-	void doOffsets(void);
-	void print(void);
-	double calculateDist1(double dist);
-	double calculateDist2(double dist);
-	double calculateDist3(double dist);
 	void sortReadings(double *list);
+	void calculateDistance(void);
+	void print(void);
+	double calculateStepFront(double dist);
+	double calculateStepRight(double dist);
+	double calculateStepLong(double dist);
 };

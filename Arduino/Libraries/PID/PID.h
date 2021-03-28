@@ -34,9 +34,16 @@ class PID
 	double E2_prev_error;
 	double E1_sum_error;
 	double E2_sum_error;
-	double KP;        	// Adjust for proportional component.
-	double KD;        	// Adjust for derivative component.
-	double KI;          // Adjust for integral component.
+	
+	// Left Motor.
+	double Left_Proportion;
+	double Left_Integral;
+	double Left_Derivative;
+	
+	// Right motor.
+	double Right_Proportion;
+	double Right_Integral;
+	double Right_Derivative;
 	
 	// PID Controller Functions.
 	void init();

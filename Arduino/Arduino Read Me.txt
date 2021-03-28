@@ -1,0 +1,52 @@
+USAGE OF ARDUINO CODE:
+
+1. Copy the folders "Movement", "PID" and "Sensors" into your PC's Arduino libraries directory located at "C:\Users\<Your Username>\Documents\Arduino\libraries".
+2. Open the main Arduino file for either "Fastest Path" or "Exploration".
+3. For adding new source code '.cpp' files, remember to include the respective header files in the.
+4. All variables used within the new 'cpp' file must be delcared within the included header file.
+4. Only one header file is needed per directory.
+
+MOTOR CALIBRATION PROCEDURE:
+
+1. Obtain data points for motor commanded power vs number of ticks counted per specified sampling time.
+2. Use a smaller incremental step value for increase in motor commanded power and collect more data points to improve accuracy of derived equation.
+3. Derive a linear equation using the data points for each motor, relating the number of ticks to move into motor commanded power.
+
+IMPROVEMENTS TO MOTOR CALIBRATION YOU CAN TRY:
+
+1. Use a ramp function when accelerating the motor from a stop, and when declerating the motor to a stop for smoother movements.
+
+SENSOR CALIBRATION PROCEDURE:
+
+1. Obtain data points for distance of obstacle from sensor in centimetres vs analog value of sensor output.
+2. For each data point, use averaging or range of median values for every batch of analog samples taken to ensure stability.
+3. Use a smaller incremental step value for obstacle distance and collect more data points to improve accuracy of derived equation.
+4. Derive a point slope form equation using the data points for each sensor, relating the sensor's analog value to the distance an obstacle is from it.
+
+IMPROVEMENTS TO SENSOR CALIBRATION YOU CAN TRY:
+
+1. For each sample of 'X' analog readings taken from a sensor, sort the values from smallest to greatest and obtain the median 'Y' values to remove any outliers or irregularity spikes.
+2. Average the range of 'Y' values to obtain a single stable analog value to feed into the distance calculation equation.
+
+FRONT OR RIGHT VERTICAL DISTANCE FROM OBSTACLE CALIBRATION:
+
+1. If one or more of the front sensor values report a distance too close to, or too far from, a wall or obstacle in front of the robot, the robot moves slightly backwards or forwards by a small amount respectively.
+2. For correcting the horizontal distance from the right, rotate the robot 90 degrees right and perform the above step with the front sensors. The robot cannot shift horizontally when it is facing front, it has to rotate right first.
+3. Use a small step distance for correction, and a for or while loop to reach the desired correct distance after a number of iterations.
+
+FRONT OR RIGHT TILT ANGLE CORRECTION:
+
+1. Compare the distances between the leftmost and rightmost sensors on the front or right.
+2. If the left sensor returns a greater distance value than the right sensor, tilt the robot slightly to the right.
+3. If the right sensor returns a greater distance value than the left sensor, tilt the robot slightly to the left.
+4. Repeat until both sensors return a distance whose difference is within a specified margin of error.
+5. Use a small step rotation angle for correction, and a for or while loop to reach the desired correct angle after a number of iterations.
+
+OTHER IMPORTANT POINTS TO NOTE:
+
+1. Communication protocols received and sent by the Arduino are subject to your group member's strategy.
+2. Lead acid battery must be connected and switched on to supply power to the sensor shield. Failing to do this will result in inaccurate sensor readings.
+3. Lead acid battery capacity can affect movement accuracy. Always start with a fully charged battery as a reference point, and recharge it once its voltage falls below the 50% point.
+4. Small infrared sensor blind spot is 10cm as stated in the datasheet, but in real life can be only 7cm.
+5. Large infrared sensor blind spot is 20cm as stated in the datasheet, but in real life can be only 15cm.
+6. Avoid using the sonar sensor as the echo of sound waves off the walls and obstacles in the arena will return to the sensor at different timings, resulting in a lot of noise and inaccurate distance gauging.
