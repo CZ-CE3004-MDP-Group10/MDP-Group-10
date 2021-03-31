@@ -1,3 +1,8 @@
+ARDUINO LIBRARIES REQUIRED:
+
+1. Pololu VHN5019 Dual Motor Driver Shield. <DualVNH5019MotorShield.h>
+2. Enable Interrupt. <EnableInterrupt.h>
+
 USAGE OF ARDUINO CODE:
 
 1. Copy the folders "Movement", "PID" and "Sensors" into your PC's Arduino libraries directory located at "C:\Users\<Your Username>\Documents\Arduino\libraries".
